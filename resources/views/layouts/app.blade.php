@@ -16,21 +16,23 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased">
-    <div class="min-h-screen bg-gray-100">
+<body data-theme="" class="font-sans antialiased">
+    <div data-theme="" class="min-h-screen">
         @include('layouts.navigation')
 
         <!-- Page Heading -->
         @isset($header)
-            <header class="bg-white shadow">
+            <header data-theme="" class="border-b-4 border-accent rounded-md">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    {{ $header }}
+                    <h1 class="text-2xl font-bold text-base-content">
+                        {{ $header }}
+                    </h1>
                 </div>
             </header>
         @endisset
 
         <!-- Page Content -->
-        <main>
+        <main data-theme="" class="border-accent rounded-md">
             {{ $slot }}
         </main>
     </div>
@@ -39,7 +41,7 @@
 
         // Load theme on page load
         document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') ||
-        'default'); // 'default' is the fallback
+            'default'); // 'default' is the fallback
 
         themeSelector.addEventListener('change', function() {
             const selectedTheme = this.value;
