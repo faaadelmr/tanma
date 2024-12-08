@@ -31,8 +31,11 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:100'],
-            'username' => ['required', 'string', 'max:30', 'unique:'.User::class],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:200', 'unique:'.User::class],
+            'username' => ['required', 'string', 'max:30', 'unique:'.User::class,
+            'regex:/^[a-zA-Z0-9._-]+$/', // Hanya karakter alfanumerik, titik, garis bawah, dan tanda hubung
+            'not_regex:/^.*[^\p{L}\p{N}._-].*$/u' // Menghindari karakter khusus
+            ],
+            'email' => ['nullable', 'string', 'lowercase', 'email', 'max:200', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
