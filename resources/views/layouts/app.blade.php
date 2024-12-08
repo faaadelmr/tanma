@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html data-theme="retro" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,5 +32,11 @@
                 {{ $slot }}
             </main>
         </div>
+        <script>
+            const themeSelector = document.getElementById('theme-selector');
+            themeSelector.addEventListener('change', function() {
+              document.documentElement.setAttribute('data-theme', this.value);
+            });
+          </script>
     </body>
 </html>
