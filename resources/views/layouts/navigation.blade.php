@@ -1,18 +1,18 @@
 <div class="navbar bg-base-100">
     <div class="flex-1">
-        <a class="btn btn-ghost text-red-600 text-xl" href="{{ route('dashboard') }}">
+        <a class="text-xl text-red-600 btn btn-ghost" href="{{ route('dashboard') }}">
             Tanma
         </a>
         <div class="flex-2">
-            <ul class="menu menu-horizontal px-1">
+            <ul class="px-1 menu menu-horizontal">
                 @role('admin')
                 <li><a href="{{ route('users.index') }}">User Management</a></li>
                 @endrole
-                <li><a href="">Report Harian</a></li>
+                <li><a href="{{ route('reports.index')}}">Report Harian</a></li>
                 <li>
                     <details>
                         <summary>Parent</summary>
-                        <ul class="bg-base-100 rounded-t-none p-2">
+                        <ul class="p-2 rounded-t-none bg-base-100">
                             <li><a>Link 1</a></li>
                             <li><a>Link 2</a></li>
                         </ul>
@@ -38,9 +38,9 @@
                 </li>
                 {{-- tema --}}
                 <li>
-                    <div class="flex items-center gap-2">
+                    <div class="flex gap-2 items-center">
                         <label for="theme-selector" class="text-sm font-medium leading-6">Tema:</label>
-                        <select id="theme-selector" class="text-sm max-w-xs select select-bordered select-sm">
+                        <select id="theme-selector" class="max-w-xs text-sm select select-bordered select-sm">
                             <option value="light">light</option>
                             <option value="dark">dark</option>
                             <option value="cupcake">cupcake</option>
