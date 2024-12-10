@@ -6,6 +6,14 @@ use App\Models\Report;
 use App\Models\Task;
 use App\Models\TaskCategory;
 use Illuminate\Http\Request;
+use App\Models\User;
+use Spatie\Permission\Models\Role;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
+use Illuminate\View\View;
 
 class ReportController extends Controller
 {
@@ -18,6 +26,7 @@ class ReportController extends Controller
     public function create()
     {
         $taskCategories = TaskCategory::all();
+        $userName=Auth::user()->name;
         return view('reports.create', compact('taskCategories'));
     }
 
