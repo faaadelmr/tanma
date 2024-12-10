@@ -10,34 +10,37 @@
             <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="mb-6">
-                        <h3 class="text-lg font-medium">Report for {{ $report->report_date->format('d/m/Y') }}</h3>
-                        <p class="text-gray-600">By: {{ $report->user->name }}</p>
+                        <h3 class="text-lg font-medium">{{ $report->date }}</h3>
+                        <h1>{{ $report->name }}</h1>
                     </div>
 
-                    <div class="space-y-4">
-                        @forelse($report->tasks->groupBy('category_id') as $categoryId => $tasks)
-                            <div class="pt-4 border-t">
-                                <h4 class="font-medium">{{ $tasks->first()->category->name ?? 'Uncategorized' }}</h4>
-                                <ul class="mt-2 space-y-2">
-                                    @foreach($tasks as $task)
-                                        <li class="flex justify-between items-center py-1 hover:bg-gray-50">
-                                            <span class="text-gray-700">{{ $task->description }}</span>
-                                            <span class="text-gray-600">{{ number_format($task->quantity) }} {{ $task->unit }}</span>
-                                        </li>
-                                    @endforeach
-                                </ul>
+                    <div class="border-t border-gray-200">
+                        @forelse($report->tasks as $key => $task)
+                        <dl class="divide-y divide-gray-200">
+                            <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                                <dt class="text-sm font-medium text-gray-500">{{ $key + 1 }}.  {{ $task->category }}</dt>
+                                <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
+                                    @if($task->batch) Batch: {{ $task->batch }}@endif
+                                    @if($task->claim) Claim: {{ $task->claim }}@endif
+                                    @if($task->email) Email: {{ $task->email }}@endif
+                                </dd>
                             </div>
+                        </dl>
+
                         @empty
                             <div class="py-4 text-center text-gray-500">
                                 No tasks found for this report.
                             </div>
-                        @endforelse                    </div>
+                        @endforelse
+                    </div>
 
                     <div class="mt-6">
-                        <a href="{{ route('reports.index') }}" class="text-blue-600 hover:text-blue-900">Back to Reports</a>
+                        <a href="{{ route('reports.index') }}" class="text-blue-600 hover:text-blue-900">Back to
+                            Reports</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </x-app-layout>
+

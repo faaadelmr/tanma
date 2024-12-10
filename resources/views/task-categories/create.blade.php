@@ -1,38 +1,55 @@
+// resources/views/task-categories/create.blade.php
+{{-- @extends('layouts.app')
+
+@section('content') --}}
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">
-            {{ __('Create Task Category') }}
+        <h2 class="font-semibold text-xl leading-tight">
+            {{ __('Kategori Tugas Baru') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <form method="POST" action="{{ route('task-categories.store') }}" class="space-y-6">
-                        @csrf
+<div class="container">
+    <h2>Create New Task Category</h2>
 
-                        <div>
-                            <x-input-label for="name" value="Category Name" />
-                            <x-text-input id="name" type="text" name="name" class="block mt-1 w-full" required />
-                            <x-input-error :messages="$errors->get('name')" class="mt-2" />
-                        </div>
-
-                        <div>
-                            <x-input-label for="description" value="Description" />
-                            <textarea id="description" name="description" rows="3"
-                                class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
-                            <x-input-error :messages="$errors->get('description')" class="mt-2" />
-                        </div>
-
-                        <div class="flex justify-end items-center">
-                            <x-primary-button>
-                                {{ __('Create Category') }}
-                            </x-primary-button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <form action="{{ route('task-categories.store') }}" method="POST">
+        @csrf
+        <div class="mb-3">
+            <label for="label" class="form-label">Label</label>
+            <input type="text" class="form-control @error('label') is-invalid @enderror" id="label" name="label" value="{{ old('label') }}" required>
+            @error('label')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
         </div>
-    </div>
+
+        <div class="mb-3">
+            <label for="details" class="form-label">Details</label>
+            <textarea class="form-control @error('details') is-invalid @enderror" id="details" name="details" required>{{ old('details') }}</textarea>
+            @error('details')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Fields</label>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="fields[]" value="batch" id="field_batch" {{ in_array('batch', old('fields', [])) ? 'checked' : '' }}>
+                <label class="form-check-label" for="field_batch">Batch</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="fields[]" value="claim" id="field_claim" {{ in_array('claim', old('fields', [])) ? 'checked' : '' }}>
+                <label class="form-check-label" for="field_claim">Claim</label>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="fields[]" value="email" id="field_email" {{ in_array('email', old('fields', [])) ? 'checked' : '' }}>
+                <label class="form-check-label" for="field_email">Email</label>
+            </div>
+            @error('fields')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Category</button>
+    </form>
+</div>
 </x-app-layout>

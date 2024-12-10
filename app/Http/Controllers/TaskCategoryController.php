@@ -9,7 +9,7 @@ class TaskCategoryController extends Controller
 {
     public function index()
     {
-        $categories = TaskCategory::all();
+        $categories = TaskCategory::withCount('tasks')->get(); // Eager load task count
         return view('task-categories.index', compact('categories'));
     }
 
@@ -21,14 +21,22 @@ class TaskCategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:task_categories',
-            'description' => 'nullable|string'
+            'label' => 'required|string|unique:task_categories,label', // Ensure label is unique
+            'details' => 'required|string',
+            'fields' => 'required|array',
+            'fields.*' => 'string|in:batch,claim,email',
         ]);
 
-        TaskCategory::create($validated);
+        $value = strtolower(str_replace(' ', '_', $validated['label']));
 
-        return redirect()->route('task-categories.index')
-            ->with('success', 'Category created successfully');
+        TaskCategory::create([
+            'value' => $value,
+            'label' => $validated['label'],
+            'details' => $validated['details'],
+            'fields' => $validated['fields'],
+        ]);
+
+        return redirect()->route('task-categories.index')->with('success', 'Category added successfully');
     }
 
     public function edit(TaskCategory $taskCategory)
@@ -39,20 +47,32 @@ class TaskCategoryController extends Controller
     public function update(Request $request, TaskCategory $taskCategory)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:task_categories,name,' . $taskCategory->id,
-            'description' => 'nullable|string'
+            'label' => 'required|string|unique:task_categories,label,' . $taskCategory->id, // Unique label, ignoring current category
+            'details' => 'required|string',
+            'fields' => 'required|array',
+            'fields.*' => 'string|in:batch,claim,email',
         ]);
 
-        $taskCategory->update($validated);
+        $value = strtolower(str_replace(' ', '_', $validated['label']));
 
-        return redirect()->route('task-categories.index')
-            ->with('success', 'Category updated successfully');
+        $taskCategory->update([
+            'value' => $value,
+            'label' => $validated['label'],
+            'details' => $validated['details'],
+            'fields' => $validated['fields'],
+        ]);
+
+        return redirect()->route('task-categories.index')->with('success', 'Category updated successfully');
     }
+
 
     public function destroy(TaskCategory $taskCategory)
     {
+        if ($taskCategory->tasks()->count() > 0) {
+            return redirect()->route('task-categories.index')->with('error', 'Cannot delete category with associated tasks.');
+        }
+
         $taskCategory->delete();
-        return redirect()->route('task-categories.index')
-            ->with('success', 'Category deleted successfully');
+        return redirect()->route('task-categories.index')->with('success', 'Category deleted successfully');
     }
 }

@@ -1,92 +1,90 @@
+// resources/views/reports/create.blade.php
+{{-- @extends('layouts.app')
+
+@section('content') --}}
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-primary-800">
-            {{ __('Create Report') }}
+        <h2 class="font-semibold text-xl leading-tight">
+            {{ __('Report Baru') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-secondary-200">
-                    <form method="POST" action="{{ route('reports.store') }}" class="space-y-6" x-data="reportForm()">
-                        @csrf
+<div class="container">
+    <h2>Create New Report</h2>
 
-                        <div>
-                            <x-input-label for="report_date" value="Report Date" class="text-primary-700"/>
-                            <x-text-input id="report_date" type="date" name="report_date" class="block mt-1 w-full border-secondary-300" :value="old('report_date')" required />
-                            <x-input-error :messages="$errors->get('report_date')" class="mt-2" />
-                        </div>
+    <form action="{{ route('reports.store') }}" method="POST" id="reportForm">
+        @csrf
+        <div class="mb-3">
+            <label for="name" class="form-label">Report Name</label>
+            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required>
+            @error('name')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-                        <div id="tasks-container" class="space-y-4">
-                            <template x-for="(task, index) in tasks" :key="index">
-                                <div class="p-4 rounded border border-secondary-300">
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium text-primary-700">Category</label>
-                                            <select :name="'tasks['+index+'][category_id]'" x-model="task.category_id" class="block mt-1 w-full rounded-md shadow-sm border-secondary-300 focus:border-accent-500 focus:ring-accent-500" required>
-                                                <option value="">Select Category</option>
-                                                @foreach($categories as $category)
-                                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+        <div class="mb-3">
+            <label for="date" class="form-label">Report Date</label>
+            <input type="date" class="form-control @error('date') is-invalid @enderror" id="date" name="date" value="{{ old('date') }}" required>
+            @error('date')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
-                                        <div>
-                                            <label class="block text-sm font-medium text-primary-700">Description</label>
-                                            <input type="text" :name="'tasks['+index+'][description]'" x-model="task.description" class="block mt-1 w-full rounded-md shadow-sm border-secondary-300 focus:border-accent-500 focus:ring-accent-500" required>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-sm font-medium text-primary-700">Quantity</label>
-                                            <input type="number" :name="'tasks['+index+'][quantity]'" x-model="task.quantity" min="0" step="0.01" class="block mt-1 w-full rounded-md shadow-sm border-secondary-300 focus:border-accent-500 focus:ring-accent-500" required>
-                                        </div>
-
-                                        <div>
-                                            <label class="block text-sm font-medium text-primary-700">Unit</label>
-                                            <input type="text" :name="'tasks['+index+'][unit]'" x-model="task.unit" class="block mt-1 w-full rounded-md shadow-sm border-secondary-300 focus:border-accent-500 focus:ring-accent-500" required>
-                                        </div>
-                                    </div>
-
-                                    <button type="button" @click="removeTask(index)" class="mt-2 text-accent-600 hover:text-accent-800">Remove Task</button>
-                                </div>
-                            </template>
-                        </div>
-
-                        <div class="flex justify-between">
-                            <button type="button" @click="addTask()" class="px-4 py-2 font-bold text-white rounded bg-accent-500 hover:bg-accent-700">
-                                Add Task
-                            </button>
-
-                            <button type="submit" class="px-4 py-2 font-bold text-white rounded bg-primary-500 hover:bg-primary-700">
-                                Submit Report
-                            </button>
-                        </div>
-                    </form>
-                </div>
+        <div id="tasksContainer">
+            <h4>Tasks</h4>
+            <div class="task-entry mb-3">
+                <select name="tasks[0][category]" class="form-select category-select" required>
+                    <option value="">Select Category</option>
+                    @foreach($taskCategories as $category)
+                        <option value="{{ $category->details }}" data-fields="{{ json_encode($category->fields) }}">
+                            {{ $category->details }}
+                        </option>
+                    @endforeach
+                </select>
+                <div class="fields-container mt-2"></div>
             </div>
         </div>
-    </div>
 
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('reportForm', () => ({
-                tasks: [],
-                init() {
-                    this.addTask();
-                },
-                addTask() {
-                    this.tasks.push({
-                        category_id: '',
-                        description: '',
-                        quantity: '',
-                        unit: ''
-                    });
-                },
-                removeTask(index) {
-                    this.tasks.splice(index, 1);
-                }
-            }));
-        });
-    </script>
+        <button type="button" class="btn btn-secondary mb-3" onclick="addTaskEntry()">Add Another Task</button>
+        <button type="submit" class="btn btn-primary">Create Report</button>
+    </form>
+</div>
+
+<script>
+let taskCount = 1;
+
+function addTaskEntry() {
+    const container = document.createElement('div');
+    container.className = 'task-entry mb-3';
+    container.innerHTML = `
+        <hr>
+        <select name="tasks[${taskCount}][category]" class="form-select category-select" required>
+            <option value="">Select Category</option>
+            @foreach($taskCategories as $category)
+                <option value="{{ $category->details }}" data-fields="{{ json_encode($category->fields) }}">
+                    {{ $category->details }}
+                </option>
+            @endforeach
+        </select>
+        <div class="fields-container mt-2"></div>
+    `;
+    document.getElementById('tasksContainer').appendChild(container);
+    taskCount++;
+}
+
+document.addEventListener('change', function(e) {
+    if (e.target.classList.contains('category-select')) {
+        const fieldsContainer = e.target.nextElementSibling;
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        const fields = JSON.parse(selectedOption.dataset.fields);
+
+        fieldsContainer.innerHTML = fields.map(field => `
+            <div class="mb-2">
+                <label class="form-label">${field.charAt(0).toUpperCase() + field.slice(1)}</label>
+                <input type="number" name="tasks[${e.target.name.match(/\d+/)[0]}][${field}]" class="form-control">
+            </div>
+        `).join('');
+    }
+});
+</script>
 </x-app-layout>

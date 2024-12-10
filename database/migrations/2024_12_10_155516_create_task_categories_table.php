@@ -8,16 +8,18 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('reports', function (Blueprint $table) {
+        Schema::create('task_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->date('date');
+            $table->string('value')->unique();
+            $table->string('label');
+            $table->string('details');
+            $table->json('fields');
             $table->timestamps();
         });
     }
 
     public function down()
     {
-        Schema::dropIfExists('reports');
+        Schema::dropIfExists('task_categories');
     }
 };

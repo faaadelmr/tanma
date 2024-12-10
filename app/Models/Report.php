@@ -3,28 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Report extends Model
 {
-    protected $fillable = [
-        'user_id',
-        'report_date',
-        'total_tasks'
-    ];
+    protected $fillable = ['name', 'date'];
 
-
-
-    protected $casts = [
-        'report_date' => 'date'
-    ];
-
-    public function user(){
-        return $this->belongsTo(User::class);
-    }
-
-    public function tasks(): HasMany
+    public function tasks()
     {
-        return $this->hasMany(ReportTask::class);
+        return $this->hasMany(Task::class);
     }
 }
