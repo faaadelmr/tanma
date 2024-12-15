@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-primary-content leading-tight">
-            Edit Task Category
+        <h2 class="text-primary font-semibold text-2xl leading-tight">
+            {{ __('Edit Tugas Kategori') }}
         </h2>
     </x-slot>
 
@@ -16,55 +16,54 @@
                             <label class="block text-sm font-medium mb-2">Name</label>
                             <input type="text" name="name" value="{{ $category->name }}" class="form-input rounded-md shadow-sm mt-1 block w-full" required>
                         </div>
-
                         <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="inline-flex items-center">
-                                    <input type="checkbox" name="has_dor_date" {{ $category->has_dor_date ? 'checked' : '' }} class="form-checkbox">
-                                    <span class="ml-2">DOR</span>
+                            <div class="form-control">
+                                <label class="cursor-pointer label justify-start gap-2">
+                                    <input type="checkbox" name="has_dor_date" {{ $category->has_dor_date ? 'checked' : '' }} class="checkbox checkbox-primary" />
+                                    <span class="label-text">DOR</span>
                                 </label>
                             </div>
-                            <div>
-                                <label class="inline-flex items-center">
-                                    <input type="checkbox" name="has_batch" {{ $category->has_batch ? 'checked' : '' }} class="form-checkbox">
-                                    <span class="ml-2">Batch</span>
+                            <div class="form-control">
+                                <label class="cursor-pointer label justify-start gap-2">
+                                    <input type="checkbox" name="has_batch" {{ $category->has_batch ? 'checked' : '' }} class="checkbox checkbox-primary" />
+                                    <span class="label-text">Batch</span>
                                 </label>
                             </div>
-                            <div>
-                                <label class="inline-flex items-center">
-                                    <input type="checkbox" name="has_claim" {{ $category->has_claim ? 'checked' : '' }} class="form-checkbox">
-                                    <span class="ml-2">Claim</span>
+                            <div class="form-control">
+                                <label class="cursor-pointer label justify-start gap-2">
+                                    <input type="checkbox" name="has_claim" {{ $category->has_claim ? 'checked' : '' }} class="checkbox checkbox-primary" />
+                                    <span class="label-text">Claim</span>
                                 </label>
                             </div>
-                            <div>
-                                <label class="inline-flex items-center">
-                                    <input type="checkbox" name="has_time_range" {{ $category->has_time_range ? 'checked' : '' }} class="form-checkbox">
-                                    <span class="ml-2">Time Range</span>
+                            <div class="form-control">
+                                <label class="cursor-pointer label justify-start gap-2">
+                                    <input type="checkbox" name="has_time_range" {{ $category->has_time_range ? 'checked' : '' }} class="checkbox checkbox-primary" />
+                                    <span class="label-text">Time Range</span>
                                 </label>
                             </div>
-                            <div>
-                                <label class="inline-flex items-center">
-                                    <input type="checkbox" name="has_sheets" {{ $category->has_sheets ? 'checked' : '' }} class="form-checkbox">
-                                    <span class="ml-2">Sheets</span>
+                            <div class="form-control">
+                                <label class="cursor-pointer label justify-start gap-2">
+                                    <input type="checkbox" name="has_sheets" {{ $category->has_sheets ? 'checked' : '' }} class="checkbox checkbox-primary" />
+                                    <span class="label-text">Sheets</span>
                                 </label>
                             </div>
-                            <div>
-                                <label class="inline-flex items-center">
-                                    <input type="checkbox" name="has_email" {{ $category->has_email ? 'checked' : '' }} class="form-checkbox">
-                                    <span class="ml-2">Email</span>
+                            <div class="form-control">
+                                <label class="cursor-pointer label justify-start gap-2">
+                                    <input type="checkbox" name="has_email" {{ $category->has_email ? 'checked' : '' }} class="checkbox checkbox-primary" />
+                                    <span class="label-text">Email</span>
                                 </label>
                             </div>
-                            <div>
-                                <label class="inline-flex items-center">
-                                    <input type="checkbox" name="has_form" {{ $category->has_form ? 'checked' : '' }} class="form-checkbox">
-                                    <span class="ml-2">Form</span>
+                            <div class="form-control">
+                                <label class="cursor-pointer label justify-start gap-2">
+                                    <input type="checkbox" name="has_form" {{ $category->has_form ? 'checked' : '' }} class="checkbox checkbox-primary" />
+                                    <span class="label-text">Form</span>
                                 </label>
                             </div>
                         </div>
 
                         <div class="flex items-center justify-end">
-                            <button type="submit" class="bg-secondary-content text-primary font-bold py-2 px-4 rounded">
-                                Update Category
+                            <button type="submit" class="bg-secondary font-bold py-2 px-4 rounded">
+                                Update Kategori
                             </button>
                         </div>
                     </form>

@@ -5,19 +5,19 @@
         </a>
         <div class="flex-2">
             <ul class="px-1 menu menu-horizontal">
+                <li><a href="{{ route('daily-reports.index') }}">Report Harian</a></li>
+                <li><a href="{{ route('meetings.index') }}">Meeting</a></li>
                 @role('admin')
-                <li><a href="{{ route('users.index') }}">User Management</a></li>
+                    <li>
+                        <details>
+                            <summary>Pengaturan</summary>
+                            <ul class="p-2 rounded-t-none bg-base-100">
+                                <li><a href="{{ route('users.index') }}">User Management</as></li>
+                                <li><a href="{{route('task-categories.index')}}" >Kategori Tugas</a></li>
+                            </ul>
+                        </details>
+                    </li>
                 @endrole
-                <li><a href="{{ route('daily-reports.index')}}">Report Harian</a></li>
-                <li>
-                    <details>
-                        <summary>Parent</summary>
-                        <ul class="p-2 rounded-t-none bg-base-100">
-                            <li><a>Link 1</a></li>
-                            <li><a>Link 2</a></li>
-                        </ul>
-                    </details>
-                </li>
             </ul>
         </div>
     </div>

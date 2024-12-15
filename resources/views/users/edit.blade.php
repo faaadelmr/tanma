@@ -1,9 +1,15 @@
 <x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-primary font-semibold text-2xl leading-tight">
+            {{ __('Edit User') }}
+        </h2>
+    </x-slot>
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <h2 class="text-2xl font-bold mb-4">Edit User</h2>
+                    <h2 class="text-2xl font-bold mb-4"></h2>
 
                     <form method="POST" action="{{ route('users.update', $user) }}" class="space-y-4">
                         @csrf
@@ -17,11 +23,16 @@
                         </div>
 
                         <div>
-                            <x-input-label for="email" value="Username" />
-                            <x-text-input id="email" name="email" type="text" class="mt-1 block w-full"
-                                value="{{ str_replace('@gmail.com', '', old('email', $user->email)) }}" required autocomplete="username"
-                                    placeholder="username" oninput="this.value = this.value.replace('@gmail.com', ''); document.getElementById('hidden_email').value = this.value + '@gmail.com';" />
-                            <input type="hidden" id="hidden_email" name="email" />
+                            <x-input-label for="username" value="Username" />
+                            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full"
+                                value="{{ old('username', $user->username) }}" required autocomplete="username" />
+                            <x-input-error :messages="$errors->get('username')" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="email" value="Email" />
+                            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full"
+                                value="{{ old('email', $user->email) }}" autocomplete="email" />
                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                         </div>
 
@@ -50,10 +61,20 @@
                             </select>
                         </div>
 
-                        <div class="flex items-center gap-4">
-                            <x-primary-button>Update User</x-primary-button>
-                            <a href="{{ url('users') }}" class="btn btn-ghost">Cancel</a>
+                        <div class="flex items-center gap-4 mt-6">
+                            <button type="submit" class="btn btn-primary hover:scale-105 transition-transform duration-200 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd"/>
+                                </svg>
+                                Update User
+                            </button>
+
+                            <a href="{{ url('users') }}" class="btn btn-ghost hover:bg-gray-400 transition-colors duration-200">
+                                Cancel
+                            </a>
                         </div>
+
                     </form>
                 </div>
             </div>

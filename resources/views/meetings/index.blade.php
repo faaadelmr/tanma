@@ -1,8 +1,15 @@
 <x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-primary font-semibold text-2xl leading-tight">
+            {{ __('Rapat Mingguan') }}
+        </h2>
+    </x-slot>
+
+
     <div class="py-12 bg-base-200 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="flex justify-between items-center mb-8">
-                <h1 class="text-4xl font-bold text-primary">Weekly Meetings</h1>
+                <h1 class="text-4xl font-bold text-primary"></h1>
                 <form action="{{ route('meetings.generate') }}" method="POST" class="inline">
                     @csrf
                     <button type="button" onclick="generateMeetings()" class="btn btn-secondary gap-2">

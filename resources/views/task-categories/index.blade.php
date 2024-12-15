@@ -1,21 +1,22 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-primary-content leading-tight">
-            Task Categories
+        <h2 class="text-primary font-semibold text-2xl leading-tight">
+            {{ __('Tugas Kategori') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="flex justify-end mb-4">
+                <a href="{{ route('task-categories.create') }}" class="btn bg-secondary font-bold py-2 px-4 rounded">
+                    Tambah Kategori Tugas
+                </a>
+            </div>
             <div class="bg-white overflow-hidden border-2 shadow-sm sm:rounded-lg">
                 <div class="p-6  ">
-                    <div class="flex justify-end mb-4">
-                        <a href="{{ route('task-categories.create') }}" class="bg-primary-content text-white font-bold py-2 px-4 rounded">
-                            Add Category
-                        </a>
-                    </div>
 
-                    <table class="min-w-full">
+
+                    <table class="min-w-full text-black">
                         <thead>
                             <tr>
                                 <th class="px-6 py-3 border-b">Nama Tugas</th>

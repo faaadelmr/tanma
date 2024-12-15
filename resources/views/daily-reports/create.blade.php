@@ -47,6 +47,7 @@
                         <option value="">Pilih Kategori</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}"
+                                    data-has-dor="{{ $category->has_dor_date }}"
                                     data-has-batch="{{ $category->has_batch }}"
                                     data-has-claim="{{ $category->has_claim }}"
                                     data-has-time="{{ $category->has_time_range }}"
@@ -136,7 +137,7 @@
                     const hasClaim = selected.dataset.hasClaim === "1";
                     const hasTime = selected.dataset.hasTime === "1";
                     const hasSheets = selected.dataset.hasSheets === "1";
-                    const hasDorDate = selected.dataset.hasDorDate === "1";
+                    const hasDorDate = selected.dataset.hasDor === "1";  // Change this line to match the data attribute name
                     const hasEmail = selected.dataset.hasEmail === "1";
                     const hasForm = selected.dataset.hasForm === "1";
 
