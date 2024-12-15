@@ -107,6 +107,9 @@
                     </div>
                 </div>
             @endforeach
+            <div class="mt-6">
+                {{ $meetings->links() }}
+            </div>
         </div>
     </div>
 

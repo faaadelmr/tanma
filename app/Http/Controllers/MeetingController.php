@@ -16,10 +16,11 @@ class MeetingController extends Controller
         $meetings = Meeting::with(['topics.files'])
             ->whereBetween('meeting_date', [now(), now()->addWeeks(4)])
             ->orderBy('meeting_date')
-            ->get();
+            ->paginate(1);
 
         return view('meetings.index', compact('meetings'));
     }
+
 
     public function generateMeetings()
 {
