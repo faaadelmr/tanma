@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\DailyReportController;
+use App\Http\Controllers\TaskCategoryController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,6 +23,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserManagementController::class);
+    Route::resource('task-categories', TaskCategoryController::class);
 });
 
 Route::middleware(['auth'])->prefix('daily-reports')->name('daily-reports.')->group(function () {
