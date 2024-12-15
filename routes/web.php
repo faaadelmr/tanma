@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\DailyReportController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,9 +20,18 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserManagementController::class);
+});
 
+Route::middleware(['auth', 'role:admin'])->prefix('daily-reports')->name('daily-reports.')->group(function () {
+    Route::get('/', [DailyReportController::class, 'index'])->name('index');
+    Route::get('/create', [DailyReportController::class, 'create'])->name('create');
+    Route::post('/', [DailyReportController::class, 'store'])->name('store');
+    Route::get('/{dailyReport}', [DailyReportController::class, 'show'])->name('show');
+    Route::get('/{dailyReport}/edit', [DailyReportController::class, 'edit'])->name('edit');
+    Route::put('/{dailyReport}', [DailyReportController::class, 'update'])->name('update');
+    Route::delete('/{dailyReport}', [DailyReportController::class, 'destroy'])->name('destroy');
 });
 
 

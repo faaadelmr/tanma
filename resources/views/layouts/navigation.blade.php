@@ -8,7 +8,7 @@
                 @role('admin')
                 <li><a href="{{ route('users.index') }}">User Management</a></li>
                 @endrole
-                <li><a href="{{ route('reports.index')}}">Report Harian</a></li>
+                <li><a href="{{ route('daily-reports.index')}}">Report Harian</a></li>
                 <li>
                     <details>
                         <summary>Parent</summary>
