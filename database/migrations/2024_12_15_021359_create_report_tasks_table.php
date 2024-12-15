@@ -15,12 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('daily_report_id')->constrained()->cascadeOnDelete();
             $table->foreignId('task_category_id')->constrained();
-            $table->string('task_date')->nullable(); // For DOR dates
-            $table->integer('batch_count')->nullable();
-            $table->integer('claim_count')->nullable();
-            $table->time('start_time')->nullable();
-            $table->time('end_time')->nullable();
-            $table->integer('sheet_count')->nullable();
+            $table->date('task_date')->nullable(); // For DOR dates
+            $table->integer('batch_count')->nullable(); //batch
+            $table->integer('claim_count')->nullable(); //klaim
+            $table->time('start_time')->nullable(); //mulai jam
+            $table->time('end_time')->nullable(); //sampai jam
+            $table->integer('sheet_count')->nullable(); //lembar
+            $table->integer('email')->nullable();//email
+            $table->integer('form')->nullable();//form
             $table->timestamps();
         });
     }

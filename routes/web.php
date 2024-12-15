@@ -24,7 +24,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserManagementController::class);
 });
 
-Route::middleware(['auth', 'role:admin'])->prefix('daily-reports')->name('daily-reports.')->group(function () {
+Route::middleware(['auth'])->prefix('daily-reports')->name('daily-reports.')->group(function () {
     Route::get('/', [DailyReportController::class, 'index'])->name('index');
     Route::get('/create', [DailyReportController::class, 'create'])->name('create');
     Route::post('/', [DailyReportController::class, 'store'])->name('store');

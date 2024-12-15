@@ -39,6 +39,8 @@ class DailyReportController extends Controller
             'tasks.*.start_time' => 'nullable|date_format:H:i',
             'tasks.*.end_time' => 'nullable|date_format:H:i',
             'tasks.*.sheet_count' => 'nullable|integer',
+            'tasks.*.email' => 'nullable|integer',
+            'tasks.*.form' => 'nullable|integer',
         ]);
 
         $report = DailyReport::create([
@@ -56,6 +58,8 @@ class DailyReportController extends Controller
                     'start_time' => $task['start_time'] ?? null,
                     'end_time' => $task['end_time'] ?? null,
                     'sheet_count' => $task['sheet_count'] ?? null,
+                    'email' => $task['email'] ?? null,
+                    'form' => $task['form'] ?? null,
                 ];
             })
         );
@@ -89,6 +93,8 @@ class DailyReportController extends Controller
             'tasks.*.start_time' => 'nullable|date_format:H:i',
             'tasks.*.end_time' => 'nullable|date_format:H:i',
             'tasks.*.sheet_count' => 'nullable|integer',
+            'email' => 'nullable|integer',
+            'form' => 'nullable|integer '
         ]);
 
         $dailyReport->update([
@@ -109,6 +115,8 @@ class DailyReportController extends Controller
                     'start_time' => $task['start_time'] ?? null,
                     'end_time' => $task['end_time'] ?? null,
                     'sheet_count' => $task['sheet_count'] ?? null,
+                    'email' => $task['email'] ?? null,
+                    'form' => $task['form'] ?? null,
                 ];
             })
         );
