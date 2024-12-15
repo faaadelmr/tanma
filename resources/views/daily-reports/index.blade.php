@@ -4,7 +4,7 @@
             <div class="flex justify-between mb-6 px-4">
                 <h2 class="text-2xl font-bold">Daily Reports</h2>
                 <a href="{{ route('daily-reports.create') }}" class="btn btn-primary">
-                    Create New Report
+                    Buat Report Baru
                 </a>
             </div>
 

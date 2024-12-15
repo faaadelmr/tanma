@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\DailyReportController;
 use App\Http\Controllers\TaskCategoryController;
+use App\Http\Controllers\MeetingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -35,6 +36,15 @@ Route::middleware(['auth'])->prefix('daily-reports')->name('daily-reports.')->gr
     Route::put('/{dailyReport}', [DailyReportController::class, 'update'])->name('update');
     Route::delete('/{dailyReport}', [DailyReportController::class, 'destroy'])->name('destroy');
 });
+
+Route::middleware('auth')->group(function () {
+    Route::get('/meetings', [MeetingController::class, 'index'])->name('meetings.index');
+    Route::post('/meetings/generate', [MeetingController::class, 'generateMeetings'])->name('meetings.generate');
+    Route::post('/meetings/{meeting}/topics', [MeetingController::class, 'storeTopic'])->name('meetings.topics.store');
+    Route::patch('/topics/{topic}/toggle', [MeetingController::class, 'toggleComplete'])->name('topics.toggle');
+    Route::post('/topics/{topic}/continue', [MeetingController::class, 'continueTopic'])->name('topics.continue');
+});
+
 
 
 
