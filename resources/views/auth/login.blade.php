@@ -10,17 +10,17 @@
 
         <div class="rounded-md shadow-sm -space-y-px">
             <div>
-                <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                <label for="username" class="block text-sm font-medium text-gray-700">Nama akun</label>
                 <input id="username" name="username" type="text" required
                     class="appearance-none relative block w-full px-3 py-2 border @error('username') border-red-300 @else @enderror placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm mt-1"
-                    placeholder="Enter your username" value="{{ old('username') }}">
+                    placeholder="Masukan akun Anda" value="{{ old('username') }}">
             </div>
 
             <div class="mt-4">
-                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <label for="password" class="block text-sm font-medium text-gray-700">Kata sandi</label>
                 <input id="password" name="password" type="password" required
                     class="appearance-none relative block w-full px-3 py-2 border @error('password') border-red-300 @else @enderror placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500 focus:z-10 sm:text-sm mt-1"
-                    placeholder="Enter your password">
+                    placeholder="Masukkan kata sandi Anda">
             </div>
         </div>
 
@@ -50,15 +50,15 @@
                 <input id="remember_me" name="remember" type="checkbox"
                     class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
                 <label for="remember_me" class="ml-2 block text-sm text-gray-900">
-                    Remember me
+                    Ingat Saya
                 </label>
             </div>
 
-            <div class="text-sm">
+            <!-- <div class="text-sm">
                 <a href="{{ route('password.request') }}" class="font-medium text-red-600 hover:text-red-500">
                     Forgot your password?
                 </a>
-            </div>
+            </div> -->
         </div>
 
         <div>
@@ -72,7 +72,7 @@
                             clip-rule="evenodd" />
                     </svg>
                 </span>
-                Sign in
+                Masuk
             </button>
         </div>
     </form>
