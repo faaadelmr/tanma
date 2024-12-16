@@ -1,10 +1,18 @@
 <div class="navbar bg-base-100">
-    <div class="flex-1">
-        <a class="text-xl text-red-600 btn btn-ghost" href="{{ route('dashboard') }}">
-            Tanma
-        </a>
-        <div class="flex-2">
-            <ul class="px-1 menu menu-horizontal">
+
+
+
+
+
+
+    <div class="navbar-start">
+        <div class="dropdown lg:hidden">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+            </div>
+            <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
                 <li><a href="{{ route('daily-reports.index') }}">Report Harian</a></li>
                 <li><a href="{{ route('meetings.index') }}">Meeting</a></li>
                 @role('admin')
@@ -12,7 +20,8 @@
                         <details>
                             <summary>Pengaturan</summary>
                             <ul class="p-2 rounded-t-none bg-base-100">
-                                <li><a href="{{ route('users.index') }}">User Management</as></li>
+
+                                <li><a href="{{ route('users.index') }}">User Management</a></li>
                                 <li><a href="{{route('task-categories.index')}}" >Kategori Tugas</a></li>
                             </ul>
                         </details>
@@ -20,8 +29,29 @@
                 @endrole
             </ul>
         </div>
+        <a class="text-xl text-red-600 btn btn-ghost" href="{{ route('dashboard') }}">
+            Tanma
+        </a>
     </div>
-    <div class="flex-none gap-2">
+
+    <div class="navbar-center hidden lg:flex">
+        <ul class="px-1 menu menu-horizontal">
+            <li><a href="{{ route('daily-reports.index') }}">Report Harian</a></li>
+            <li><a href="{{ route('meetings.index') }}">Meeting</a></li>
+            @role('admin')
+                <li>
+                    <details>
+                        <summary>Pengaturan</summary>
+                        <ul class="p-2 rounded-t-none bg-base-100">
+                            <li><a href="{{ route('users.index') }}">User Management</a></li>
+                            <li><a href="{{route('task-categories.index')}}" >Kategori Tugas</a></li>
+                        </ul>
+                    </details>
+                </li>
+            @endrole
+        </ul>
+    </div>
+    <div class="navbar-end">
         <div class="dropdown dropdown-end">
             <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
                 <div class="w-10 rounded-full">
@@ -29,14 +59,14 @@
                 </div>
             </div>
             <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                {{-- profile --}}
+
                 <li>
                     <a href={{ route('profile.edit') }} class="justify-between">
                         Profil
                         <span class="badge">New</span>
                     </a>
                 </li>
-                {{-- tema --}}
+
                 <li>
                     <div class="flex gap-2 items-center">
                         <label for="theme-selector" class="text-sm font-medium leading-6">Tema:</label>
@@ -70,7 +100,7 @@
                         </select>
                     </div>
                 </li>
-                {{-- Logout --}}
+
                 <li>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
