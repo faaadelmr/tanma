@@ -24,6 +24,7 @@ class RolePermissionSeeder extends Seeder
             'lihat-tulisan',
             'edit-tulisan',
             'hapus-tulisan',
+            'bolehchat'
         ];
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
@@ -40,10 +41,10 @@ class RolePermissionSeeder extends Seeder
 
         // Assign permissions to roles
         $roleAdmin = Role::findByName('admin');
-        $roleAdmin->givePermissionTo(['tambah-user', 'lihat-user', 'edit-user', 'hapus-user']);
+        $roleAdmin->givePermissionTo(['tambah-user', 'lihat-user', 'edit-user', 'hapus-user', 'bolehchat']);
 
         $rolePengguna = Role::findByName('pengguna');
-        $rolePengguna->givePermissionTo(['tambah-tulisan', 'lihat-tulisan', 'edit-tulisan', 'hapus-tulisan']);
+        $rolePengguna->givePermissionTo(['tambah-tulisan', 'lihat-tulisan', 'edit-tulisan', 'hapus-tulisan', 'bolehchat']);
     }
 
 }
