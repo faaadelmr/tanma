@@ -71,7 +71,7 @@ return [
      * Configuration for uploading media and files in chats.
      */
     'attachments' => [
-        'storage_folder' => 'attachments',
+        'storage_folder' => 'chats',
         'storage_disk' => 'public',
         'max_uploads' => 10,
 
