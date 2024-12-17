@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Create Task Category
+        <h2 class="text-primary font-semibold text-2xl leading-tight">
+            {{ __('Buat Katagori Report') }}
         </h2>
     </x-slot>
 

@@ -1,166 +1,187 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Dashboard') }}
-            </h2>
-        </div>
+        <h2 class="text-primary font-semibold text-2xl leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
     </x-slot>
 
-    <div class="py-6">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Metrics Carousel -->
-            <div class="flex justify-end items-center space-x-4">
-                <select id="dateRange" class="select select-bordered w-full max-w-xs"
-                    onchange="updateDashboard(this.value)">
-                    <option value="week" {{ $dateRange === 'week' ? 'selected' : '' }}>Minggu ini</option>
-                    <option value="month" {{ $dateRange === 'month' ? 'selected' : '' }}>Bulan ini</option>
-                    <option value="three_months" {{ $dateRange === 'three_months' ? 'selected' : '' }}>3 Bulan yang lalu
-                    </option>
-                    <option value="six_months" {{ $dateRange === 'six_months' ? 'selected' : '' }}>6 Bulan yang lalu
-                    </option>
-                    <option value="year" {{ $dateRange === 'year' ? 'selected' : '' }}>Tahun ini</option>
-                </select>
-                <button class="btn btn-primary" onclick="refreshData()">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Update
-                </button>
-            </div>
-            <div class="carousel w-full mb-8 py-3 rounded-box">
-                @foreach (collect($metrics)->chunk(3) as $index => $metricsChunk)
-                    <div id="slide{{ $index }}" class="carousel-item relative w-full">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full px-4">
-                            @foreach ($metricsChunk as $category => $metric)
-                                <div class="card bg-base-100 hover:bg-base-200 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer backdrop-blur-sm"
-                                    onclick="loadCategoryChart('{{ $category }}')">
-                                    <div class="card-body">
-                                        <h3 class="card-title text-xl font-bold text-primary">{{ $category }}</h3>
-                                        <div class="stats bg-base-200/50 shadow-inner rounded-xl">
-                                            <div class="stat p-4">
-                                                <div class="stat-title font-medium opacity-70">Current Total</div>
-                                                <div class="stat-value text-3xl my-2">
-                                                    {{ number_format($metric['current_total']) }}</div>
-                                                <div class="stat-desc flex items-center gap-3 mt-2">
-                                                    @php
-                                                        $percentageChange = $metric['percentage_change'];
-                                                        $isIncreasing =
-                                                            $metric['current_total'] > $metric['previous_total'];
-                                                        $trendClass = $isIncreasing ? 'text-success' : 'text-error';
-                                                        $badgeClass = $isIncreasing ? 'badge-success' : 'badge-error';
-                                                        $trendArrow = $isIncreasing ? '↑' : '↓';
 
-                                                        // Format percentage display
-                                                        $formattedPercentage =
-                                                            $percentageChange == 0
-                                                                ? '0'
-                                                                : ($percentageChange > 0
-                                                                    ? '+' . $percentageChange
-                                                                    : $percentageChange);
-                                                    @endphp
-                                                    <div class="flex items-center gap-2 {{ $trendClass }} font-bold">
-                                                        <span class="text-lg">{{ $formattedPercentage }}%</span>
-                                                        <span class="badge badge-lg {{ $badgeClass }} gap-1">
-                                                            {{ $trendArrow }}
-                                                        </span>
-                                                    </div>
-                                                    <span class="text-base-content/60">vs previous</span>
-                                                </div>
+    <div class="py-6 sm:py-12">
+        <div id="caraousel" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+                <div class="p-4 sm:p-6">
+                    <!-- Date Picker -->
+                    <div class="mb-4 sm:mb-6">
+                        <form method="GET" class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4"
+                            id="dateForm">
+                            <label for="date" class="text-sm sm:text-base">Select Date</label>
+                            <input type="date" name="date" id="date" value="<?php echo $selectedDate->format('Y-m-d'); ?>"
+                                class="w-full sm:w-auto rounded-md border-gray-300" onchange="this.form.submit()">
+                        </form>
+                    </div>
 
+                    <!-- Carousel -->
+                    <div id="carousel" class="relative">
+                        <!-- Navigation buttons - Hidden on mobile, visible on larger screens -->
+                        <button onclick="prevSlide()"
+                            class="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/50 hover:bg-gray-800/75 text-white rounded-r-lg p-2">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+
+                        <button onclick="nextSlide()"
+                            class="hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/50 hover:bg-gray-800/75 text-white rounded-l-lg p-2">
+                            <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+
+                        <div class="overflow-hidden rounded-xl">
+                            <?php
+                            // Group and sort the data
+                            $groupedComparisons = [];
+                            foreach ($comparisons as $categoryName => $data) {
+                                $prefix = explode(' ', $categoryName)[0];
+                                $groupedComparisons[$prefix][$categoryName] = $data;
+                            }
+                            ksort($groupedComparisons); // Sort groups alphabetically
+                            ?>
+
+                            <div id="slides" class="flex transition-transform duration-500">
+                                <?php foreach($groupedComparisons as $groupName => $categories): ?>
+                                <?php ksort($categories); // Sort items within group alphabetically ?>
+                                <div class="w-full flex-shrink-0 p-3 sm:p-6">
+                                    <h2 class="text-lg sm:text-2xl font-bold mb-4 sm:mb-6 text-center">
+                                        <?php echo $groupName; ?> Data</h2>
+                                    <?php foreach($categories as $categoryName => $data): ?>
+                                    <div class="mb-6 sm:mb-8">
+                                        <h3 class="text-base sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-700">
+                                            <?php echo $categoryName; ?></h3>
+                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
+                                            <div class="bg-blue-50 p-2 sm:p-4 rounded-lg">
+                                                <h3 class="text-sm sm:text-lg font-semibold text-blue-600">Hari ini</h3>
+                                                <p class="text-xl sm:text-3xl font-bold text-blue-700">
+                                                    <?php echo number_format($data['current_total']); ?></p>
+                                            </div>
+                                            <div class="bg-green-50 p-2 sm:p-4 rounded-lg">
+                                                <h3 class="text-sm sm:text-lg font-semibold text-green-600">vs Kemarin
+                                                </h3>
+                                                <p class="text-xl sm:text-3xl font-bold <?php echo $data['day_change'] >= 0 ? 'text-green-600' : 'text-red-600'; ?>">
+                                                    <?php echo $data['day_change']; ?>%
+                                                </p>
+                                            </div>
+                                            <div class="bg-purple-50 p-2 sm:p-4 rounded-lg">
+                                                <h3 class="text-sm sm:text-lg font-semibold text-purple-600">vs Minggu
+                                                    lalu</h3>
+                                                <p class="text-xl sm:text-3xl font-bold <?php echo $data['week_change'] >= 0 ? 'text-green-600' : 'text-red-600'; ?>">
+                                                    <?php echo $data['week_change']; ?>%
+                                                </p>
+                                            </div>
+                                            <div class="bg-orange-50 p-2 sm:p-4 rounded-lg">
+                                                <h3 class="text-sm sm:text-lg font-semibold text-orange-600">vs Bulan
+                                                    lalu</h3>
+                                                <p class="text-xl sm:text-3xl font-bold <?php echo $data['month_change'] >= 0 ? 'text-green-600' : 'text-red-600'; ?>">
+                                                    <?php echo $data['month_change']; ?>%
+                                                </p>
                                             </div>
                                         </div>
                                     </div>
+                                    <?php endforeach; ?>
                                 </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                        <!-- Indicators -->
+                        <div class="flex justify-center mt-4 gap-2">
+                            <?php $index = 0; ?>
+                            @foreach ($groupedComparisons as $groupName => $categories)
+                                <button onclick="goToSlide(<?php echo $index; ?>)"
+                                    class="h-3 w-3 bg-gray-300 rounded-full transition-all duration-300 hover:bg-blue-400"
+                                    id="indicator-<?php echo $index; ?>">
+                                </button>
+                                <?php $index++; ?>
                             @endforeach
                         </div>
-                        <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
-                            <a href="#slide{{ $index - 1 }}"
-                                class="btn btn-circle {{ $index === 0 ? 'invisible' : '' }}">❮</a>
-                            <a href="#slide{{ $index + 1 }}"
-                                class="btn btn-circle {{ $index === collect($metrics)->chunk(3)->count() - 1 ? 'invisible' : '' }}">❯</a>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-            <!-- Category Chart Section -->
-            <div class=" card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    <h3 class="card-title" id="chartTitle">Overall Performance</h3>
-                    <div class="w-full h-[400px]">
-                        <canvas id="categoryChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
     <script>
-        let currentChart;
-        const colors = [
-            'rgb(75, 192, 192)',
-            'rgb(255, 99, 132)',
-            'rgb(255, 205, 86)',
-            'rgb(54, 162, 235)',
-            'rgb(153, 102, 255)'
-        ];
+        let currentSlide = parseInt(localStorage.getItem('currentCarouselSlide')) || 0;
+        const slides = document.getElementById('slides');
+        const totalSlides = document.querySelectorAll('#slides > div').length;
 
-        function loadCategoryChart(category) {
-            const chartData = @json($chartData);
-            const categoryData = {
-                labels: chartData.labels,
-                datasets: chartData.datasets.filter(dataset => dataset.label === category)
-            };
+        function updateCarousel() {
+            slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+            updateIndicators();
+            localStorage.setItem('currentCarouselSlide', currentSlide);
+        }
 
-            if (currentChart) {
-                currentChart.destroy();
-            }
-
-            const ctx = document.getElementById('categoryChart').getContext('2d');
-            document.getElementById('chartTitle').textContent = `${category} Performance`;
-
-            currentChart = new Chart(ctx, {
-                type: 'line',
-                data: categoryData,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `Total: ${context.parsed.y.toLocaleString()}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: value => value.toLocaleString()
-                            }
-                        }
-                    }
+        function updateIndicators() {
+            for (let i = 0; i < totalSlides; i++) {
+                const indicator = document.getElementById(`indicator-${i}`);
+                if (i === currentSlide) {
+                    indicator.classList.add('bg-blue-600');
+                    indicator.classList.remove('bg-gray-300');
+                } else {
+                    indicator.classList.remove('bg-blue-600');
+                    indicator.classList.add('bg-gray-300');
                 }
-            });
+            }
         }
 
-        function updateDashboard(range) {
-            window.location.href = `${window.location.pathname}?date_range=${range}`;
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
         }
 
-        function refreshData() {
-            window.location.reload();
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateCarousel();
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            loadCategoryChart('Overall');
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+        }
+
+        // Auto-play functionality
+        let autoplayInterval = setInterval(nextSlide, 30000);
+
+        // Pause auto-play on hover
+        const carousel = document.getElementById('carousel');
+        carousel.addEventListener('mouseenter', () => clearInterval(autoplayInterval));
+        carousel.addEventListener('mouseleave', () => {
+            autoplayInterval = setInterval(nextSlide, 60000);
+        });
+
+        // Initialize carousel with saved position
+        updateCarousel();
+
+        // Add loading animation when date changes
+        document.getElementById('date').addEventListener('change', function() {
+            document.body.style.cursor = 'wait';
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+            overlay.style.display = 'flex';
+            overlay.style.justifyContent = 'center';
+            overlay.style.alignItems = 'center';
+            overlay.style.zIndex = '9999';
+            overlay.innerHTML =
+                '<div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>';
+            document.body.appendChild(overlay);
+            localStorage.setItem('currentCarouselSlide', currentSlide);
+            this.form.submit();
         });
     </script>
+
 </x-app-layout>

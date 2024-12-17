@@ -431,16 +431,6 @@ class TaskCategorySeeder extends Seeder
                 'has_dor_date' => true
             ],
             [
-                'name' => 'Jumlah angka di scan',
-                'has_batch' => false,
-                'has_claim' => false,
-                'has_time_range' => false,
-                'has_sheets' => true,
-                'has_email' => false,
-                'has_form' => false,
-                'has_dor_date' => false
-            ],
-            [
                 'name' => 'Jumlah angka scanner',
                 'has_batch' => false,
                 'has_claim' => false,

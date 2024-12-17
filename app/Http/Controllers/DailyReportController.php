@@ -136,12 +136,113 @@ class DailyReportController extends Controller
     }
 
     public function dashboard(Request $request)
-{
-    $dateRange = $request->get('date_range', 'week');
-    $selectedCategory = $request->get('category');
+    {
+        $selectedDate = Carbon::parse($request->get('date', now()));
 
+        $categories = TaskCategory::all();
+        $comparisons = [];
+
+        foreach ($categories as $category) {
+            // Get current day total
+            $currentTotal = DailyReport::whereDate('report_date', $selectedDate)
+                ->with(['tasks' => function($query) use ($category) {
+                    $query->where('task_category_id', $category->id);
+                }])
+                ->get()
+                ->flatMap->tasks
+                ->sum(function ($task) {
+                    return ($task->claim_count ?? 0) +
+                       ($task->sheet_count ?? 0) +
+                       ($task->email ?? 0) +
+                       ($task->form ?? 0);
+                });
+
+            // Get previous periods totals
+            $previousDay = $this->getPeriodTotal($category, $selectedDate->copy()->subDay());
+            $previousWeek = $this->getPeriodTotal($category, $selectedDate->copy()->subWeek());
+            $previousMonth = $this->getPeriodTotal($category, $selectedDate->copy()->subMonth());
+
+            // Calculate percentage changes
+            $comparisons[$category->name] = [
+                'current_total' => $currentTotal,
+                'day_change' => $this->calculatePercentageChange($currentTotal, $previousDay),
+                'week_change' => $this->calculatePercentageChange($currentTotal, $previousWeek),
+                'month_change' => $this->calculatePercentageChange($currentTotal, $previousMonth)
+            ];
+        }
+
+        $chartData = [];
+        foreach($comparisons as $index => $data) {
+            $chartData[$index] = $this->getInitialChartData($index, 'week');
+        }
+
+        return view('dashboard', compact('comparisons', 'selectedDate', 'chartData'));
+    }
+
+    private function getInitialChartData($categoryId, $range)
+    {
+        $endDate = now();
+        $startDate = match($range) {
+            'week' => now()->subWeek(),
+            'month' => now()->subMonth(),
+            'three_months' => now()->subMonths(3),
+            'six_months' => now()->subMonths(6),
+            'year' => now()->subYear(),
+            default => now()->subWeek(),
+        };
+
+        $data = DailyReport::with(['tasks' => function($query) use ($categoryId) {
+            $query->where('task_category_id', $categoryId);
+        }])
+        ->whereBetween('report_date', [$startDate, $endDate])
+        ->orderBy('report_date')
+        ->get();
+
+        $chartData = [
+            'labels' => $data->pluck('report_date')->map->format('Y-m-d'),
+            'datasets' => [
+                [
+                    'label' => 'Total Tasks',
+                    'data' => $data->map(function($report) {
+                        return $report->tasks->sum(function($task) {
+                            return ($task->claim_count ?? 0) +
+                               ($task->sheet_count ?? 0) +
+                               ($task->email ?? 0) +
+                               ($task->form ?? 0);
+                        });
+                    }),
+                ],
+            ],
+        ];
+
+        return $chartData;
+    }
+private function getPeriodTotal($category, $date)
+{
+    return DailyReport::whereDate('report_date', $date)
+        ->with(['tasks' => function($query) use ($category) {
+            $query->where('task_category_id', $category->id);
+        }])
+        ->get()
+        ->flatMap->tasks
+        ->sum(function ($task) {
+            return ($task->claim_count ?? 0) +
+                   ($task->sheet_count ?? 0) +
+                   ($task->email ?? 0) +
+                   ($task->form ?? 0);
+        });
+}
+
+private function calculatePercentageChange($current, $previous)
+{
+    if ($previous == 0) return $current > 0 ? 100 : 0;
+    return round((($current - $previous) / $previous) * 100, 2);
+}
+
+public function getChartData($categoryId, $range)
+{
     $endDate = now();
-    $startDate = match($dateRange) {
+    $startDate = match($range) {
         'week' => now()->subWeek(),
         'month' => now()->subMonth(),
         'three_months' => now()->subMonths(3),
@@ -150,147 +251,34 @@ class DailyReportController extends Controller
         default => now()->subWeek(),
     };
 
-    $currentPeriodData = DailyReport::with(['tasks.category'])
-        ->whereBetween('report_date', [$startDate, $endDate])
-        ->get();
+    $data = DailyReport::with(['tasks' => function($query) use ($categoryId) {
+        $query->where('task_category_id', $categoryId);
+    }])
+    ->whereBetween('report_date', [$startDate, $endDate])
+    ->orderBy('report_date')
+    ->get();
 
-    $previousStartDate = (clone $startDate)->subDays($startDate->diffInDays($endDate));
-    $previousPeriodData = DailyReport::with(['tasks.category'])
-        ->whereBetween('report_date', [$previousStartDate, $startDate])
-        ->get();
-
-    $metrics = $this->calculateMetrics($currentPeriodData, $previousPeriodData);
-    $chartData = $this->prepareChartData($currentPeriodData);
-
-    if ($selectedCategory) {
-        $categoryData = $this->prepareCategoryData($currentPeriodData, $selectedCategory);
-        return response()->json($categoryData);
-    }
-
-    return view('dashboard', compact('metrics', 'chartData', 'dateRange'));
-}
-
-private function calculateMetrics($currentData, $previousData)
-{
-    $metrics = [];
-    $categories = TaskCategory::all();
-
-    foreach ($categories as $category) {
-        // Calculate current period totals
-        $currentTotal = $currentData->flatMap->tasks
-            ->where('task_category_id', $category->id)
-            ->sum(function ($task) {
-                return collect([
-                    $task->claim_count,
-                    $task->sheet_count,
-                    $task->email,
-                    $task->form
-                ])->sum();
-            });
-
-        // Calculate previous period totals
-        $previousTotal = $previousData->flatMap->tasks
-            ->where('task_category_id', $category->id)
-            ->sum(function ($task) {
-                return collect([
-                    $task->claim_count,
-                    $task->sheet_count,
-                    $task->email,
-                    $task->form
-                ])->sum();
-            });
-
-        // Enhanced percentage change calculation
-        if ($previousTotal > 0) {
-            $percentageChange = (($currentTotal - $previousTotal) / $previousTotal) * 100;
-        } elseif ($previousTotal === 0 && $currentTotal > 0) {
-            $percentageChange = (($currentTotal - $previousTotal) / 1) * 100;
-        } elseif ($previousTotal === 0 && $currentTotal === 0) {
-            $percentageChange = 0;
-        } elseif ($previousTotal > 0 && $currentTotal === 0) {
-            $percentageChange = -100;
-        } else {
-            $percentageChange = 0;
-        }        // Round to 1 decimal place for more precision
-        $roundedPercentage = round($percentageChange, 1);
-
-        $metrics[$category->name] = [
-            'current_total' => $currentTotal,
-            'previous_total' => $previousTotal,
-            'percentage_change' => $roundedPercentage,
-            'trend' => $currentTotal >= $previousTotal ? 'up' : 'down',
-            'category_id' => $category->id
-        ];
-    }
-
-    return $metrics;
-}
-
-
-private function prepareChartData($data)
-{
-    $categories = TaskCategory::all();
-    $dates = $data->pluck('report_date')->sort()->unique();
-
-    $datasets = [];
-    foreach ($categories as $category) {
-        $categoryData = [];
-        foreach ($dates as $date) {
-            $total = $data->where('report_date', $date)
-                ->flatMap->tasks
-                ->where('task_category_id', $category->id)
-                ->sum(function ($task) {
-                    return collect([
-
-                        $task->claim_count,
-                        $task->sheet_count,
-                        $task->email,
-                        $task->form
-                    ])->sum();
-                });
-            $categoryData[] = $total;
-        }
-
-        $datasets[] = [
-            'label' => $category->name,
-            'data' => $categoryData
-        ];
-    }
-
-    return [
-        'labels' => $dates->map->format('Y-m-d')->values()->toArray(),
-        'datasets' => $datasets
+    $chartData = [
+        'labels' => $data->pluck('report_date')->map->format('Y-m-d'),
+        'datasets' => [
+            [
+                'label' => 'Total Tasks',
+                'data' => $data->map(function($report) {
+                    return $report->tasks->sum(function($task) {
+                        return ($task->claim_count ?? 0) +
+                               ($task->sheet_count ?? 0) +
+                               ($task->email ?? 0) +
+                               ($task->form ?? 0);
+                    });
+                }),
+                'borderColor' => 'rgb(59, 130, 246)',
+                'tension' => 0.1
+            ]
+        ]
     ];
+
+    return response()->json($chartData);
 }
 
-private function prepareCategoryData($data, $categoryId)
-{
-    $category = TaskCategory::find($categoryId);
-    $dates = $data->pluck('report_date')->sort()->unique();
 
-    $categoryData = [];
-    foreach ($dates as $date) {
-        $total = $data->where('report_date', $date)
-            ->flatMap->tasks
-            ->where('task_category_id', $categoryId)
-            ->sum(function ($task) {
-                return collect([
-
-                    $task->claim_count,
-                    $task->sheet_count,
-                    $task->email,
-                    $task->form
-                ])->sum();
-            });
-        $categoryData[] = $total;
-    }
-
-    return [
-        'labels' => $dates->map->format('Y-m-d')->values()->toArray(),
-        'datasets' => [[
-            'label' => $category->name,
-            'data' => $categoryData
-        ]]
-    ];
-}
 }
