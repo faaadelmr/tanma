@@ -33,6 +33,7 @@ Route::middleware(['auth'])->prefix('daily-reports')->name('daily-reports.')->gr
     Route::get('/{dailyReport}/edit', [DailyReportController::class, 'edit'])->name('edit');
     Route::put('/{dailyReport}', [DailyReportController::class, 'update'])->name('update');
     Route::delete('/{dailyReport}', [DailyReportController::class, 'destroy'])->name('destroy');
+    Route::post('/{dailyReport}/approve', [DailyReportController::class, 'approve'])->name('approve');
 });
 
 Route::middleware('auth')->group(function () {

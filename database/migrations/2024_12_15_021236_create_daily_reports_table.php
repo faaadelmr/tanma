@@ -15,6 +15,9 @@ return new class extends Migration
         $table->id();
         $table->foreignId('user_id')->constrained();
         $table->date('report_date');
+        $table->boolean('is_approved')->default(false);
+        $table->timestamp('approved_at')->nullable();
+        $table->foreignId('approved_by')->nullable()->constrained('users');
         $table->timestamps();
     });
 }

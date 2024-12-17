@@ -16,7 +16,7 @@
                 </a>
             </div>
 
-            <div class="grid gap-6">
+            <div class="grid gap-4">
                 @php
                     $groupedReports = $reports->groupBy(function ($report) {
                         return $report->report_date->format('d/m/Y');
@@ -24,62 +24,74 @@
                 @endphp
 
                 @foreach ($groupedReports as $date => $dateReports)
-                    <div class="card bg-base-100 shadow-xl">
-                        <div class="card-body">
-                            <h3 class="card-title text-xl mb-4">{{ $date }}</h3>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="card-body p-4">
+                            <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+                                <h3 class="text-lg font-semibold">{{ $date }}</h3>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="badge badge-success badge-sm">
+                                        Disetujui: {{ $dateReports->where('is_approved', true)->count() }}
+                                    </span>
+                                    <span class="badge badge-warning badge-sm">
+                                        Pending: {{ $dateReports->where('is_approved', false)->count() }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                 @foreach ($dateReports as $report)
-                                    <div class="card bg-base-100 shadow-xl">
-                                        <div class="card-body">
-                                            <div class="flex items-center justify-between mb-3">
-                                                <div class="flex items-center">
-                                                    <div class="badge badge-primary">Report</div>
-                                                    <span class="ml-2 font-medium">{{ $report->user->name }}</span>
+                                    <div class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow">
+                                        <div class="card-body p-3">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <div class="flex items-center gap-1 text-sm">
+                                                    @role('admin')
+                                                        <form id="approveForm-{{ $report->id }}"
+                                                            action="{{ route('daily-reports.approve', $report->id) }}"
+                                                            method="POST" class="inline">
+                                                            @csrf
+                                                            @method('POST')
+                                                            <button type="button"
+                                                                onclick="confirmApprove({{ $report->id }})"
+                                                                class="badge badge-primary badge-sm cursor-pointer">Report</button>
+                                                        </form>
+                                                    @else
+                                                        <span class="badge badge-primary badge-sm">Report</span>
+                                                    @endrole
+                                                    <span class="font-medium">{{ $report->user->name }}</span>
+                                                    <span id="checkmark-{{ $report->id }}"
+                                                        class="text-green-500 {{ $report->is_approved ? 'block' : 'hidden' }}">
+                                                        <i class="fas fa-check-circle"></i>
+                                                    </span>
                                                 </div>
                                             </div>
-                                            <div class="space-y-2">
+                                            <div class="space-y-1 text-sm">
                                                 @foreach ($report->tasks as $index => $task)
-                                                    <div class="flex gap-2">
-                                                        <span class="font-medium">{{ $index + 1 }}.</span>
-                                                        <div>
+                                                    <div class="flex gap-1">
+                                                        <span>{{ $index + 1 }}.</span>
+                                                        <div class="flex-1">
                                                             <span class="font-medium">{{ $task->category->name }}</span>
                                                             @if ($task->category->id && $task->task_date)
-                                                                <span class="text-bold">DOR
-                                                                    {{ $task->task_date }}</span>
+                                                                <span class="text-xs">DOR {{ $task->task_date }}</span>
                                                             @endif
-                                                            <span class="text-gray-600">:
-                                                                @if ($task->batch_count)
-                                                                    {{ $task->batch_count }} Batch,
-                                                                @endif
-                                                                @if ($task->claim_count)
-                                                                    {{ $task->claim_count }} Klaim
-                                                                @endif
+                                                            <span class="text-gray-600 text-xs">
+                                                                @if ($task->batch_count){{ $task->batch_count }} Batch,@endif
+                                                                @if ($task->claim_count){{ $task->claim_count }} Klaim @endif
                                                                 @if ($task->start_time && $task->end_time)
-                                                                    {{ \Carbon\Carbon::parse($task->start_time)->format('H:i') }}
-                                                                    -
-                                                                    {{ \Carbon\Carbon::parse($task->end_time)->format('H:i') }}
+                                                                    {{ \Carbon\Carbon::parse($task->start_time)->format('H:i') }}-{{ \Carbon\Carbon::parse($task->end_time)->format('H:i') }}
                                                                 @endif
-                                                                @if ($task->sheet_count)
-                                                                    {{ $task->sheet_count }} Lembar
-                                                                @endif
-                                                                @if ($task->email)
-                                                                    {{ $task->email }} Email
-                                                                @endif
-                                                                @if ($task->form)
-                                                                    {{ $task->form }} Form
-                                                                @endif
+                                                                @if ($task->sheet_count){{ $task->sheet_count }} Lembar @endif
+                                                                @if ($task->email){{ $task->email }} Email @endif
+                                                                @if ($task->form){{ $task->form }} Form @endif
                                                             </span>
                                                         </div>
                                                     </div>
                                                 @endforeach
                                             </div>
                                         </div>
-                                        <div class="flex items-center justify-between">
+                                        <div class="flex items-center justify-between px-3 pb-2">
                                             @role('admin')
                                                 <button
                                                     onclick="document.getElementById('delete-modal-{{ $report->id }}').showModal()"
-                                                    class="ml-4 mb-2 btn btn-error btn-sm">
+                                                    class="btn btn-error btn-xs">
                                                     Hapus
                                                 </button>
                                                 <dialog id="delete-modal-{{ $report->id }}" class="modal">
@@ -91,18 +103,17 @@
                                                                 method="POST">
                                                                 @csrf
                                                                 @method('DELETE')
-                                                                <button type="submit" class="btn btn-error">Ya,
-                                                                    Hapus</button>
+                                                                <button type="submit" class="btn btn-error btn-sm">Ya, Hapus</button>
                                                             </form>
                                                             <form method="dialog">
-                                                                <button class="btn">Batal</button>
+                                                                <button class="btn btn-sm">Batal</button>
                                                             </form>
                                                         </div>
                                                     </div>
                                                 </dialog>
                                             @endrole
 
-                                            <div class="mr-2 mb-1 text-sm text-gray-500 flex items-center gap-1">
+                                            <div class="text-xs text-gray-500 flex items-center gap-1">
                                                 <i class="fa-regular fa-clock"></i>
                                                 {{ $report->created_at->locale('id')->diffForHumans() }}
                                             </div>
@@ -114,10 +125,35 @@
                     </div>
                 @endforeach
             </div>
-
             <div class="mt-6">
                 {{ $reports->links() }}
             </div>
         </div>
     </div>
+
+
+    <script>
+        function confirmApprove(reportId) {
+            Swal.fire({
+                title: 'Apakah anda yakin?',
+                text: "Ingin menyetujui report ini?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Setuju!',
+                cancelButtonText: 'Tidak'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire(
+                        'Berhasil!',
+                        'Report telah disetujui',
+                        'success'
+                    ).then(() => {
+                        document.getElementById(approveForm-{{ $report->id }}).submit();
+                    })
+                }
+            })
+        }
+    </script>
 </x-app-layout>

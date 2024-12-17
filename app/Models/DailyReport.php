@@ -9,7 +9,9 @@ class DailyReport extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'report_date'];
+    protected $fillable = ['user_id', 'report_date',     'is_approved',
+    'approved_at',
+    'approved_by'];
 
     protected $casts = [
         'report_date' => 'date'

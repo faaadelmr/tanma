@@ -9,7 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-
+use Spatie\Permission\Contracts\Permission;
+use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
 
 class DailyReportController extends Controller
 {
@@ -17,7 +18,7 @@ class DailyReportController extends Controller
     {
         $reports = DailyReport::with(['user', 'tasks.category'])
             ->latest('report_date')
-            ->paginate(10);
+            ->paginate(15);
 
         return view('daily-reports.index', compact('reports'));
     }
@@ -82,6 +83,16 @@ class DailyReportController extends Controller
         return view('daily-reports.edit', compact('dailyReport', 'categories'));
     }
 
+    public function approve(DailyReport $dailyReport)
+{
+    $dailyReport->update([
+        'is_approved' => true,
+        'approved_at' => now(),
+        'approved_by' => Auth::id(),
+    ]);
+
+    return redirect()->route('daily-reports.index');
+}
     public function update(Request $request, DailyReport $dailyReport)
     {
         $validatedData = $request->validate([
