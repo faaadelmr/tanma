@@ -10,15 +10,16 @@ export default {
         './vendor/namu/wirechat/resources/views/**/*.blade.php',
         './vendor/namu/wirechat/src/Livewire/**/*.php',
     ],
-
     theme: {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            animation: {
+                'spin-slow': 'spin 3s linear infinite',
+            }
         },
     },
-
     plugins: [require('daisyui'), forms],
     daisyui: {
         themes: [
