@@ -62,8 +62,8 @@ class TaskCategorySeeder extends Seeder
             ],
             [
                 'name' => 'Filling Provider',
-                'has_batch' => false,
-                'has_claim' => true,
+                'has_batch' => true,
+                'has_claim' => false,
                 'has_time_range' => false,
                 'has_sheets' => false,
                 'has_email' => false,
@@ -83,22 +83,12 @@ class TaskCategorySeeder extends Seeder
             [
                 'name' => 'Follow Up Email',
                 'has_batch' => false,
-                'has_claim' => true,
-                'has_time_range' => false,
-                'has_sheets' => false,
-                'has_email' => true,
-                'has_form' => false,
-                'has_dor_date' => false
-            ],
-            [
-                'name' => 'Follow Up Email',
-                'has_batch' => false,
                 'has_claim' => false,
                 'has_time_range' => false,
                 'has_sheets' => false,
                 'has_email' => true,
                 'has_form' => false,
-                'has_dor_date' => true
+                'has_dor_date' => false
             ],
             [
                 'name' => 'Follow Up RS',
