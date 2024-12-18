@@ -23,28 +23,27 @@ class MeetingController extends Controller
 
 
     public function generateMeetings()
-{
-    $startDate = now();
-    $endOfCentury = Carbon::create(2100, 12, 31);
-    $generatedCount = 2;
+    {
+        $startDate = now();
+        $endOfCentury = Carbon::create(2100, 12, 31);
+        $generatedCount = 0;
 
-    while ($startDate <= $endOfCentury) {
-        $nextFriday = $startDate->copy()->next(Carbon::FRIDAY);
-        $meeting = Meeting::firstOrCreate(['meeting_date' => $nextFriday]);
+        while ($startDate <= $endOfCentury) {
+            $nextFriday = $startDate->copy()->next(Carbon::FRIDAY);
+            $meeting = Meeting::firstOrCreate(['meeting_date' => $nextFriday]);
 
-        if ($meeting->wasRecentlyCreated) {
-            $generatedCount++;
+            if ($meeting->wasRecentlyCreated) {
+                $generatedCount++;
+            }
+
+            $startDate = $nextFriday;
         }
 
-        $startDate = $nextFriday;
+        return response()->json([
+            'success' => true,
+            'message' => "{$generatedCount} meetings generated until year 2100"
+        ]);
     }
-
-    return response()->json([
-        'success' => true,
-        'message' => "{$generatedCount} meetings generated until year 2100"
-    ]);
-}
-
 
 
     public function storeTopic(Meeting $meeting, Request $request)
@@ -89,6 +88,8 @@ public function toggleComplete(MeetingTopic $topic)
 
 public function continueTopic(MeetingTopic $topic)
 {
+    $topic->update(['is_completed' => 2]);
+
     $nextMeeting = Meeting::where('meeting_date', '>', $topic->meeting->meeting_date)
         ->orderBy('meeting_date')
         ->first();
@@ -119,6 +120,5 @@ public function continueTopic(MeetingTopic $topic)
         'message' => 'Topic continued to next meeting'
     ]);
 }
-
 }
 

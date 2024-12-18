@@ -170,17 +170,18 @@ class DailyReportController extends Controller
 
             // Get previous periods totals
             $previousDay = $this->getPeriodTotal($category, $selectedDate->copy()->subDay());
+            $currentWeek = $this->getPeriodTotal($category, $selectedDate);
             $previousWeek = $this->getPeriodTotal($category, $selectedDate->copy()->subWeek());
+            $currentMonth = $this->getPeriodTotal($category, $selectedDate);
             $previousMonth = $this->getPeriodTotal($category, $selectedDate->copy()->subMonth());
 
             // Calculate percentage changes
             $comparisons[$category->name] = [
                 'current_total' => $currentTotal,
                 'day_change' => $this->calculatePercentageChange($currentTotal, $previousDay),
-                'week_change' => $this->calculatePercentageChange($currentTotal, $previousWeek),
-                'month_change' => $this->calculatePercentageChange($currentTotal, $previousMonth)
-            ];
-        }
+                'week_change' => $this->calculatePercentageChange($currentWeek, $previousWeek),
+                'month_change' => $this->calculatePercentageChange($currentMonth, $previousMonth)
+            ];        }
 
         $chartData = [];
         foreach($comparisons as $index => $data) {
