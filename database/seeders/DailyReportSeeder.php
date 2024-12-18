@@ -2,74 +2,47 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Database\Seeder;
 use App\Models\DailyReport;
-use App\Models\ReportTask;
+use App\Models\User;
 use App\Models\TaskCategory;
 use Carbon\Carbon;
-use Illuminate\Database\Seeder;
 
 class DailyReportSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
-        // Generate reports for the last 30 days
-        $startDate = Carbon::now()->subDays(30);
-        $endDate = Carbon::now();
-
-        // Create reports for each day
-        for ($date = $startDate; $date <= $endDate; $date->addDay()) {
-            $report = DailyReport::create([
-                'user_id' => rand(1, 5), // Assuming you have 5 users
-                'report_date' => $date->format('Y-m-d'),
-            ]);
-
-            // Get all task categories
-            $categories = TaskCategory::all();
-
-            // Randomly select 5-15 tasks for each day
-            $selectedCategories = $categories->random(rand(5, 15));
-
-            foreach ($selectedCategories as $category) {
-                $startTime = null;
-                $endTime = null;
-                $batchCount = null;
-                $claimCount = null;
-                $sheetCount = null;
-
-                // Generate appropriate random values based on task type
-                if ($category->has_time_range) {
-                    $startHour = rand(8, 16);
-                    $startMinute = rand(0, 59);
-                    $duration = rand(30, 180); // 30 minutes to 3 hours
-
-                    $startTime = sprintf('%02d:%02d', $startHour, $startMinute);
-                    $endTime = Carbon::createFromFormat('H:i', $startTime)
-                        ->addMinutes($duration)
-                        ->format('H:i');
-                }
-
-                if ($category->has_batch) {
-                    $batchCount = rand(1, 200);
-                }
-
-                if ($category->has_claim) {
-                    $claimCount = rand(1, 500);
-                }
-
-                if ($category->has_sheets) {
-                    $sheetCount = rand(100, 2000);
-                }
-
-                ReportTask::create([
-                    'daily_report_id' => $report->id,
-                    'task_category_id' => $category->id,
-                    'task_date' => $date->format('Y-m-d'),
-                    'batch_count' => $batchCount,
-                    'claim_count' => $claimCount,
-                    'start_time' => $startTime,
-                    'end_time' => $endTime,
-                    'sheet_count' => $sheetCount
+        $users = User::all();
+        $categories = TaskCategory::all();
+        
+        foreach ($users as $user) {
+            // Create reports for last 30 days
+            for ($i = 0; $i < 30; $i++) {
+                $report = DailyReport::create([
+                    'user_id' => $user->id,
+                    'report_date' => Carbon::now()->subDays($i),
+                    'is_approved' => rand(0, 1),
+                    'approved_at' => rand(0, 1) ? Carbon::now() : null,
+                    'approved_by' => rand(0, 1) ? $users->random()->id : null,
                 ]);
+
+                // Create 1-3 tasks per report
+                for ($j = 0; $j < rand(1, 3); $j++) {
+                    $category = $categories->random();
+                    $taskData = [
+                        'task_category_id' => $category->id,
+                        'task_date' => $category->has_dor_date ? Carbon::now()->subDays($i) : null,
+                        'batch_count' => $category->has_batch ? rand(1, 100) : null,
+                        'claim_count' => $category->has_claim ? rand(1, 50) : null,
+                        'start_time' => $category->has_time_range ? '08:00' : null,
+                        'end_time' => $category->has_time_range ? '17:00' : null,
+                        'sheet_count' => $category->has_sheets ? rand(1, 200) : null,
+                        'email' => $category->has_email ? rand(1, 20) : null,
+                        'form' => $category->has_form ? rand(1, 15) : null,
+                    ];
+                    
+                    $report->tasks()->create($taskData);
+                }
             }
         }
     }
