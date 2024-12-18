@@ -17,7 +17,7 @@ class DailyReportSeeder extends Seeder
         
         foreach ($users as $user) {
             // Create reports for last 30 days
-            for ($i = 0; $i < 30; $i++) {
+            for ($i = 0; $i < 60; $i++) {
                 $report = DailyReport::create([
                     'user_id' => $user->id,
                     'report_date' => Carbon::now()->subDays($i),
@@ -27,7 +27,7 @@ class DailyReportSeeder extends Seeder
                 ]);
 
                 // Create 1-3 tasks per report
-                for ($j = 0; $j < rand(1, 3); $j++) {
+                for ($j = 0; $j < rand(2, 4); $j++) {
                     $category = $categories->random();
                     $taskData = [
                         'task_category_id' => $category->id,
