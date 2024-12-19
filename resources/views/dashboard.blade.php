@@ -1,25 +1,67 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-primary font-semibold text-2xl leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="text-primary font-semibold text-2xl leading-tight">
+                {{ __('Dashboard') }}
+            </h2>
+        </div>
     </x-slot>
-
 
     <div class="py-6 sm:py-12">
         <div id="caraousel" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm rounded-lg">
                 <div class="p-4 sm:p-6">
                     <!-- Date Picker -->
-                    <div class="mb-4 sm:mb-6">
-                        <form method="GET" class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4"
-                            id="dateForm">
-                            <label for="date" class="text-sm sm:text-base">Select Date</label>
-                            <input type="date" name="date" id="date" value="<?php echo $selectedDate->format('Y-m-d'); ?>"
-                                class="w-full sm:w-auto rounded-md border-gray-300" onchange="this.form.submit()">
-                        </form>
-                    </div>
+                    <div class="mb-4">
+                        <div class="flex flex-col space-y-4">
+                            <div class="flex justify-between items-start gap-4">
+                                <form method="GET" class="flex-1 bg-white rounded-lg shadow-sm p-4" id="dateForm">
+                                    <label for="date" class="text-sm font-medium text-gray-700 flex items-center gap-1 mb-1">
+                                        <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        Pilih Tanggal
+                                    </label>
+                                    <input type="date" name="date" id="date" value="<?php echo $selectedDate->format('Y-m-d'); ?>"
+                                        class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-1" onchange="this.form.submit()">
+                                </form>
 
+                                <form action="{{ route('daily-reports.export') }}" method="GET" class="flex-1 bg-white rounded-lg shadow-sm p-4">
+                                    @csrf
+                                    <div class="flex gap-4">
+                                        <div class="group hover:scale-[1.01] transition-transform flex-1">
+                                            <label class="text-sm font-medium text-gray-700 flex items-center gap-1 mb-1">
+                                                <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                                Tanggal Mulai
+                                            </label>
+                                            <input type="date" name="start_date" class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-1" required>
+                                        </div>
+                                        
+                                        <div class="group hover:scale-[1.01] transition-transform flex-1">
+                                            <label class="text-sm font-medium text-gray-700 flex items-center gap-1 mb-1">
+                                                <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                                Tanggal Akhir
+                                            </label>
+                                            <input type="date" name="end_date" class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-1" required>
+                                        </div>
+
+                                        <div class="flex items-end">
+                                            <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 transition-all hover:scale-[1.02]">
+                                                <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                </svg>
+                                                Export to Excel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Carousel -->
                     <div id="carousel" class="relative">
                         <!-- Navigation buttons - Hidden on mobile, visible on larger screens -->

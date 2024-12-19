@@ -12,8 +12,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DailyReportController::class, 'dashboard'])->name('dashboard');
-Route::get('/daily-reports/export', [DailyReportController::class, 'exportToExcel'])->name('daily-reports.export');
-
+Route::get('/dashboard/export/', [DailyReportController::class, 'exportToExcel'])->name('daily-reports.export');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
