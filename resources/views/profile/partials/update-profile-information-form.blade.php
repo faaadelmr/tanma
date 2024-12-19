@@ -13,7 +13,7 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="POST" enctype="multipart/form-data" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
         @csrf
         @method('patch')
 
@@ -22,7 +22,11 @@
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
-
+        <div class="form-control">
+            <input type="file" class="file-input file-input-bordered file-input-primary w-full max-w-xs" name="files[]" multiple class="file-input file-input-bordered w-full"
+                onchange="previewFiles(this)" />
+            <div id="filePreview" class="grid grid-cols-4 gap-2 mt-4"></div>
+        </div>
         <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
@@ -62,3 +66,32 @@
         </div>
     </form>
 </section>
+
+<script>function previewFiles(input) {
+    const preview = document.getElementById('filePreview');
+    preview.innerHTML = '';
+
+    Array.from(input.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const div = document.createElement('div');
+            div.className = 'relative group';
+
+            if (file.type.startsWith('image/')) {
+                div.innerHTML = `
+            <div class="aspect-square rounded-xl overflow-hidden">
+                <img src="${e.target.result}" class="w-full h-full object-cover"/>
+            </div>`;
+            } else {
+                div.innerHTML = `
+            <div class="aspect-square rounded-xl border-2 border-base-300 flex flex-col items-center justify-center p-4">
+                <i class="fa-solid fa-file-lines text-3xl text-primary"></i>
+                <span class="mt-2 text-sm text-center line-clamp-2">${file.name}</span>
+            </div>`;
+            }
+
+            preview.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    });
+}</script>

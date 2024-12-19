@@ -41,7 +41,7 @@ class MeetingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => "{$generatedCount} meetings generated until year 2100"
+            'message' => "{$generatedCount}"
         ]);
     }
 
@@ -69,7 +69,7 @@ class MeetingController extends Controller
                 'path' => $path,
                 'type' => $file->getMimeType()
             ]);
-        }
+        } 
     }
 
     return back()->with('success', 'Topic added successfully');
