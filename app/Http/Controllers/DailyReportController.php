@@ -448,7 +448,7 @@ public function exportToExcel(Request $request)
     }
     
     $writer = new Xlsx($spreadsheet);
-    $filename = 'daily_reports_' . now()->format('Y-m-d') . '.xlsx';
+    $filename = 'Tanma:Report ' . $startDate->format('d-M-Y') .' <-> '. $endDate->format('d-M-Y') . '.xlsx';
     
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     header('Content-Disposition: attachment;filename="' . $filename . '"');
