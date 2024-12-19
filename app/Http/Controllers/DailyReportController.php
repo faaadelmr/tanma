@@ -154,7 +154,60 @@ class DailyReportController extends Controller
 
         foreach ($categories as $category) {
             // Get current day total
-            $currentTotal = DailyReport::whereDate('report_date', $selectedDate)
+
+            $currentTotal = $this->getPeriodTotal($category, $selectedDate);
+
+            // Get monthly totals
+            $currentMonthStart = $selectedDate->copy()->startOfMonth();
+            $currentMonthEnd = $selectedDate->copy()->endOfMonth();
+            $previousMonthStart = $selectedDate->copy()->subMonth()->startOfMonth();
+            $previousMonthEnd = $selectedDate->copy()->subMonth()->endOfMonth();
+
+            $currentMonth = DailyReport::whereBetween('report_date', [$currentMonthStart, $currentMonthEnd])
+                ->with(['tasks' => function($query) use ($category) {
+                    $query->where('task_category_id', $category->id);
+                }])
+                ->get()
+
+                ->flatMap->tasks
+                ->sum(function ($task) {
+                    return ($task->claim_count ?? 0) +
+                           ($task->sheet_count ?? 0) +
+                           ($task->email ?? 0) +
+                           ($task->form ?? 0);
+                });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            $previousMonth = DailyReport::whereBetween('report_date', [$previousMonthStart, $previousMonthEnd])
                 ->with(['tasks' => function($query) use ($category) {
                     $query->where('task_category_id', $category->id);
                 }])
@@ -162,34 +215,74 @@ class DailyReportController extends Controller
                 ->flatMap->tasks
                 ->sum(function ($task) {
                     return ($task->claim_count ?? 0) +
-                       ($task->sheet_count ?? 0) +
-                       ($task->email ?? 0) +
-                       ($task->form ?? 0);
+
+
+
+                           ($task->sheet_count ?? 0) +
+                           ($task->email ?? 0) +
+                           ($task->form ?? 0);
                 });
+                    // Get previous periods totals
+                    $previousDay = $this->getPeriodTotal($category, $selectedDate->copy()->subDay());
 
-            // Get previous periods totals
-            $previousDay = $this->getPeriodTotal($category, $selectedDate->copy()->subDay());
-            $currentWeek = $this->getPeriodTotal($category, $selectedDate);
-            $previousWeek = $this->getPeriodTotal($category, $selectedDate->copy()->subWeek());
-            $currentMonth = $this->getPeriodTotal($category, $selectedDate);
-            $previousMonth = $this->getPeriodTotal($category, $selectedDate->copy()->subMonth());
+                    // Get current week's start (Monday) and end (Sunday)
+                    $currentWeekStart = $selectedDate->copy()->startOfWeek();
+                    $currentWeekEnd = $selectedDate->copy()->endOfWeek();
 
-            // Calculate percentage changes
-            $comparisons[$category->name] = [
-                'current_total' => $currentTotal,
-                'day_change' => $this->calculatePercentageChange($currentTotal, $previousDay),
-                'week_change' => $this->calculatePercentageChange($currentWeek, $previousWeek),
-                'month_change' => $this->calculatePercentageChange($currentMonth, $previousMonth)
-            ];        }
+                    // Get previous week's start and end
+                    $previousWeekStart = $selectedDate->copy()->subWeek()->startOfWeek();
+                    $previousWeekEnd = $selectedDate->copy()->subWeek()->endOfWeek();
+
+                    // Calculate current week total
+                    $currentWeek = DailyReport::whereBetween('report_date', [$currentWeekStart, $currentWeekEnd])
+                        ->with(['tasks' => function($query) use ($category) {
+                            $query->where('task_category_id', $category->id);
+                        }])
+                        ->get()
+                        ->flatMap->tasks
+                        ->sum(function ($task) {
+                            return ($task->claim_count ?? 0) +
+                                    ($task->sheet_count ?? 0) +
+                                    ($task->email ?? 0) +
+                                    ($task->form ?? 0);
+                        });
+
+                    // Calculate previous week total
+                    $previousWeek = DailyReport::whereBetween('report_date', [$previousWeekStart, $previousWeekEnd])
+                        ->with(['tasks' => function($query) use ($category) {
+                            $query->where('task_category_id', $category->id);
+                        }])
+                        ->get()
+                        ->flatMap->tasks
+                        ->sum(function ($task) {
+                            return ($task->claim_count ?? 0) +
+                                    ($task->sheet_count ?? 0) +
+                                    ($task->email ?? 0) +
+                                    ($task->form ?? 0);
+                        });
+
+                    // Calculate percentage changes
+                    $comparisons[$category->name] = [
+                        'current_total' => $currentTotal,
+                        'day_change' => $this->calculatePercentageChange($currentTotal, $previousDay),
+                        'week_change' => $this->calculatePercentageChange($currentWeek, $previousWeek),
+                        'month_change' => $this->calculatePercentageChange($currentMonth, $previousMonth),
+                        'previous_day_total' => $previousDay,
+                        'previous_week_total' => $previousWeek,
+                        'previous_month_total' => $previousMonth
+                    ];
+                }
 
         $chartData = [];
-        foreach($comparisons as $index => $data) {
-            $chartData[$index] = $this->getInitialChartData($index, 'week');
+
+
+        foreach($categories as $category) {
+            $chartData[$category->name] = $this->getInitialChartData($category->id, 'week');
         }
 
         return view('dashboard', compact('comparisons', 'selectedDate', 'chartData'));
-    }
 
+    }
     private function getInitialChartData($categoryId, $range)
     {
         $endDate = now();

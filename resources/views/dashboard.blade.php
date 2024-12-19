@@ -67,22 +67,25 @@
                                                     <?php echo number_format($data['current_total']); ?></p>
                                             </div>
                                             <div class="bg-green-50 p-2 sm:p-4 rounded-lg">
-                                                <h3 class="text-sm sm:text-lg font-semibold text-green-600">vs Kemarin
+                                                <h3 class="text-sm sm:text-lg font-semibold text-green-600 flex items-center gap-2">vs Kemarin <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100">{{ number_format($data['previous_day_total']) }}</span></h3>
                                                 </h3>
                                                 <p class="text-xl sm:text-3xl font-bold <?php echo $data['day_change'] >= 0 ? 'text-green-600' : 'text-red-600'; ?>">
                                                     <?php echo $data['day_change']; ?>%
                                                 </p>
+                                                
                                             </div>
                                             <div class="bg-purple-50 p-2 sm:p-4 rounded-lg">
-                                                <h3 class="text-sm sm:text-lg font-semibold text-purple-600">vs Minggu
-                                                    lalu</h3>
+                                                <h3 class="text-sm sm:text-lg font-semibold text-purple-600">vs Minggu lalu
+                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100">{{ number_format($data['previous_week_total']) }}</span>
+                                                    </h3>
                                                 <p class="text-xl sm:text-3xl font-bold <?php echo $data['week_change'] >= 0 ? 'text-green-600' : 'text-red-600'; ?>">
                                                     <?php echo $data['week_change']; ?>%
                                                 </p>
                                             </div>
                                             <div class="bg-orange-50 p-2 sm:p-4 rounded-lg">
-                                                <h3 class="text-sm sm:text-lg font-semibold text-orange-600">vs Bulan
-                                                    lalu</h3>
+                                                <h3 class="text-sm sm:text-lg font-semibold text-orange-600">vs Bulan lalu
+                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100">{{ number_format($data['previous_month_total']) }}</span>
+                                                    </h3>
                                                 <p class="text-xl sm:text-3xl font-bold <?php echo $data['month_change'] >= 0 ? 'text-green-600' : 'text-red-600'; ?>">
                                                     <?php echo $data['month_change']; ?>%
                                                 </p>
@@ -148,7 +151,6 @@
             currentSlide = index;
             updateCarousel();
         }
-
         // Auto-play functionality
         let autoplayInterval = setInterval(nextSlide, 30000);
 
