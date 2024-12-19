@@ -8,7 +8,7 @@ use App\Http\Controllers\TaskCategoryController;
 use App\Http\Controllers\MeetingController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Route::get('/dashboard', [DailyReportController::class, 'dashboard'])->name('dashboard');
@@ -31,7 +31,7 @@ Route::middleware(['auth'])->prefix('daily-reports')->name('daily-reports.')->gr
     Route::get('/create', [DailyReportController::class, 'create'])->name('create');
     Route::post('/', [DailyReportController::class, 'store'])->name('store');
     Route::get('/{dailyReport}', [DailyReportController::class, 'show'])->name('show');
-    Route::get('/{dailyReport}/edit', [DailyReportController::class, 'edit'])->name('edit');
+    Route::get('/{dailyReport}/continue', [DailyReportController::class, 'continue'])->name('continue');
     Route::put('/{dailyReport}', [DailyReportController::class, 'update'])->name('update');
     Route::delete('/{dailyReport}', [DailyReportController::class, 'destroy'])->name('destroy');
     Route::post('/{dailyReport}/approve', [DailyReportController::class, 'approve'])->name('approve');

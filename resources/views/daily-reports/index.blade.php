@@ -41,8 +41,8 @@
                                 @foreach ($dateReports as $report)
                                     <div class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow">
                                         <div class="card-body p-3">
-                                            <div class="flex items-center justify-between mb-2">
-                                                <div class="flex items-center gap-1 text-sm">
+                                            <div class="flex flex-wrap items-center justify-between mb-2">
+                                                <div class="flex flex-wrap items-center gap-1 text-sm">
                                                     @role('admin')
                                                         <form id="approveForm-{{ $report->id }}"
                                                             action="{{ route('daily-reports.approve', $report->id) }}"
@@ -62,8 +62,11 @@
                                                         <i class="fas fa-check-circle"></i>
                                                     </span>
                                                 </div>
-                                            </div>
-                                            <div class="space-y-1 text-sm">
+                                                <div class="mt-2 sm:mt-0 opacity-25 hover:opacity-100">
+                                                    <a href="{{ route('daily-reports.continue', $report) }}" 
+                                                        class="btn btn-ghost btn-xs">Teruskan</a>
+                                                </div>
+                                            </div>                                            <div class="space-y-1 text-sm">
                                                 @foreach ($report->tasks as $index => $task)
                                                     <div class="flex gap-1">
                                                         <span>{{ $index + 1 }}.</span>
@@ -72,7 +75,7 @@
                                                             @if ($task->category->id && $task->task_date)
                                                                 <span class="text-xs">DOR {{ $task->task_date }}</span>
                                                             @endif
-                                                            <span class="text-gray-600 text-xs">
+                                                            <span class="text-gray-700 dark:text-white text-xs">
                                                                 @if ($task->batch_count){{ $task->batch_count }} Batch,@endif
                                                                 @if ($task->claim_count){{ $task->claim_count }} Klaim @endif
                                                                 @if ($task->start_time && $task->end_time)

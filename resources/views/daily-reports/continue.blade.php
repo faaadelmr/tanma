@@ -1,24 +1,102 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-primary font-semibold text-2xl leading-tight">
-            {{ __('Buat Report Harian') }}
+            {{ __('Edit Report Harian') }}
         </h2>
     </x-slot>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <form action="{{ route('daily-reports.store') }}" method="POST" id="reportForm">
+                    <form action="{{ route('daily-reports.store', $dailyReport) }}" method="POST" id="reportForm">
                         @csrf
-
                         <div class="mb-6">
                             <label class="block mb-2">Tanggal Report</label>
-                            <input type="date" name="report_date" value="{{ old('report_date', date('Y-m-d')) }}" required
+                            <input type="date" name="report_date" value="{{ $dailyReport->report_date->format('Y-m-d') }}" required
                                    class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                         </div>
 
                         <div id="tasks-container" class="space-y-6">
-                            <!-- Tasks will be added here -->
+                            @foreach($dailyReport->tasks as $index => $task)
+                                <div class="task-entry border p-4 rounded-lg">
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block mb-2">Kategori Tugas</label>
+                                            <select name="tasks[{{$index}}][category_id]" required class="task-category rounded-md shadow-sm border-gray-300 w-full">
+                                                <option value="">Pilih Kategori</option>
+                                                @foreach($categories as $category)
+                                                    <option value="{{ $category->id }}"
+                                                            data-has-dor="{{ $category->has_dor_date }}"
+                                                            data-has-batch="{{ $category->has_batch }}"
+                                                            data-has-claim="{{ $category->has_claim }}"
+                                                            data-has-time="{{ $category->has_time_range }}"
+                                                            data-has-sheets="{{ $category->has_sheets }}"
+                                                            data-has-email="{{ $category->has_email }}"
+                                                            data-has-form="{{ $category->has_form }}"
+                                                            {{ $task->task_category_id == $category->id ? 'selected' : '' }}>
+                                                        {{ $category->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="dor-field {{ $task->task_date ? '' : 'hidden' }}">
+                                            <label class="block mb-2">DOR</label>
+                                            <input type="date" name="tasks[{{$index}}][date]" value="{{ $task->task_date }}" 
+                                                   class="rounded-md shadow-sm border-gray-300 w-full">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-4 mt-4">
+                                        <div class="batch-field {{ $task->batch_count ? '' : 'hidden' }}">
+                                            <label class="block mb-2">Batch</label>
+                                            <input type="number" name="tasks[{{$index}}][batch_count]" value="{{ $task->batch_count }}"
+                                                   class="rounded-md shadow-sm border-gray-300 w-full">
+                                        </div>
+
+                                        <div class="claim-field {{ $task->claim_count ? '' : 'hidden' }}">
+                                            <label class="block mb-2">Claim</label>
+                                            <input type="number" name="tasks[{{$index}}][claim_count]" value="{{ $task->claim_count }}"
+                                                   class="rounded-md shadow-sm border-gray-300 w-full">
+                                        </div>
+                                    </div>
+
+                                    <div class="grid-cols-2 gap-4 mt-4 time-range-fields {{ ($task->start_time || $task->end_time) ? '' : 'hidden' }}">
+                                        <div>
+                                            <label class="block mb-2">Mulai Jam</label>
+                                            <input type="time" name="tasks[{{$index}}][start_time]" value="{{ $task->start_time }}"
+                                                   class="rounded-md shadow-sm border-gray-300 w-full">
+                                        </div>
+                                        <div>
+                                            <label class="block mb-2">Sampai Jam</label>
+                                            <input type="time" name="tasks[{{$index}}][end_time]" value="{{ $task->end_time }}"
+                                                   class="rounded-md shadow-sm border-gray-300 w-full">
+                                        </div>
+                                    </div>
+
+                                    <div class="sheets-field {{ $task->sheet_count ? '' : 'hidden' }} mt-4">
+                                        <label class="block mb-2">Lembar</label>
+                                        <input type="number" name="tasks[{{$index}}][sheet_count]" value="{{ $task->sheet_count }}"
+                                               class="rounded-md shadow-sm border-gray-300 w-full">
+                                    </div>
+
+                                    <div class="email-field {{ $task->email ? '' : 'hidden' }} mt-4">
+                                        <label class="block mb-2">Email</label>
+                                        <input type="number" name="tasks[{{$index}}][email]" value="{{ $task->email }}"
+                                               class="rounded-md shadow-sm border-gray-300 w-full">
+                                    </div>
+
+                                    <div class="form-field {{ $task->form ? '' : 'hidden' }} mt-4">
+                                        <label class="block mb-2">Form</label>
+                                        <input type="number" name="tasks[{{$index}}][form]" value="{{ $task->form }}"
+                                               class="rounded-md shadow-sm border-gray-300 w-full">
+                                    </div>
+
+                                    <button type="button" class="remove-task mt-4 text-red-500 hover:text-red-700">
+                                        Hapus Tugas
+                                    </button>
+                                </div>
+                            @endforeach
                         </div>
 
                         <div class="mt-6">
@@ -53,8 +131,7 @@
                                     data-has-time="{{ $category->has_time_range }}"
                                     data-has-sheets="{{ $category->has_sheets }}"
                                     data-has-email="{{ $category->has_email }}"
-                                    data-has-form="{{ $category->has_form }}"
-                                    >
+                                    data-has-form="{{ $category->has_form }}">
                                 {{ $category->name }}
                             </option>
                         @endforeach
@@ -113,7 +190,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let taskIndex = 0;
+            let taskIndex = {{ count($dailyReport->tasks) }};
             const tasksContainer = document.getElementById('tasks-container');
             const template = document.getElementById('task-template');
             const addTaskButton = document.getElementById('add-task');
@@ -137,10 +214,9 @@
                     const hasClaim = selected.dataset.hasClaim === "1";
                     const hasTime = selected.dataset.hasTime === "1";
                     const hasSheets = selected.dataset.hasSheets === "1";
-                    const hasDorDate = selected.dataset.hasDor === "1";  // Change this line to match the data attribute name
+                    const hasDorDate = selected.dataset.hasDor === "1";
                     const hasEmail = selected.dataset.hasEmail === "1";
                     const hasForm = selected.dataset.hasForm === "1";
-
 
                     taskElement.querySelector('.batch-field').classList.toggle('hidden', !hasBatch);
                     taskElement.querySelector('.claim-field').classList.toggle('hidden', !hasClaim);
@@ -158,14 +234,8 @@
 
             addTaskButton.addEventListener('click', addTask);
 
-            // Add initial task
-            addTask();
-
-            // Debug form submission
-            document.getElementById('reportForm').addEventListener('submit', function(e) {
-                const formData = new FormData(this);
-                console.log('Form Data:', Object.fromEntries(formData));
-            });
+            // Setup listeners for existing tasks
+            document.querySelectorAll('.task-entry').forEach(setupTaskListeners);
         });
     </script>
 </x-app-layout>

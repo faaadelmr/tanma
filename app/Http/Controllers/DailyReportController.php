@@ -82,6 +82,13 @@ class DailyReportController extends Controller
         return view('daily-reports.edit', compact('dailyReport', 'categories'));
     }
 
+    public function continue(DailyReport $dailyReport)
+    {
+        $categories = TaskCategory::all();
+        $dailyReport->load(['tasks.category']);
+        return view('daily-reports.continue', compact('dailyReport', 'categories'));
+    }
+
     public function approve(DailyReport $dailyReport)
 {
     $dailyReport->update([
