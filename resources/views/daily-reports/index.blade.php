@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-primary font-semibold text-2xl leading-tight">
+        <h2 class="text-2xl font-semibold leading-tight text-primary">
             {{ __('Report Harian') }}
         </h2>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="flex justify-between mb-6 px-4">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="flex justify-between px-4 mb-6">
                 @role('admin')
                     <h2 class="btn btn-accent"><a href="{{ route('task-categories.index') }}">Tambah Kategori Tugas</a></h2>
                 @endrole
@@ -24,9 +24,9 @@
                 @endphp
 
                 @foreach ($groupedReports as $date => $dateReports)
-                    <div class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow">
-                        <div class="card-body p-4">
-                            <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+                    <div class="border-2 shadow-sm transition-shadow card border-white-500/100 bg-base-100 hover:shadow-md">
+                        <div class="p-4 card-body">
+                            <div class="flex flex-wrap gap-2 justify-between items-center mb-3">
                                 <h3 class="text-lg font-semibold">{{ $date }}</h3>
                                 <div class="flex flex-wrap gap-2">
                                     <span class="badge badge-success badge-sm">
@@ -37,12 +37,12 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                 @foreach ($dateReports as $report)
-                                    <div class="card bg-base-100 shadow-sm hover:shadow-md transition-shadow">
-                                        <div class="card-body p-3">
-                                            <div class="flex flex-wrap items-center justify-between mb-2">
-                                                <div class="flex flex-wrap items-center gap-1 text-sm">
+                                    <div class="shadow-sm transition-shadow card bg-base-100 hover:shadow-md hover:border-2 hover:border-white-500/100">
+                                        <div class="p-3 card-body">
+                                            <div class="flex flex-wrap justify-between items-center mb-2">
+                                                <div class="flex flex-wrap gap-1 items-center text-sm">
                                                     @role('admin')
                                                         <form id="approveForm-{{ $report->id }}"
                                                             action="{{ route('daily-reports.approve', $report->id) }}"
@@ -51,7 +51,7 @@
                                                             @method('POST')
                                                             <button type="button"
                                                                 onclick="confirmApprove({{ $report->id }})"
-                                                                class="badge badge-primary badge-sm cursor-pointer">Report</button>
+                                                                class="cursor-pointer badge badge-primary badge-sm">Report</button>
                                                         </form>
                                                     @else
                                                         <span class="badge badge-primary badge-sm">Report</span>
@@ -62,8 +62,8 @@
                                                         <i class="fas fa-check-circle"></i>
                                                     </span>
                                                 </div>
-                                                <div class="mt-2 sm:mt-0 opacity-25 hover:opacity-100">
-                                                    <a href="{{ route('daily-reports.continue', $report) }}" 
+                                                <div class="mt-2 opacity-25 sm:mt-0 hover:opacity-100">
+                                                    <a href="{{ route('daily-reports.continue', $report) }}"
                                                         class="btn btn-ghost btn-xs">Teruskan</a>
                                                 </div>
                                             </div>                                            <div class="space-y-1 text-sm">
@@ -75,7 +75,7 @@
                                                             @if ($task->category->id && $task->task_date)
                                                                 <span class="text-xs">DOR {{ $task->task_date }}</span>
                                                             @endif
-                                                            <span class="text-gray-700 dark:text-white text-xs">
+                                                            <span class="text-xs text-gray-700 dark:text-white">
                                                                 @if ($task->batch_count){{ $task->batch_count }} Batch,@endif
                                                                 @if ($task->claim_count){{ $task->claim_count }} Klaim @endif
                                                                 @if ($task->start_time && $task->end_time)
@@ -90,7 +90,7 @@
                                                 @endforeach
                                             </div>
                                         </div>
-                                        <div class="flex items-center justify-between px-3 pb-2">
+                                        <div class="flex justify-between items-center px-3 pb-2">
                                             @role('admin')
                                                 <button
                                                     onclick="document.getElementById('delete-modal-{{ $report->id }}').showModal()"
@@ -99,7 +99,7 @@
                                                 </button>
                                                 <dialog id="delete-modal-{{ $report->id }}" class="modal">
                                                     <div class="modal-box">
-                                                        <h3 class="font-bold text-lg">Konfirmasi Hapus</h3>
+                                                        <h3 class="text-lg font-bold">Konfirmasi Hapus</h3>
                                                         <p class="py-4">Apakah anda yakin ingin menghapus report ini?</p>
                                                         <div class="modal-action">
                                                             <form action="{{ route('daily-reports.destroy', $report) }}"
@@ -116,7 +116,7 @@
                                                 </dialog>
                                             @endrole
 
-                                            <div class="text-xs text-gray-500 flex items-center gap-1">
+                                            <div class="flex gap-1 items-center text-xs text-gray-500">
                                                 <i class="fa-regular fa-clock"></i>
                                                 {{ $report->created_at->locale('id')->diffForHumans() }}
                                             </div>
