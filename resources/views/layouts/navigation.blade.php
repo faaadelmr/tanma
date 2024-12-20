@@ -36,8 +36,11 @@
 
     <div class="hidden navbar-center lg:flex">
         <ul class="px-1 menu menu-horizontal">
+            <li><a href="{{ route('dashboard') }}">Beranda</a></li>
             <li><a href="{{ route('daily-reports.index') }}">Report Harian</a></li>
             <li><a href="{{ route('meetings.index') }}">Meeting</a></li>
+
+            <li><a href="{{ url('/chats') }}">Chat</a></li>
             @role('admin')
                 <li>
                     <details>
