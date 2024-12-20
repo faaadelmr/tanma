@@ -34,7 +34,7 @@
         </a>
     </div>
 
-    <div class="navbar-center hidden lg:flex">
+    <div class="hidden navbar-center lg:flex">
         <ul class="px-1 menu menu-horizontal">
             <li><a href="{{ route('daily-reports.index') }}">Report Harian</a></li>
             <li><a href="{{ route('meetings.index') }}">Meeting</a></li>
@@ -58,7 +58,7 @@
         <div class="dropdown dropdown-end">
             <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
                 <div class="w-10 rounded-full">
-                    <img alt="Null Foto Profil" src="{{ auth()->user()->path ? asset('storage/' . auth()->user()->path) : asset('images/default-avatar.png') }}" />
+                    <img alt="Null Foto Profil" src="{{ auth()->user()->path ? asset('storage/' . auth()->user()->path) : asset('image.webp') }}" />
                 </div>
             </div>
             <ul tabindex="0" class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
@@ -75,7 +75,6 @@
                         <label for="theme-selector" class="text-sm font-medium leading-6">Tema:</label>
                         <select id="theme-selector" class="max-w-xs text-sm select select-bordered select-sm">
                             <option value="light">light</option>
-                            <option value="dark">dark</option>
                             <option value="cupcake">cupcake</option>
                             <option value="bumblebee">bumblebee</option>
                             <option value="emerald">emerald</option>
@@ -87,7 +86,6 @@
                             <option value="halloween">halloween</option>
                             <option value="garden">garden</option>
                             <option value="forest">forest</option>
-                            <option value="aqua">aqua</option>
                             <option value="lofi">lofi</option>
                             <option value="pastel">pastel</option>
                             <option value="fantasy">fantasy</option>
