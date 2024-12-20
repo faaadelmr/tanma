@@ -52,7 +52,9 @@
         </ul>
     </div>
     <div class="navbar-end">
-        <div><p>Hi! {{auth()->user()->name}}</p></div>
+        <div>
+            <p>Hi! {{ Str::before(auth()->user()->name, ' ') }}</p>
+        </div>
         <div class="dropdown dropdown-end">
             <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
                 <div class="w-10 rounded-full">
