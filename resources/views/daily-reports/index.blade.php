@@ -51,7 +51,8 @@
                                                             @method('POST')
                                                             <button type="button"
                                                                 onclick="confirmApprove({{ $report->id }})"
-                                                                class="cursor-pointer badge badge-primary badge-sm">Report</button>
+                                                                class="cursor-pointer badge badge-primary badge-sm"
+                                                                {{ $report->is_approved ? 'disabled' : '' }}>Report</button>
                                                         </form>
                                                     @else
                                                         <span class="badge badge-primary badge-sm">Report</span>
@@ -62,7 +63,7 @@
                                                         <i class="fas fa-check-circle"></i>
                                                     </span>
                                                 </div>
-                                                <div class="mt-2 opacity-25 sm:mt-0 hover:opacity-100">
+                                                <div class="mt-2 opacity-10 sm:mt-0 hover:opacity-100">
                                                     <a href="{{ route('daily-reports.continue', $report) }}"
                                                         class="btn btn-ghost btn-xs">Teruskan</a>
                                                 </div>
@@ -75,7 +76,7 @@
                                                             @if ($task->category->id && $task->task_date)
                                                                 <span class="text-xs">DOR {{ $task->task_date }}</span>
                                                             @endif
-                                                            <span class="text-xs text-gray-700 dark:text-white">
+                                                            <span class="text-xs text-gray-500 dark:text-white">
                                                                 @if ($task->batch_count){{ $task->batch_count }} Batch,@endif
                                                                 @if ($task->claim_count){{ $task->claim_count }} Klaim @endif
                                                                 @if ($task->start_time && $task->end_time)
