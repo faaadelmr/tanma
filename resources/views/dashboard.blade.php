@@ -1,23 +1,23 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="text-primary font-semibold text-2xl leading-tight">
+            <h2 class="text-2xl font-semibold leading-tight text-primary">
                 {{ __('Dashboard') }}
             </h2>
         </div>
     </x-slot>
 
     <div class="py-6 sm:py-12">
-        <div id="caraousel" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm rounded-lg">
+        <div id="caraousel" class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="overflow-hidden bg-white rounded-lg shadow-sm">
                 <div class="p-4 sm:p-6">
                     <!-- Date Picker -->
                     <div class="mb-4">
                         <div class="flex flex-col space-y-4">
-                            <div class="flex justify-between items-start gap-4">
-                                <form method="GET" class="flex-1 bg-white rounded-lg shadow-sm p-4" id="dateForm">
-                                    <label for="date" class="text-sm font-medium text-gray-700 flex items-center gap-1 mb-1">
-                                        <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="flex gap-4 justify-between items-start">
+                                <form method="GET" class="flex-1 p-4 bg-white rounded-lg shadow-sm" id="dateForm">
+                                    <label for="date" class="flex gap-1 items-center mb-1 text-sm font-medium text-gray-700">
+                                        <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                         </svg>
                                         Pilih Tanggal
@@ -26,32 +26,32 @@
                                         class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-1" onchange="this.form.submit()">
                                 </form>
 
-                                <form action="{{ route('daily-reports.export') }}" method="GET" class="flex-1 bg-white rounded-lg shadow-sm p-4">
+                                <form action="{{ route('daily-reports.export') }}" method="GET" class="flex-1 p-4 bg-white rounded-lg shadow-sm">
                                     @csrf
                                     <div class="flex gap-4">
                                         <div class="group hover:scale-[1.01] transition-transform flex-1">
-                                            <label class="text-sm font-medium text-gray-700 flex items-center gap-1 mb-1">
-                                                <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <label class="flex gap-1 items-center mb-1 text-sm font-medium text-gray-700">
+                                                <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                 </svg>
                                                 Tanggal Mulai
                                             </label>
-                                            <input type="date" name="start_date" class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-1" required>
+                                            <input type="date" name="start_date" class="w-full rounded-md border-gray-300 cursor-pointer focus:border-indigo-500 focus:ring-1" value="{{ request('start_date', now()->format('Y-m-d')) }}" required>
                                         </div>
-                                        
+
                                         <div class="group hover:scale-[1.01] transition-transform flex-1">
-                                            <label class="text-sm font-medium text-gray-700 flex items-center gap-1 mb-1">
-                                                <svg class="h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <label class="flex gap-1 items-center mb-1 text-sm font-medium text-gray-700">
+                                                <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                                 </svg>
                                                 Tanggal Akhir
                                             </label>
-                                            <input type="date" name="end_date" class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-1" required>
+                                            <input type="date" name="end_date" class="w-full rounded-md border-gray-300 cursor-pointer focus:border-indigo-500 focus:ring-1" value="{{ request('end_date', now()->format('Y-m-d')) }}" required>
                                         </div>
 
                                         <div class="flex items-end">
                                             <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 transition-all hover:scale-[1.02]">
-                                                <svg class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg class="mr-1.5 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                                 </svg>
                                                 Export to Excel
@@ -66,7 +66,7 @@
                     <div id="carousel" class="relative">
                         <!-- Navigation buttons - Hidden on mobile, visible on larger screens -->
                         <button onclick="prevSlide()"
-                            class="hidden sm:block absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/50 hover:bg-gray-800/75 text-white rounded-r-lg p-2">
+                            class="hidden absolute left-0 top-1/2 z-10 p-2 text-white rounded-r-lg -translate-y-1/2 sm:block bg-gray-800/50 hover:bg-gray-800/75">
                             <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 19l-7-7 7-7" />
@@ -74,7 +74,7 @@
                         </button>
 
                         <button onclick="nextSlide()"
-                            class="hidden sm:block absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-gray-800/50 hover:bg-gray-800/75 text-white rounded-l-lg p-2">
+                            class="hidden absolute right-0 top-1/2 z-10 p-2 text-white rounded-l-lg -translate-y-1/2 sm:block bg-gray-800/50 hover:bg-gray-800/75">
                             <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 5l7 7-7 7" />
@@ -95,38 +95,38 @@
                             <div id="slides" class="flex transition-transform duration-500">
                                 <?php foreach($groupedComparisons as $groupName => $categories): ?>
                                 <?php ksort($categories); // Sort items within group alphabetically ?>
-                                <div class="w-full flex-shrink-0 p-3 sm:p-6">
-                                    <h2 class="text-lg sm:text-2xl font-bold mb-4 sm:mb-6 text-center">
+                                <div class="flex-shrink-0 p-3 w-full sm:p-6">
+                                    <h2 class="mb-4 text-lg font-bold text-center sm:text-2xl sm:mb-6">
                                         <?php echo $groupName; ?> Data</h2>
                                     <?php foreach($categories as $categoryName => $data): ?>
                                     <div class="mb-6 sm:mb-8">
-                                        <h3 class="text-base sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-700">
+                                        <h3 class="mb-3 text-base font-semibold text-gray-700 sm:text-xl sm:mb-4">
                                             <?php echo $categoryName; ?></h3>
-                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
-                                            <div class="bg-blue-50 p-2 sm:p-4 rounded-lg">
-                                                <h3 class="text-sm sm:text-lg font-semibold text-blue-600">Hari ini</h3>
-                                                <p class="text-xl sm:text-3xl font-bold text-blue-700">
+                                        <div class="grid grid-cols-2 gap-2 md:grid-cols-4 sm:gap-4">
+                                            <div class="p-2 bg-blue-50 rounded-lg sm:p-4">
+                                                <h3 class="text-sm font-semibold text-blue-600 sm:text-lg">Hari ini</h3>
+                                                <p class="text-xl font-bold text-blue-700 sm:text-3xl">
                                                     <?php echo number_format($data['current_total']); ?></p>
                                             </div>
-                                            <div class="bg-green-50 p-2 sm:p-4 rounded-lg">
-                                                <h3 class="text-sm sm:text-lg font-semibold text-green-600 flex items-center gap-2">vs Kemarin <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100">{{ number_format($data['previous_day_total']) }}</span></h3>
+                                            <div class="p-2 bg-green-50 rounded-lg sm:p-4">
+                                                <h3 class="flex gap-2 items-center text-sm font-semibold text-green-600 sm:text-lg">vs Kemarin <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 rounded-full">{{ number_format($data['previous_day_total']) }}</span></h3>
                                                 </h3>
                                                 <p class="text-xl sm:text-3xl font-bold <?php echo $data['day_change'] >= 0 ? 'text-green-600' : 'text-red-600'; ?>">
                                                     <?php echo $data['day_change']; ?>%
                                                 </p>
-                                                
+
                                             </div>
-                                            <div class="bg-purple-50 p-2 sm:p-4 rounded-lg">
-                                                <h3 class="text-sm sm:text-lg font-semibold text-purple-600">vs Minggu lalu
-                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100">{{ number_format($data['previous_week_total']) }}</span>
+                                            <div class="p-2 bg-purple-50 rounded-lg sm:p-4">
+                                                <h3 class="text-sm font-semibold text-purple-600 sm:text-lg">vs Minggu lalu
+                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-purple-100 rounded-full">{{ number_format($data['previous_week_total']) }}</span>
                                                     </h3>
                                                 <p class="text-xl sm:text-3xl font-bold <?php echo $data['week_change'] >= 0 ? 'text-green-600' : 'text-red-600'; ?>">
                                                     <?php echo $data['week_change']; ?>%
                                                 </p>
                                             </div>
-                                            <div class="bg-orange-50 p-2 sm:p-4 rounded-lg">
-                                                <h3 class="text-sm sm:text-lg font-semibold text-orange-600">vs Bulan lalu
-                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100">{{ number_format($data['previous_month_total']) }}</span>
+                                            <div class="p-2 bg-orange-50 rounded-lg sm:p-4">
+                                                <h3 class="text-sm font-semibold text-orange-600 sm:text-lg">vs Bulan lalu
+                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-orange-100 rounded-full">{{ number_format($data['previous_month_total']) }}</span>
                                                     </h3>
                                                 <p class="text-xl sm:text-3xl font-bold <?php echo $data['month_change'] >= 0 ? 'text-green-600' : 'text-red-600'; ?>">
                                                     <?php echo $data['month_change']; ?>%
@@ -140,11 +140,11 @@
                             </div>
                         </div>
                         <!-- Indicators -->
-                        <div class="flex justify-center mt-4 gap-2">
+                        <div class="flex gap-2 justify-center mt-4">
                             <?php $index = 0; ?>
                             @foreach ($groupedComparisons as $groupName => $categories)
                                 <button onclick="goToSlide(<?php echo $index; ?>)"
-                                    class="h-3 w-3 bg-gray-300 rounded-full transition-all duration-300 hover:bg-blue-400"
+                                    class="w-3 h-3 bg-gray-300 rounded-full transition-all duration-300 hover:bg-blue-400"
                                     id="indicator-<?php echo $index; ?>">
                                 </button>
                                 <?php $index++; ?>
@@ -221,7 +221,7 @@
             overlay.style.alignItems = 'center';
             overlay.style.zIndex = '9999';
             overlay.innerHTML =
-                '<div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>';
+                '<div class="w-12 h-12 rounded-full border-t-2 border-b-2 border-blue-500 animate-spin"></div>';
             document.body.appendChild(overlay);
             localStorage.setItem('currentCarouselSlide', currentSlide);
             this.form.submit();
