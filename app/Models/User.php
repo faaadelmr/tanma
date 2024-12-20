@@ -60,4 +60,9 @@ class User extends Authenticatable
      {
          return $this->hasRole(['admin','pengguna']);
      }
+
+     public function canCreateGroups(): bool
+     {
+         return $this->hasRole(['admin','pengguna']);
+     }
 }
