@@ -14,21 +14,30 @@
                     <!-- Date Picker -->
                     <div class="mb-4">
                         <div class="flex flex-col space-y-4">
-                            <div class="flex gap-4 justify-between items-start">
-                                <form method="GET" class="flex-1 p-4 bg-white rounded-lg shadow-sm" id="dateForm">
-                                    <label for="date" class="flex gap-1 items-center mb-1 text-sm font-medium text-gray-700">
-                                        <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                        Pilih Tanggal
-                                    </label>
-                                    <input type="date" name="date" id="date" value="<?php echo $selectedDate->format('Y-m-d'); ?>"
-                                        class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-1" onchange="this.form.submit()">
-                                </form>
+                            <!-- Single Date Picker -->
+                            <form method="GET" class="w-full p-4 bg-white rounded-lg shadow-sm" id="dateForm">
+                                <label for="date" class="flex gap-1 items-center mb-1 text-sm font-medium text-gray-700">
+                                    <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    Pilih Tanggal
+                                </label>
+                                <input type="date" name="date" id="date" value="<?php echo $selectedDate->format('Y-m-d'); ?>"
+                                    class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-1" onchange="this.form.submit()">
+                            </form>
 
-                                <form action="{{ route('daily-reports.export') }}" method="GET" class="flex-1 p-4 bg-white rounded-lg shadow-sm">
+                            <!-- Export Section with Collapse -->
+                            <div class="w-full">
+                                <button onclick="toggleExport()" class="flex justify-between items-center w-full p-4 text-left bg-white rounded-lg shadow-sm hover:bg-gray-50">
+                                    <span class="text-sm font-medium text-gray-700">Export Data</span>
+                                    <svg id="exportArrow" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                
+                                <form action="{{ route('daily-reports.export') }}" method="GET" id="exportForm" class="hidden mt-2 p-4 bg-white rounded-lg shadow-sm">
                                     @csrf
-                                    <div class="flex gap-4">
+                                    <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
                                         <div class="group hover:scale-[1.01] transition-transform flex-1">
                                             <label class="flex gap-1 items-center mb-1 text-sm font-medium text-gray-700">
                                                 <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -49,8 +58,8 @@
                                             <input type="date" name="end_date" class="w-full rounded-md border-gray-300 cursor-pointer focus:border-indigo-500 focus:ring-1" value="{{ request('end_date', now()->format('Y-m-d')) }}" required>
                                         </div>
 
-                                        <div class="flex items-end">
-                                            <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 transition-all hover:scale-[1.02]">
+                                        <div class="flex sm:items-end">
+                                            <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 transition-all hover:scale-[1.02]">
                                                 <svg class="mr-1.5 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                                 </svg>
@@ -60,6 +69,15 @@
                                     </div>
                                 </form>
                             </div>
+
+                            <script>
+                                function toggleExport() {
+                                    const form = document.getElementById('exportForm');
+                                    const arrow = document.getElementById('exportArrow');
+                                    form.classList.toggle('hidden');
+                                    arrow.classList.toggle('rotate-180');
+                                }
+                            </script>
                         </div>
                     </div>
                     <!-- Carousel -->

@@ -39,7 +39,7 @@
                             </div>
                             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                 @foreach ($dateReports as $report)
-                                    <div class="shadow-sm transition-shadow card bg-base-100 hover:shadow-md hover:border-2 hover:border-white-500/100">
+                                    <div class="shadow-sm transition-shadow card bg-base-100 hover:shadow-md border-2 hover:border-white-500/100">
                                         <div class="p-3 card-body">
                                             <div class="flex flex-wrap justify-between items-center mb-2">
                                                 <div class="flex flex-wrap gap-1 items-center text-sm">
@@ -76,7 +76,7 @@
                                                             @if ($task->category->id && $task->task_date)
                                                                 <span class="text-xs">DOR {{ $task->task_date }}</span>
                                                             @endif
-                                                            <span class="text-xs text-gray-500 dark:text-white">
+                                                            <span class="text-xs text-accent-500">
                                                                 @if ($task->batch_count){{ $task->batch_count }} Batch,@endif
                                                                 @if ($task->claim_count){{ $task->claim_count }} Klaim @endif
                                                                 @if ($task->start_time && $task->end_time)

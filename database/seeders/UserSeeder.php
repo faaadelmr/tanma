@@ -24,12 +24,20 @@ class UserSeeder extends Seeder
         $admin->assignRole('admin');
 
         $dandy = User::create([
+            'name' => 'fadel',
+            'username' => 'fadel',
+            'email' => 'fadel@gmail.com',
+            'password' => bcrypt('fadel')
+        ]);
+        $dandy->assignRole('admin');
+
+        $dandy = User::create([
             'name' => 'Dandy',
             'username' => 'dandy',
             'email' => 'dandy@gmail.com',
             'password' => bcrypt('dandy')
         ]);
-        $dandy->assignRole('pengguna');
+        $dandy->assignRole('admin');
 
         $eva = User::create([
             'name' => 'Evan', 
