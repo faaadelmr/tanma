@@ -6,6 +6,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
+use Faker\Factory as Faker;
 
 class UserSeeder extends Seeder
 {
@@ -15,28 +16,48 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $admin = User::create([
-            'name' => 'saya adalah admin',
+            'name' => 'admin ini adalah',
             'username' => 'admin',
             'email' => 'admin@gmail.com',
             'password' => bcrypt('admin')
         ]);
         $admin->assignRole('admin');
 
-        $pengguna = User::create([
-            'name' => 'saya ini pengguna',
-            'username' => 'pengguna',
-            'email' => 'pengguna@gmail.com',
-            'password' => bcrypt('pengguna')
+        $dandy = User::create([
+            'name' => 'Dandy',
+            'username' => 'dandy',
+            'email' => 'dandy@gmail.com',
+            'password' => bcrypt('dandy')
         ]);
-        $pengguna->assignRole('pengguna');
+        $dandy->assignRole('pengguna');
 
-        $pengguna2 = User::create([
-            'name' => 'Pengguna Dua',
-            'username' => 'pengguna2',
-            'email' => 'pengguna2@gmail.com',
-            'password' => bcrypt('pengguna')
+        $eva = User::create([
+            'name' => 'Evan', 
+            'username' => 'evan',
+            'email' => 'eva@gmail.com',
+            'password' => bcrypt('evan')
         ]);
-        $pengguna2->assignRole('pengguna');
+        $eva->assignRole('pengguna');
+
+        $ryand = User::create([
+            'name' => 'Ryand',
+            'username' => 'ryand', 
+            'email' => 'ryand@gmail.com',
+            'password' => bcrypt('ryand')
+        ]);
+        $ryand->assignRole('pengguna');
+
+
+        $faker = Faker::create('id_ID');
+        for ($i = 1; $i <= 9; $i++) {
+            $user = User::create([
+                'name' => $faker->name,
+                'username' => $faker->unique()->userName,
+                'email' => $faker->unique()->safeEmail,
+                'password' => bcrypt('pengguna')
+            ]);
+            $user->assignRole('pengguna');
+        }
 
     }
 }

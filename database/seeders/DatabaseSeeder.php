@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             TaskCategorySeeder::class,
             UserSeeder::class,
             DailyReportSeeder::class,
+            MeetingsTableSeeder::class,
         ]);
     }
 }

@@ -27,7 +27,7 @@ class DailyReportSeeder extends Seeder
                 ]);
 
                 // Create 1-3 tasks per report
-                for ($j = 0; $j < rand(2, 4); $j++) {
+                for ($j = 0; $j < rand(3, 5); $j++) {
                     $category = $categories->random();
                     $taskData = [
                         'task_category_id' => $category->id,

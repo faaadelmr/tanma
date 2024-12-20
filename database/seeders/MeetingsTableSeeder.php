@@ -44,14 +44,14 @@ class MeetingsTableSeeder extends Seeder
             ];
 
             // Generate 2-5 topik per rapat
-            $jumlahTopik = $faker->numberBetween(2, 5);
+            $jumlahTopik = $faker->numberBetween(5, 11);
 
             for ($j = 0; $j < $jumlahTopik; $j++) {
                 $meeting->topics()->create([
                     'title' => $faker->randomElement($topikRapat),
                     'description' => 'Pembahasan mengenai ' . $faker->sentence(8),
                     'is_completed' => $faker->boolean(30),
-                    'user_id' => $faker->numberBetween(1, 2)
+                    'user_id' => $faker->numberBetween(1, 13)
                 ]);
             }
         }
