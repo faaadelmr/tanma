@@ -4,6 +4,17 @@
             {{ __('Buat Report Harian') }}
         </h2>
     </x-slot>
+@if(session('error'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal!',
+            text: "{{ session('error') }}",
+            timer: 5000,
+            showConfirmButton: false
+        });
+    </script>
+@endif
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -13,8 +24,7 @@
 
                         <div class="mb-6">
                             <label class="block mb-2">Tanggal Report</label>
-                            <input type="date" name="report_date" value="{{ old('report_date', date('Y-m-d')) }}" required
-                                   class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            <input type="date" name="report_date" value="{{ now()->format('Y-m-d') }}" required                                   class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                         </div>
 
                         <div id="tasks-container" class="space-y-6">

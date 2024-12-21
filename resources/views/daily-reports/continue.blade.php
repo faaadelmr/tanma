@@ -1,9 +1,31 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="text-primary font-semibold text-2xl leading-tight">
-            {{ __('Edit Report Harian') }}
+            {{ __('Buat Report Harian') }}
         </h2>
     </x-slot>
+                @if(session('success'))
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            </script>
+        @endif
+        @if(session('error'))
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: "{{ session('error') }}",
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            </script>
+        @endif
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -12,7 +34,7 @@
                         @csrf
                         <div class="mb-6">
                             <label class="block mb-2">Tanggal Report</label>
-                            <input type="date" name="report_date" value="{{ $dailyReport->report_date->format('Y-m-d') }}" required
+                            <input type="date" name="report_date" value="{{ now()->format('Y-m-d') }}" required
                                    class="rounded-md shadow-sm border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                         </div>
 
@@ -124,7 +146,7 @@
                     <select name="tasks[INDEX][category_id]" required class="task-category rounded-md shadow-sm border-gray-300 w-full">
                         <option value="">Pilih Kategori</option>
                         @foreach($categories as $category)
-                            <option value="{{ $category->id }}"
+                            <option value=""
                                     data-has-dor="{{ $category->has_dor_date }}"
                                     data-has-batch="{{ $category->has_batch }}"
                                     data-has-claim="{{ $category->has_claim }}"
@@ -189,53 +211,84 @@
     </template>
 
     <script>
+        function setupTaskListeners(taskElement) {
+    const categorySelect = taskElement.querySelector('.task-category');
+    const removeButton = taskElement.querySelector('.remove-task');
+
+    categorySelect.addEventListener('change', function() {
+        const selected = this.options[this.selectedIndex];
+        const hasBatch = selected.dataset.hasBatch === "1";
+        const hasClaim = selected.dataset.hasClaim === "1";
+        const hasTime = selected.dataset.hasTime === "1";
+        const hasSheets = selected.dataset.hasSheets === "1";
+        const hasDorDate = selected.dataset.hasDor === "1";
+        const hasEmail = selected.dataset.hasEmail === "1";
+        const hasForm = selected.dataset.hasForm === "1";
+
+        taskElement.querySelector('.batch-field').classList.toggle('hidden', !hasBatch);
+        taskElement.querySelector('.claim-field').classList.toggle('hidden', !hasClaim);
+        taskElement.querySelector('.time-range-fields').classList.toggle('hidden', !hasTime);
+        taskElement.querySelector('.sheets-field').classList.toggle('hidden', !hasSheets);
+        taskElement.querySelector('.dor-field').classList.toggle('hidden', !hasDorDate);
+        taskElement.querySelector('.email-field').classList.toggle('hidden', !hasEmail);
+        taskElement.querySelector('.form-field').classList.toggle('hidden', !hasForm);
+    });
+
+    removeButton.addEventListener('click', function() {
+        taskElement.remove();
+    });
+}
+
         document.addEventListener('DOMContentLoaded', function() {
-            let taskIndex = {{ count($dailyReport->tasks) }};
+            let taskIndex = {{ count($dailyReport->tasks) }}; // Start from number of existing tasks
             const tasksContainer = document.getElementById('tasks-container');
             const template = document.getElementById('task-template');
             const addTaskButton = document.getElementById('add-task');
-
-            function addTask() {
+    
+            function addTask(existingTask = null) {
                 const taskHtml = template.innerHTML.replace(/INDEX/g, taskIndex);
                 tasksContainer.insertAdjacentHTML('beforeend', taskHtml);
-
+    
                 const newTask = tasksContainer.lastElementChild;
                 setupTaskListeners(newTask);
+    
+                if (existingTask) {
+                    const select = newTask.querySelector('.task-category');
+                    select.value = existingTask.task_category_id;
+                    select.dispatchEvent(new Event('change'));
+                }
+    
                 taskIndex++;
             }
-
-            function setupTaskListeners(taskElement) {
-                const categorySelect = taskElement.querySelector('.task-category');
-                const removeButton = taskElement.querySelector('.remove-task');
-
-                categorySelect.addEventListener('change', function() {
-                    const selected = this.options[this.selectedIndex];
-                    const hasBatch = selected.dataset.hasBatch === "1";
-                    const hasClaim = selected.dataset.hasClaim === "1";
-                    const hasTime = selected.dataset.hasTime === "1";
-                    const hasSheets = selected.dataset.hasSheets === "1";
-                    const hasDorDate = selected.dataset.hasDor === "1";
-                    const hasEmail = selected.dataset.hasEmail === "1";
-                    const hasForm = selected.dataset.hasForm === "1";
-
-                    taskElement.querySelector('.batch-field').classList.toggle('hidden', !hasBatch);
-                    taskElement.querySelector('.claim-field').classList.toggle('hidden', !hasClaim);
-                    taskElement.querySelector('.time-range-fields').classList.toggle('hidden', !hasTime);
-                    taskElement.querySelector('.sheets-field').classList.toggle('hidden', !hasSheets);
-                    taskElement.querySelector('.dor-field').classList.toggle('hidden', !hasDorDate);
-                    taskElement.querySelector('.email-field').classList.toggle('hidden', !hasEmail);
-                    taskElement.querySelector('.form-field').classList.toggle('hidden', !hasForm);
-                });
-
-                removeButton.addEventListener('click', function() {
-                    taskElement.remove();
-                });
+    
+            function fillField(taskElement, fieldName, value) {
+                if (value) {
+                    const input = taskElement.querySelector(`[name^="tasks"][name$="[${fieldName}]"]`);
+                    if (input) input.value = value;
+                }
             }
-
-            addTaskButton.addEventListener('click', addTask);
-
-            // Setup listeners for existing tasks
-            document.querySelectorAll('.task-entry').forEach(setupTaskListeners);
+    
+            function toggleFields(taskElement, dataset) {
+                taskElement.querySelector('.batch-field').classList.toggle('hidden', dataset.hasBatch !== "1");
+                taskElement.querySelector('.claim-field').classList.toggle('hidden', dataset.hasClaim !== "1");
+                taskElement.querySelector('.time-range-fields').classList.toggle('hidden', dataset.hasTime !== "1");
+                taskElement.querySelector('.sheets-field').classList.toggle('hidden', dataset.hasSheets !== "1");
+                taskElement.querySelector('.dor-field').classList.toggle('hidden', dataset.hasDor !== "1");
+                taskElement.querySelector('.email-field').classList.toggle('hidden', dataset.hasEmail !== "1");
+                taskElement.querySelector('.form-field').classList.toggle('hidden', dataset.hasForm !== "1");
+            }
+    
+            @if(isset($tasks))
+                @foreach($tasks as $task)
+                    addTask(@json($task));
+                @endforeach
+            @else
+                addTask();
+            @endif
+    
+            addTaskButton.addEventListener('click', () => addTask());
         });
     </script>
+    
 </x-app-layout>
+

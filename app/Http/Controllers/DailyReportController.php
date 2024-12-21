@@ -15,72 +15,23 @@ class DailyReportController extends Controller
 {
     public function index()
     {
-        $reports = DailyReport::with(['user', 'tasks.category'])
-            ->latest('report_date')
-            ->paginate(15);
 
+        
+        $reports = DailyReport::with(['user', 'tasks.category'])
+            ->orderBy('is_approved', 'asc')
+            ->orderBy('report_date', 'desc')
+            ->orderBy('created_at', 'asc')
+            ->paginate(16);
         return view('daily-reports.index', compact('reports'));
     }
 
+    
+
     public function create()
-    {
-        $categories = TaskCategory::all();
-        return view('daily-reports.create', compact('categories'));
-    }
-
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'report_date' => 'required|date',
-            'tasks' => 'required|array',
-            'tasks.*.category_id' => 'required|exists:task_categories,id',
-            'tasks.*.date' => 'nullable|date',
-            'tasks.*.batch_count' => 'nullable|integer',
-            'tasks.*.claim_count' => 'nullable|integer',
-            'tasks.*.start_time' => 'nullable|date_format:H:i',
-            'tasks.*.end_time' => 'nullable|date_format:H:i',
-            'tasks.*.sheet_count' => 'nullable|integer',
-            'tasks.*.email' => 'nullable|integer',
-            'tasks.*.form' => 'nullable|integer',
-        ]);
-
-        $report = DailyReport::create([
-            'user_id' => Auth::id(),
-            'report_date' => $validatedData['report_date']
-        ]);
-
-        $report->tasks()->createMany(
-            collect($validatedData['tasks'])->map(function ($task) {
-                return [
-                    'task_category_id' => $task['category_id'],
-                    'task_date' => $task['date'] ?? null,
-                    'batch_count' => $task['batch_count'] ?? null,
-                    'claim_count' => $task['claim_count'] ?? null,
-                    'start_time' => $task['start_time'] ?? null,
-                    'end_time' => $task['end_time'] ?? null,
-                    'sheet_count' => $task['sheet_count'] ?? null,
-                    'email' => $task['email'] ?? null,
-                    'form' => $task['form'] ?? null,
-                ];
-            })
-        );
-
-        return redirect()->route('daily-reports.index')
-            ->with('success', 'Daily report created successfully');
-    }
-
-    public function show(DailyReport $dailyReport)
-    {
-        $dailyReport->load(['user', 'tasks.category']);
-        return view('daily-reports.show', compact('dailyReport'));
-    }
-
-    public function edit(DailyReport $dailyReport)
-    {
-        $categories = TaskCategory::all();
-        $dailyReport->load(['tasks.category']);
-        return view('daily-reports.edit', compact('dailyReport', 'categories'));
-    }
+{
+    $categories = TaskCategory::all();
+    return view('daily-reports.create', compact('categories'));
+}
 
     public function continue(DailyReport $dailyReport)
     {
@@ -88,6 +39,71 @@ class DailyReportController extends Controller
         $dailyReport->load(['tasks.category']);
         return view('daily-reports.continue', compact('dailyReport', 'categories'));
     }
+
+
+
+public function store(Request $request)
+{
+    // Check if user already has a report for this date
+    $existingReport = DailyReport::where('user_id', Auth::id())
+        ->whereDate('report_date', $request->report_date)
+        ->first();
+
+    if ($existingReport) {
+        return redirect()->back()
+            ->with('error', 'Anda sudah membuat report untuk tanggal ini');
+    }
+
+    $validatedData = $request->validate([
+        'report_date' => 'required|date',
+        'tasks' => 'required|array',
+        'tasks.*.category_id' => 'required|exists:task_categories,id',
+        'tasks.*.date' => 'nullable|date',
+        'tasks.*.batch_count' => 'nullable|integer', 
+        'tasks.*.claim_count' => 'nullable|integer',
+        'tasks.*.start_time' => 'nullable|date_format:H:i',
+        'tasks.*.end_time' => 'nullable|date_format:H:i',
+        'tasks.*.sheet_count' => 'nullable|integer',
+        'tasks.*.email' => 'nullable|integer',
+        'tasks.*.form' => 'nullable|integer',
+    ]);
+
+    $report = DailyReport::create([
+        'user_id' => Auth::id(),
+        'report_date' => $validatedData['report_date']
+    ]);
+
+    $report->tasks()->createMany(
+        collect($validatedData['tasks'])->map(function ($task) {
+            return [
+                'task_category_id' => $task['category_id'],
+                'task_date' => $task['date'] ?? null,
+                'batch_count' => $task['batch_count'] ?? null,
+                'claim_count' => $task['claim_count'] ?? null,
+                'start_time' => $task['start_time'] ?? null,
+                'end_time' => $task['end_time'] ?? null,
+                'sheet_count' => $task['sheet_count'] ?? null,
+                'email' => $task['email'] ?? null,
+                'form' => $task['form'] ?? null,
+            ];
+        })
+    );
+
+    return redirect()->route('daily-reports.index')
+        ->with('success', 'Report berhasil dibuat');
+}
+    // public function show(DailyReport $dailyReport)
+    // {
+    //     $dailyReport->load(['user', 'tasks.category']);
+    //     return view('daily-reports.show', compact('dailyReport'));
+    // }
+
+    // public function edit(DailyReport $dailyReport)
+    // {
+    //     $categories = TaskCategory::all();
+    //     $dailyReport->load(['tasks.category']);
+    //     return view('daily-reports.edit', compact('dailyReport', 'categories'));
+    // }
 
     public function approve(DailyReport $dailyReport)
 {
@@ -99,49 +115,49 @@ class DailyReportController extends Controller
 
     return redirect()->route('daily-reports.index');
 }
-    public function update(Request $request, DailyReport $dailyReport)
-    {
-        $validatedData = $request->validate([
-            'report_date' => 'required|date',
-            'tasks' => 'required|array',
-            'tasks.*.category_id' => 'required|exists:task_categories,id',
-            'tasks.*.date' => 'nullable|date',
-            'tasks.*.batch_count' => 'nullable|integer',
-            'tasks.*.claim_count' => 'nullable|integer',
-            'tasks.*.start_time' => 'nullable|date_format:H:i',
-            'tasks.*.end_time' => 'nullable|date_format:H:i',
-            'tasks.*.sheet_count' => 'nullable|integer',
-            'email' => 'nullable|integer',
-            'form' => 'nullable|integer '
-        ]);
+    // public function update(Request $request, DailyReport $dailyReport)
+    // {
+    //     $validatedData = $request->validate([
+    //         'report_date' => 'required|date',
+    //         'tasks' => 'required|array',
+    //         'tasks.*.category_id' => 'required|exists:task_categories,id',
+    //         'tasks.*.date' => 'nullable|date',
+    //         'tasks.*.batch_count' => 'nullable|integer',
+    //         'tasks.*.claim_count' => 'nullable|integer',
+    //         'tasks.*.start_time' => 'nullable|date_format:H:i',
+    //         'tasks.*.end_time' => 'nullable|date_format:H:i',
+    //         'tasks.*.sheet_count' => 'nullable|integer',
+    //         'email' => 'nullable|integer',
+    //         'form' => 'nullable|integer '
+    //     ]);
 
-        $dailyReport->update([
-            'report_date' => $validatedData['report_date']
-        ]);
+    //     $dailyReport->update([
+    //         'report_date' => $validatedData['report_date']
+    //     ]);
 
-        // Delete existing tasks
-        $dailyReport->tasks()->delete();
+    //     // Delete existing tasks
+    //     $dailyReport->tasks()->delete();
 
-        // Create new tasks
-        $dailyReport->tasks()->createMany(
-            collect($validatedData['tasks'])->map(function ($task) {
-                return [
-                    'task_category_id' => $task['category_id'],
-                    'task_date' => $task['date'] ?? null,
-                    'batch_count' => $task['batch_count'] ?? null,
-                    'claim_count' => $task['claim_count'] ?? null,
-                    'start_time' => $task['start_time'] ?? null,
-                    'end_time' => $task['end_time'] ?? null,
-                    'sheet_count' => $task['sheet_count'] ?? null,
-                    'email' => $task['email'] ?? null,
-                    'form' => $task['form'] ?? null,
-                ];
-            })
-        );
+    //     // Create new tasks
+    //     $dailyReport->tasks()->createMany(
+    //         collect($validatedData['tasks'])->map(function ($task) {
+    //             return [
+    //                 'task_category_id' => $task['category_id'],
+    //                 'task_date' => $task['date'] ?? null,
+    //                 'batch_count' => $task['batch_count'] ?? null,
+    //                 'claim_count' => $task['claim_count'] ?? null,
+    //                 'start_time' => $task['start_time'] ?? null,
+    //                 'end_time' => $task['end_time'] ?? null,
+    //                 'sheet_count' => $task['sheet_count'] ?? null,
+    //                 'email' => $task['email'] ?? null,
+    //                 'form' => $task['form'] ?? null,
+    //             ];
+    //         })
+    //     );
 
-        return redirect()->route('daily-reports.index')
-            ->with('success', 'Daily report updated successfully');
-    }
+    //     return redirect()->route('daily-reports.index')
+    //         ->with('success', 'Daily report updated successfully');
+    // }
 
     public function destroy(DailyReport $dailyReport)
     {
@@ -183,37 +199,6 @@ class DailyReportController extends Controller
                            ($task->email ?? 0) +
                            ($task->form ?? 0);
                 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             $previousMonth = DailyReport::whereBetween('report_date', [$previousMonthStart, $previousMonthEnd])
                 ->with(['tasks' => function($query) use ($category) {
                     $query->where('task_category_id', $category->id);
@@ -222,9 +207,6 @@ class DailyReportController extends Controller
                 ->flatMap->tasks
                 ->sum(function ($task) {
                     return ($task->claim_count ?? 0) +
-
-
-
                            ($task->sheet_count ?? 0) +
                            ($task->email ?? 0) +
                            ($task->form ?? 0);
@@ -418,9 +400,9 @@ public function exportToExcel(Request $request)
         // Set headers
         $sheet->setCellValue('A1', 'Date');
         $sheet->setCellValue('B1', 'User');
-        $sheet->setCellValue('C1', 'Batch Count');
-        $sheet->setCellValue('D1', 'Claim Count');
-        $sheet->setCellValue('E1', 'Sheet Count');
+        $sheet->setCellValue('C1', 'Batch');
+        $sheet->setCellValue('D1', 'Claim');
+        $sheet->setCellValue('E1', 'Sheet');
         $sheet->setCellValue('F1', 'Email');
         $sheet->setCellValue('G1', 'Form');
         $sheet->setCellValue('H1', 'Start Time');

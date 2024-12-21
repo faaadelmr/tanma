@@ -17,7 +17,9 @@ class ReportTask extends Model
         'claim_count',
         'start_time',
         'end_time',
-        'sheet_count'
+        'sheet_count',
+        'email',
+        'form',
     ];
 
     public function category()

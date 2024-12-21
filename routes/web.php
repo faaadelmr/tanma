@@ -33,7 +33,7 @@ Route::middleware(['auth'])->prefix('daily-reports')->name('daily-reports.')->gr
     Route::post('/', [DailyReportController::class, 'store'])->name('store');
     Route::get('/{dailyReport}', [DailyReportController::class, 'show'])->name('show');
     Route::get('/{dailyReport}/continue', [DailyReportController::class, 'continue'])->name('continue');
-    Route::put('/{dailyReport}', [DailyReportController::class, 'update'])->name('update');
+    //Route::put('/{dailyReport}', [DailyReportController::class, 'update'])->name('update');
     Route::delete('/{dailyReport}', [DailyReportController::class, 'destroy'])->name('destroy');
     Route::post('/{dailyReport}/approve', [DailyReportController::class, 'approve'])->name('approve');
 });

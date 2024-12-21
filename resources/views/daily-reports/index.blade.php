@@ -15,14 +15,34 @@
                     Buat Report Baru
                 </a>
             </div>
-
+            @if(session('success'))
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            </script>
+        @endif
+        @if(session('error'))
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: "{{ session('error') }}",
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            </script>
+        @endif
             <div class="grid gap-4">
                 @php
-                    $groupedReports = $reports->groupBy(function ($report) {
-                        return $report->report_date->format('d/m/Y');
-                    });
-                @endphp
-
+    $groupedReports = $reports->sortByDesc('report_date')->groupBy(function ($report) {
+        return $report->report_date->format('d/m/Y');
+    });
+@endphp
                 @foreach ($groupedReports as $date => $dateReports)
                     <div class="border-2 shadow-sm transition-shadow card border-white-500/100 bg-base-100 hover:shadow-md">
                         <div class="p-4 card-body">
@@ -154,7 +174,7 @@
                         'Report telah disetujui',
                         'success'
                     ).then(() => {
-                        document.getElementById(approveForm-{{ $report->id }}).submit();
+                        document.getElementById(`approveForm-${reportId}`).submit();
                     })
                 }
             })
