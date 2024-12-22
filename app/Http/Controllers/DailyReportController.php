@@ -165,7 +165,7 @@ public function store(Request $request)
         $dailyReport->delete();
 
         return redirect()->route('daily-reports.index')
-            ->with('success', 'Report berrhasil dihapus');
+            ->with('success', 'Report ' . $dailyReport->user->name . ' berrhasil dihapus');
     }
 
     public function dashboard(Request $request)

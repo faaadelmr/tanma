@@ -15,20 +15,20 @@ class RolePermissionSeeder extends Seeder
 
     public function run(): void
     {
-        $permissions = [
-            'tambah-user',
-            'lihat-user',
-            'edit-user',
-            'hapus-user',
-            'tambah-tulisan',
-            'lihat-tulisan',
-            'edit-tulisan',
-            'hapus-tulisan',
-            'bolehchat'
-        ];
-        foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
-        }
+        // $permissions = [
+        //     'tambah-user',
+        //     'lihat-user',
+        //     'edit-user',
+        //     'hapus-user',
+        //     'tambah-tulisan',
+        //     'lihat-tulisan',
+        //     'edit-tulisan',
+        //     'hapus-tulisan',
+        //     'bolehchat'
+        // ];
+        // foreach ($permissions as $permission) {
+        //     Permission::create(['name' => $permission]);
+        // }
 
         // Create roles
         $roles = [
@@ -40,11 +40,11 @@ class RolePermissionSeeder extends Seeder
         }
 
         // Assign permissions to roles
-        $roleAdmin = Role::findByName('admin');
-        $roleAdmin->givePermissionTo(['tambah-user', 'lihat-user', 'edit-user', 'hapus-user', 'bolehchat']);
+        // $roleAdmin = Role::findByName('admin');
+        // // $roleAdmin->givePermissionTo(['tambah-user', 'lihat-user', 'edit-user', 'hapus-user', 'bolehchat']);
 
-        $rolePengguna = Role::findByName('pengguna');
-        $rolePengguna->givePermissionTo(['tambah-tulisan', 'lihat-tulisan', 'edit-tulisan', 'hapus-tulisan', 'bolehchat']);
+        // $rolePengguna = Role::findByName('pengguna');
+        // $rolePengguna->givePermissionTo(['tambah-tulisan', 'lihat-tulisan', 'edit-tulisan', 'hapus-tulisan', 'bolehchat']);
     }
 
 }
