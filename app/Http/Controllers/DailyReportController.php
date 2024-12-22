@@ -165,7 +165,7 @@ public function store(Request $request)
         $dailyReport->delete();
 
         return redirect()->route('daily-reports.index')
-            ->with('success', 'Daily report deleted successfully');
+            ->with('success', 'Report berrhasil dihapus');
     }
 
     public function dashboard(Request $request)

@@ -82,7 +82,7 @@ public function toggleComplete(MeetingTopic $topic)
 
     return response()->json([
         'success' => true,
-        'message' => $topic->is_completed ? 'Topic marked as completed' : 'Topic marked as pending'
+        'message' => 'Topic status updated successfully'
     ]);
 }
 
@@ -117,7 +117,7 @@ public function continueTopic(MeetingTopic $topic)
 
     return response()->json([
         'success' => true,
-        'message' => 'Topic continued to next meeting'
+        'message' => 'Topik pembahasan dilanjutkan ke pertemuan berikutnya',
     ]);
 }
 }

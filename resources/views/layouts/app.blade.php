@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -15,10 +15,13 @@
     <link href="https://cdn.jsdelivr.net/npm/chart.js@4/dist/Chart.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="icon" href="{{ asset('tanma.gif') }}" type="image/gif"/>
+
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+
 
 <body data-theme="" class="font-sans antialiased">
     <div data-theme="" class="min-h-screen">
@@ -34,6 +37,7 @@
                 </div>
             </header>
         @endisset
+        
 
         <!-- Page Content -->
         <main data-theme="" class="border-accent rounded-md">
@@ -45,12 +49,12 @@
 
         // Load theme on page load
         document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') ||
-            'default'); // 'default' is the fallback
+            'retro'); // 'default' is the fallback
 
         themeSelector.addEventListener('change', function() {
             const selectedTheme = this.value;
             document.documentElement.setAttribute('data-theme', selectedTheme);
-            localStorage.setItem('theme', selectedTheme); // Store in local storage
+            localStorage.setItem('theme', selectedTheme);
         });
     </script>
 </body>
