@@ -82,7 +82,7 @@ public function toggleComplete(MeetingTopic $topic)
 
     return response()->json([
         'success' => true,
-        'message' => 'Topic status updated successfully'
+        'message' => 'Pembahasan ditambahkan'
     ]);
 }
 

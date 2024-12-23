@@ -8,6 +8,28 @@
             </button>
         </div>
     </x-slot>
+    @if(session('success'))
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil!',
+                    text: "{{ session('success') }}",
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            </script>
+        @endif
+        @if(session('error'))
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: "{{ session('error') }}",
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            </script>
+        @endif
 
     <div class="py-6 bg-base-200/50 min-h-screen">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -84,7 +106,7 @@
                                                     @unless($topic->is_completed || $topic->is_continued)
                                                         <button 
                                                             onclick="continueTopic({{ $topic->id }})"
-                                                            class="btn btn-ghost btn-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            class="btn hover:btn-info btn-xs opacity-0 group-hover:opacity-100 transition-opacity">
                                                             Teruskan
                                                             <i class="fa-solid fa-arrow-right"></i>
                                                         </button>
@@ -102,6 +124,11 @@
                                                         <i class="fa-solid fa-user-pen text-primary/70"></i>
                                                         {{ ucwords(strtolower($topic->user->name)) }}
                                                     </span>
+                                                    <span class="text-xs text-base-content/50">
+                                                        <i class="fa-regular fa-clock text-primary/70"></i>
+                                                        {{ $topic->created_at->locale('id')->diffForHumans() }}
+                                                    </span>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -246,21 +273,22 @@
                 }
             })
             .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.reload();
-                    const toast = document.createElement('div');
-                    toast.className = 'toast toast-top toast-end';
-                    toast.innerHTML = `
-                        <div class="alert alert-success">
-                            <i class="fa-solid fa-check"></i>
-                            <span>${data.message}</span>
-                        </div>
-                    `;
-                    document.body.appendChild(toast);
-                    setTimeout(() => toast.remove(), 3000);
-                }
-            });
+            // .then(data => {
+            //     if (data.success) {
+            //         window.location.reload();
+            //         const toast = document.createElement('div');
+            //         toast.className = 'toast toast-top toast-end';
+            //         toast.innerHTML = `
+            //             <div class="alert alert-success">
+            //                 <i class="fa-solid fa-check"></i>
+            //                 <span>${data.message}</span>
+            //             </div>
+            //         `;
+            //         document.body.appendChild(toast);
+            //         setTimeout(() => toast.remove(), 3000);
+            //     }
+            // })
+            ;
         }
 
         function openTopicModal(meetingId) {
