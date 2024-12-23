@@ -12,6 +12,7 @@ class MeetingTopic extends Model
         'title',
         'description',
         'is_completed',
+        'is_continued',
         'continued_from_id',
         'user_id',
     ];

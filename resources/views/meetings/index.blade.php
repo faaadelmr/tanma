@@ -1,10 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="text-primary font-bold text-2xl">{{ __('Weekly Meetings') }}</h2>
+            <h2 class="text-primary font-bold text-2xl">{{ __('Meeting Mingguan') }}</h2>
             <button onclick="generateMeetings()" class="btn btn-primary btn-sm gap-2">
                 <i class="fa-solid fa-calendar-plus"></i>
-                Generate
+                Buat Meeting
             </button>
         </div>
     </x-slot>
@@ -22,7 +22,7 @@
                                     </div>
                                     <div>
                                         <h2 class="text-lg sm:text-xl font-bold">
-                                            {{ $meeting->meeting_date->isoFormat('dddd') }}
+                                            {{ $meeting->meeting_date->isoFormat('dddd', 'id') }}
                                         </h2>
                                         <p class="text-sm text-base-content/70">
                                             {{ $meeting->meeting_date->isoFormat('D MMMM Y') }}
@@ -33,7 +33,7 @@
                                     onclick="openTopicModal({{ $meeting->id }})" 
                                     class="btn btn-primary btn-sm">
                                     <i class="fa-solid fa-plus"></i>
-                                    <span class="hidden sm:inline">Add Topic</span>
+                                    <span class="hidden sm:inline">Tambah Pembahasan</span>
                                 </button>
                             </div>
 
@@ -51,7 +51,7 @@
                                             
                                             <div class="flex-1 min-w-0">
                                                 <div class="flex items-center justify-between gap-2">
-                                                    <h3 class="font-medium {{ $topic->is_completed ? 'line-through opacity-50' : '' }}">
+                                                    <h3 class="font-medium {{ $topic->is_completed | $topic->is_continued ? 'line-through opacity-50' : '' }}">
                                                         {{ $topic->title }}
                                                         <span class="inline-flex gap-2 ml-2">
  
@@ -67,13 +67,13 @@
                                                                 <i class="fa-solid fa-check mr-1"></i>
                                                                 Selesai
                                                             </span>
-                                                        @elseif($topic->is_completed == 0 && $topic->continued_from_id == false)
+                                                        @elseif($topic->is_completed == 0 && $topic->continued_from_id == false && $topic->is_continued == false)
                                                             <span class="badge badge-warning badge-sm">
                                                                 <i class="fa-solid fa-magnifying-glass mr-1"></i>
                                                                 Pembahasan baru!
                                                             </span>
                                                         @endif      
-                                                        @if($topic->is_completed == 2 && $topic->is_completed = 1)
+                                                        @if($topic->is_continued)
                                                         <span class="badge badge-warning badge-sm">
                                                             <i class="fa-solid fa-arrow-right mr-1"></i>
                                                             Dilanjutkan ke meeting berikutnya
@@ -81,11 +81,11 @@
                                                         @endif                             
                                                         </span>
                                                     </h3>
-                                                    @unless($topic->is_completed)
+                                                    @unless($topic->is_completed || $topic->is_continued)
                                                         <button 
                                                             onclick="continueTopic({{ $topic->id }})"
                                                             class="btn btn-ghost btn-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            Continue
+                                                            Teruskan
                                                             <i class="fa-solid fa-arrow-right"></i>
                                                         </button>
                                                     @endunless

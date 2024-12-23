@@ -88,7 +88,7 @@ public function toggleComplete(MeetingTopic $topic)
 
 public function continueTopic(MeetingTopic $topic)
 {
-    $topic->update(['is_completed' => 2]);
+    $topic->update(['is_continued' => 1]);
 
     $nextMeeting = Meeting::where('meeting_date', '>', $topic->meeting->meeting_date)
         ->orderBy('meeting_date')
@@ -104,6 +104,7 @@ public function continueTopic(MeetingTopic $topic)
     $newTopic->meeting_id = $nextMeeting->id;
     $newTopic->continued_from_id = $topic->id;
     $newTopic->is_completed = false;
+    $newTopic->is_continued = false;
     $newTopic->save();
 
     // Copy files to new topic if any

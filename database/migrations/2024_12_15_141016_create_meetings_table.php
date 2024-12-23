@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->boolean('is_completed')->default(false);
+            $table->boolean('is_continued')->default(false);
             $table->foreignId('continued_from_id')->nullable()->constrained('meeting_topics');
             $table->timestamps();
         });
