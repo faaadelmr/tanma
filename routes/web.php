@@ -6,6 +6,8 @@ use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\DailyReportController;
 use App\Http\Controllers\TaskCategoryController;
 use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\DashboardController;
+
 
 Route::get('/', function () {
     return view('auth.login');
@@ -17,7 +19,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/dashboard', [DailyReportController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard/export/', [DailyReportController::class, 'exportToExcel'])->name('daily-reports.export');
 });
 

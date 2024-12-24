@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class ReportTask extends Model
 {
-    use HasFactory;
 
+    use HasFactory;
     protected $fillable = [
         'daily_report_id',
         'task_category_id',
@@ -19,7 +19,7 @@ class ReportTask extends Model
         'end_time',
         'sheet_count',
         'email',
-        'form',
+        'form'
     ];
 
     public function category()
@@ -27,8 +27,13 @@ class ReportTask extends Model
         return $this->belongsTo(TaskCategory::class, 'task_category_id');
     }
 
-    public function dailyReport()
+    public function daily_report()
     {
         return $this->belongsTo(DailyReport::class);
+    }
+
+    public function taskCategory()
+    {
+        return $this->belongsTo(TaskCategory::class);
     }
 }

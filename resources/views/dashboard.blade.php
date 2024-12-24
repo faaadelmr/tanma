@@ -1,249 +1,166 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="text-2xl font-semibold leading-tight text-primary">
-                {{ __('Beranda') }}
-            </h2>
+    <div class="p-4 space-y-4 sm:p-6 sm:space-y-6">
+        <!-- Header with Quick Stats -->
+        <div class="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
+            @foreach($performanceMetrics as $metric => $value)
+            <div class="rounded-lg shadow-md transition-shadow stat bg-base-100 hover:shadow-lg">
+                <div class="text-xs stat-title sm:text-sm">{{ Str::title(str_replace('_', ' ', $metric)) }}</div>
+                <div class="text-sm stat-value sm:text-lg md:text-xl">
+                    @if($metric === 'top_performers')
+                        <div class="overflow-x-auto">
+                            <table class="table w-full table-compact sm:table-normal">
+                                @foreach($value as $performer)
+                                    <tr>
+                                        <td class="text-xs sm:text-sm">{{ $performer['name'] }}</td>
+                                        <td class="text-xs sm:text-sm">{{ $performer['completion_rate'] }}%</td>
+                                    </tr>
+                                @endforeach
+                            </table>
+                        </div>
+                    @else
+                        {{ is_numeric($value) ? number_format($value, 0, ',', '.') : $value }}
+                    @endif
+                </div>
+                <div class="text-xs stat-desc">{{ now()->format('F Y') }}</div>
+            </div>
+            @endforeach
         </div>
-    </x-slot>
 
-    <div class="py-6 sm:py-12">
-        <div id="caraousel" class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="overflow-hidden bg-white rounded-lg shadow-sm">
-                <div class="p-4 sm:p-6">
-                    <!-- Date Picker -->
-                    <div class="mb-4">
-                        <div class="flex flex-col space-y-4">
-                            <!-- Single Date Picker -->
-                            <form method="GET" class="w-full p-4 bg-white rounded-lg shadow-sm" id="dateForm">
-                                <label for="date" class="flex gap-1 items-center mb-1 text-sm font-medium text-gray-700">
-                                    <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                    Pilih Tanggal
-                                </label>
-                                <input type="date" name="date" id="date" value="<?php echo $selectedDate->format('Y-m-d'); ?>"
-                                    class="w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-1" onchange="this.form.submit()">
-                            </form>
+        <!-- Category Groups Tabs -->
+        <div class="overflow-x-auto whitespace-nowrap tabs tabs-boxed">
+            @foreach($groupedCategories as $groupName => $categories)
+            <a class="tab tab-sm sm:tab-md {{ $loop->first ? 'tab-active' : '' }}"
+               onclick="switchCategoryGroup('{{ $groupName }}')">
+                {{ $groupName }}
+            </a>
+            @endforeach
+        </div>
 
-                            <!-- Export Section with Collapse -->
-                            <div class="w-full">
-                                <button onclick="toggleExport()" class="flex justify-between items-center w-full p-4 text-left bg-white rounded-lg shadow-sm hover:bg-gray-50">
-                                    <span class="text-sm font-medium text-gray-700">Export Data</span>
-                                    <svg id="exportArrow" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </button>
-                                
-                                <form action="{{ route('daily-reports.export') }}" method="GET" id="exportForm" class="hidden mt-2 p-4 bg-white rounded-lg shadow-sm">
-                                    @csrf
-                                    <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
-                                        <div class="group hover:scale-[1.01] transition-transform flex-1">
-                                            <label class="flex gap-1 items-center mb-1 text-sm font-medium text-gray-700">
-                                                <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                </svg>
-                                                Tanggal Mulai
-                                            </label>
-                                            <input type="date" name="start_date" class="w-full rounded-md border-gray-300 cursor-pointer focus:border-indigo-500 focus:ring-1" value="{{ request('start_date', now()->format('Y-m-d')) }}" required>
-                                        </div>
-
-                                        <div class="group hover:scale-[1.01] transition-transform flex-1">
-                                            <label class="flex gap-1 items-center mb-1 text-sm font-medium text-gray-700">
-                                                <svg class="w-4 h-4 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                </svg>
-                                                Tanggal Akhir
-                                            </label>
-                                            <input type="date" name="end_date" class="w-full rounded-md border-gray-300 cursor-pointer focus:border-indigo-500 focus:ring-1" value="{{ request('end_date', now()->format('Y-m-d')) }}" required>
-                                        </div>
-
-                                        <div class="flex sm:items-end">
-                                            <button type="submit" class="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 transition-all hover:scale-[1.02]">
-                                                <svg class="mr-1.5 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                                </svg>
-                                                Export to Excel
-                                            </button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-
-                            <script>
-                                function toggleExport() {
-                                    const form = document.getElementById('exportForm');
-                                    const arrow = document.getElementById('exportArrow');
-                                    form.classList.toggle('hidden');
-                                    arrow.classList.toggle('rotate-180');
-                                }
-                            </script>
-                        </div>
+        <!-- Dynamic Content Area -->
+        @foreach($groupedCategories as $groupName => $categories)
+        <div id="group-{{ $groupName }}" class="category-group {{ !$loop->first ? 'hidden' : '' }}">
+            <!-- Metrics Cards -->
+            <div class="grid grid-cols-1 gap-3 mb-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4 sm:mb-6">
+                @foreach($categories as $category)
+                <div class="shadow-md transition-shadow card bg-base-100 hover:shadow-lg">
+                    <div class="p-3 card-body sm:p-4">
+                        <h3 class="flex justify-between items-center text-sm card-title sm:text-base">
+                            {{ $category->name }}
+                            <span class="text-xs badge badge-primary">{{ $category->tasks_count ?? 0 }} Tasks</span>
+                        </h3>
+                        <!-- Rest of the card content with responsive classes -->
                     </div>
-                    <!-- Carousel -->
-                    <div id="carousel" class="relative">
-                        <!-- Navigation buttons - Hidden on mobile, visible on larger screens -->
-                        <button onclick="prevSlide()"
-                            class="hidden absolute left-0 top-1/2 z-10 p-2 text-white rounded-r-lg -translate-y-1/2 sm:block bg-gray-800/50 hover:bg-gray-800/75">
-                            <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
+                </div>
+                @endforeach
+            </div>
 
-                        <button onclick="nextSlide()"
-                            class="hidden absolute right-0 top-1/2 z-10 p-2 text-white rounded-l-lg -translate-y-1/2 sm:block bg-gray-800/50 hover:bg-gray-800/75">
-                            <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
-
-                        <div class="overflow-hidden rounded-xl">
-                            <?php
-                            // Group and sort the data
-                            $groupedComparisons = [];
-                            foreach ($comparisons as $categoryName => $data) {
-                                $prefix = explode(' ', $categoryName)[0];
-                                $groupedComparisons[$prefix][$categoryName] = $data;
-                            }
-                            ksort($groupedComparisons); // Sort groups alphabetically
-                            ?>
-
-                            <div id="slides" class="flex transition-transform duration-500">
-                                <?php foreach($groupedComparisons as $groupName => $categories): ?>
-                                <?php ksort($categories); // Sort items within group alphabetically ?>
-                                <div class="flex-shrink-0 p-3 w-full sm:p-6">
-                                    <h2 class="mb-4 text-lg font-bold text-center sm:text-2xl sm:mb-6">
-                                        <?php echo $groupName; ?> Data</h2>
-                                    <?php foreach($categories as $categoryName => $data): ?>
-                                    <div class="mb-6 sm:mb-8">
-                                        <h3 class="mb-3 text-base font-semibold text-gray-700 sm:text-xl sm:mb-4">
-                                            <?php echo $categoryName; ?></h3>
-                                        <div class="grid grid-cols-2 gap-2 md:grid-cols-4 sm:gap-4">
-                                            <div class="p-2 bg-blue-50 rounded-lg sm:p-4">
-                                                <h3 class="text-sm font-semibold text-blue-600 sm:text-lg">Hari ini</h3>
-                                                <p class="text-xl font-bold text-blue-700 sm:text-3xl">
-                                                    <?php echo number_format($data['current_total']); ?></p>
-                                            </div>
-                                            <div class="p-2 bg-green-50 rounded-lg sm:p-4">
-                                                <h3 class="flex gap-2 items-center text-sm font-semibold text-green-600 sm:text-lg">vs Kemarin <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-green-100 rounded-full">{{ number_format($data['previous_day_total']) }}</span></h3>
-                                                </h3>
-                                                <p class="text-xl sm:text-3xl font-bold <?php echo $data['day_change'] >= 0 ? 'text-green-600' : 'text-red-600'; ?>">
-                                                    <?php echo $data['day_change']; ?>%
-                                                </p>
-
-                                            </div>
-                                            <div class="p-2 bg-purple-50 rounded-lg sm:p-4">
-                                                <h3 class="text-sm font-semibold text-purple-600 sm:text-lg">vs Minggu lalu
-                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-purple-100 rounded-full">{{ number_format($data['previous_week_total']) }}</span>
-                                                    </h3>
-                                                <p class="text-xl sm:text-3xl font-bold <?php echo $data['week_change'] >= 0 ? 'text-green-600' : 'text-red-600'; ?>">
-                                                    <?php echo $data['week_change']; ?>%
-                                                </p>
-                                            </div>
-                                            <div class="p-2 bg-orange-50 rounded-lg sm:p-4">
-                                                <h3 class="text-sm font-semibold text-orange-600 sm:text-lg">vs Bulan lalu
-                                                    <span class="inline-flex items-center px-2 py-1 text-xs font-medium bg-orange-100 rounded-full">{{ number_format($data['previous_month_total']) }}</span>
-                                                    </h3>
-                                                <p class="text-xl sm:text-3xl font-bold <?php echo $data['month_change'] >= 0 ? 'text-green-600' : 'text-red-600'; ?>">
-                                                    <?php echo $data['month_change']; ?>%
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <?php endforeach; ?>
-                                </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                        <!-- Indicators -->
-                        <div class="flex gap-2 justify-center mt-4">
-                            <?php $index = 0; ?>
-                            @foreach ($groupedComparisons as $groupName => $categories)
-                                <button onclick="goToSlide(<?php echo $index; ?>)"
-                                    class="w-3 h-3 bg-gray-300 rounded-full transition-all duration-300 hover:bg-blue-400"
-                                    id="indicator-<?php echo $index; ?>">
-                                </button>
-                                <?php $index++; ?>
-                            @endforeach
-                        </div>
+            
+            <!-- Chart with responsive height -->
+            <div class="shadow-md card bg-base-100">
+                <div class="p-3 card-body sm:p-4">
+                    <h2 class="text-sm card-title sm:text-base">{{ $groupName }} Tasks Overview</h2>
+                    <div class="h-60 sm:h-80">
+                        <canvas id="taskChart-{{ $groupName }}"></canvas>
                     </div>
                 </div>
             </div>
         </div>
+        @endforeach
+
+        <!-- Top Performers Table -->
+        <div class="shadow-md card bg-base-100">
+            <div class="p-3 card-body sm:p-4">
+                <h2 class="mb-2 text-sm card-title sm:text-base">Top Performers</h2>
+                <div class="overflow-x-auto">
+                    <table class="table w-full table-compact sm:table-normal">
+                        <thead>
+                            <tr>
+                                <th class="text-xs sm:text-sm">User</th>
+                                <th class="text-xs sm:text-sm">Total Tasks</th>
+                                <th class="text-xs sm:text-sm">Completion Rate</th>
+                                <th class="text-xs sm:text-sm">Most Productive Category</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($performanceMetrics['top_performers'] as $performer)
+                            <tr>
+                                <td class="text-xs sm:text-sm">{{ $performer['name'] }}</td>
+                                <td class="text-xs sm:text-sm">{{ $performer['total_tasks'] }}</td>
+                                <td class="text-xs sm:text-sm">{{ $performer['completion_rate'] }}%</td>
+                                <td class="text-xs sm:text-sm">{{ $performer['most_productive_category'] }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
     <script>
-        let currentSlide = parseInt(localStorage.getItem('currentCarouselSlide')) || 0;
-        const slides = document.getElementById('slides');
-        const totalSlides = document.querySelectorAll('#slides > div').length;
+            function switchCategoryGroup(groupName) {
+        // Hide all category groups
+        document.querySelectorAll('.category-group').forEach(el => el.classList.add('hidden'));
 
-        function updateCarousel() {
-            slides.style.transform = `translateX(-${currentSlide * 100}%)`;
-            updateIndicators();
-            localStorage.setItem('currentCarouselSlide', currentSlide);
+        // Show selected group
+        document.getElementById(`group-${groupName}`).classList.remove('hidden');
+
+        // Update active tab state
+        document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('tab-active'));
+        event.target.classList.add('tab-active');
+
+        // Refresh charts for the selected group
+        createTaskCharts();
+    }
+
+        function createTaskCharts() {
+            @foreach($groupedCategories as $groupName => $categories)
+                new Chart(document.getElementById('taskChart-{{ $groupName }}'), {
+                    type: 'bar',
+                    data: {
+                        labels: {!! json_encode($categories->pluck('name')) !!},
+                        datasets: [{
+                            label: 'Batch Count',
+                            data: {!! json_encode($categories->pluck('metrics.batch_count')) !!},
+                            backgroundColor: '#9333EA'
+                        }, {
+                            label: 'Claim Count',
+                            data: {!! json_encode($categories->pluck('metrics.claim_count')) !!},
+                            backgroundColor: '#3B82F6'
+                        }, {
+                            label: 'Sheet Count',
+                            data: {!! json_encode($categories->pluck('metrics.sheet_count')) !!},
+                            backgroundColor: '#22C55E'
+                        }, {
+                            label: 'Email',
+                            data: {!! json_encode($categories->pluck('metrics.email')) !!},
+                            backgroundColor: '#EAB308'
+                        }, {
+                            label: 'Form',
+                            data: {!! json_encode($categories->pluck('metrics.form')) !!},
+                            backgroundColor: '#EC4899'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            @endforeach
         }
 
-        function updateIndicators() {
-            for (let i = 0; i < totalSlides; i++) {
-                const indicator = document.getElementById(`indicator-${i}`);
-                if (i === currentSlide) {
-                    indicator.classList.add('bg-blue-600');
-                    indicator.classList.remove('bg-gray-300');
-                } else {
-                    indicator.classList.remove('bg-blue-600');
-                    indicator.classList.add('bg-gray-300');
-                }
-            }
-        }
-
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            updateCarousel();
-        }
-
-        function prevSlide() {
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-            updateCarousel();
-        }
-
-        function goToSlide(index) {
-            currentSlide = index;
-            updateCarousel();
-        }
-        // Auto-play functionality
-        let autoplayInterval = setInterval(nextSlide, 30000);
-
-        // Pause auto-play on hover
-        const carousel = document.getElementById('carousel');
-        carousel.addEventListener('mouseenter', () => clearInterval(autoplayInterval));
-        carousel.addEventListener('mouseleave', () => {
-            autoplayInterval = setInterval(nextSlide, 60000);
-        });
-
-        // Initialize carousel with saved position
-        updateCarousel();
-
-        // Add loading animation when date changes
-        document.getElementById('date').addEventListener('change', function() {
-            document.body.style.cursor = 'wait';
-            const overlay = document.createElement('div');
-            overlay.style.position = 'fixed';
-            overlay.style.top = '0';
-            overlay.style.left = '0';
-            overlay.style.width = '100%';
-            overlay.style.height = '100%';
-            overlay.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
-            overlay.style.display = 'flex';
-            overlay.style.justifyContent = 'center';
-            overlay.style.alignItems = 'center';
-            overlay.style.zIndex = '9999';
-            overlay.innerHTML =
-                '<div class="w-12 h-12 rounded-full border-t-2 border-b-2 border-blue-500 animate-spin"></div>';
-            document.body.appendChild(overlay);
-            localStorage.setItem('currentCarouselSlide', currentSlide);
-            this.form.submit();
-        });
+        document.addEventListener('DOMContentLoaded', createTaskCharts);
     </script>
-
 </x-app-layout>

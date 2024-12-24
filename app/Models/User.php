@@ -65,4 +65,10 @@ class User extends Authenticatable
      {
          return $this->hasRole(['admin','pengguna']);
      }
+
+    public function daily_reports()
+    {
+        return $this->hasMany(DailyReport::class);
+    }
+    
 }

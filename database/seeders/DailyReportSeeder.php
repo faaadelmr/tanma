@@ -14,10 +14,10 @@ class DailyReportSeeder extends Seeder
     {
         $users = User::all();
         $categories = TaskCategory::all();
-        
+
         foreach ($users as $user) {
             // Create reports for last 30 days
-            for ($i = 0; $i < 1; $i++) {
+            for ($i = 0; $i < 120; $i++) {
                 $report = DailyReport::create([
                     'user_id' => $user->id,
                     'report_date' => Carbon::now()->subDays($i),
@@ -40,7 +40,7 @@ class DailyReportSeeder extends Seeder
                         'email' => $category->has_email ? rand(1, 20) : null,
                         'form' => $category->has_form ? rand(1, 15) : null,
                     ];
-                    
+
                     $report->tasks()->create($taskData);
                 }
             }
