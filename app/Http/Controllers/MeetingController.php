@@ -14,7 +14,7 @@ class MeetingController extends Controller
     public function index()
     {
         $meetings = Meeting::with(['topics.files'])
-            ->whereBetween('meeting_date', [now(), now()->addWeeks(4)])
+            ->whereBetween('meeting_date', [now(), now()->addWeeks(8)])
             ->orderBy('meeting_date')
             ->paginate(1);
 

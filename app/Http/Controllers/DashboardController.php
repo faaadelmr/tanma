@@ -6,6 +6,8 @@ use App\Models\DailyReport;
 use App\Models\TaskCategory;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 
 class DashboardController extends Controller
 {
@@ -14,7 +16,27 @@ class DashboardController extends Controller
         // Calculate performance metrics
         $performanceMetrics = [
             'total_reports' => DailyReport::count(),
-            'reports_this_month' => DailyReport::whereMonth('report_date', now()->month)->count(),
+            'report_bulan_ini' => DailyReport::whereMonth('report_date', now()->month)->count(),
+            'report_minggu_ini' => DailyReport::whereBetween('report_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count(),
+            'recent_reporters' => DailyReport::with('user', 'tasks')
+            ->orderBy('report_date', 'desc')
+            ->where('is_approved', '0')
+            ->take(6)
+            ->get()
+            ->map(function ($report) {
+                return [
+                'id' => $report->id,
+                'name' => ucwords($report->user->name),
+                'photo' => $report->user->path ? asset('storage/' . $report->user->path) : asset('image.webp'),
+                'task_count' => $report->tasks->count(),
+                'report_time' => $report->created_at->diffForHumans(),
+                'report_date' => $report->report_date ? $report->report_date->format('d-m-Y') : null,
+                ];
+            }),
+            'pengguna_online' => DB::table('sessions')
+            ->where('last_activity', '>=', Carbon::now()->subMinutes(config('session.lifetime'))->timestamp)
+            ->distinct('user_id')
+            ->count('user_id'),
         ];
 
         // Get all categories
@@ -34,7 +56,7 @@ class DashboardController extends Controller
             case 'week':
                 $startDate = Carbon::now()->startOfWeek();
                 $endDate = Carbon::now()->endOfWeek();
-                $dateFormat = 'l';
+                $dateFormat = 'd-l';
                 break;
             case 'month':
                 $startDate = Carbon::now()->startOfMonth();
@@ -42,11 +64,37 @@ class DashboardController extends Controller
                 $dateFormat = 'M-d';
                 break;
 
-            case 'year':
-                $startDate = Carbon::now()->startOfYear();
-                $endDate = Carbon::now()->endOfYear();
-                $dateFormat = 'M';
-                break;
+                case 'year':
+                    $startDate = Carbon::now()->startOfYear();
+                    $endDate = Carbon::now()->endOfYear();
+                    $dateFormat = 'm-M';
+                    
+                    $months = collect();
+                    for ($date = $startDate->copy(); $date->lte($endDate); $date->addMonth()) {
+                        $months->push($date->format($dateFormat));
+                    }
+                    
+                    $reports = $query->whereYear('report_date', Carbon::now()->year)
+                                   ->orderBy('report_date', 'asc')
+                                   ->get();
+                    
+                    foreach ($months as $month) {
+                        foreach (TaskCategory::all() as $category) {
+                            $categoryGroup = explode(' ', $category->name)[0];
+                            if (!isset($chartData[$categoryGroup])) {
+                                $chartData[$categoryGroup] = [];
+                            }
+                            $chartData[$categoryGroup][] = [
+                                'date' => $month,
+                                'batch_count' => 0,
+                                'claim_count' => 0,
+                                'sheet_count' => 0,
+                                'email' => 0,
+                                'form' => 0
+                            ];
+                        }
+                    }
+                    break;
 
             default:
                 return response()->json(['error' => 'Invalid period'], 400);

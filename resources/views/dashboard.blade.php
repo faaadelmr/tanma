@@ -1,48 +1,86 @@
 <x-app-layout>
-    <div class="p-4 space-y-4 sm:p-6 sm:space-y-6">
+    <x-slot name="header">
+        <h2 class="text-2xl font-semibold leading-tight text-primary">
+            {{ __('Beranda') }}
+        </h2>
+    </x-slot>
+
+    <div class="mx-auto max-w-screen-2xl sm:px-6 lg:px-8">
+    <div class="py-12 p-4 space-y-4 sm:p-6 sm:space-y-6">
         <!-- Header with Quick Stats -->
         <div class="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
             @foreach($performanceMetrics as $metric => $value)
+            @if($metric !== 'recent_reporters')
             <div class="rounded-lg shadow-md transition-shadow stat bg-base-100 hover:shadow-lg">
                 <div class="text-xs stat-title sm:text-sm">{{ Str::title(str_replace('_', ' ', $metric)) }}</div>
                 <div class="text-sm stat-value sm:text-lg md:text-xl">
                     {{ is_numeric($value) ? number_format($value, 0, ',', '.') : $value }}
                 </div>
-                @if ($metric !== 'total_reports')
+                @if ($metric === 'pengguna_online')
+                    <div class="text-xs stat-desc">Sekarang</div>
+                @elseif ($metric !== 'total_reports')
                     <div class="text-xs stat-desc">{{ now()->format('F Y') }}</div>
                 @endif
             </div>
+            @endif
             @endforeach
         </div>
 
+        <!-- Recent Reporters -->
+        <div class="mt-6">
+            @if(($performanceMetrics['recent_reporters']))
+                <h2 class="text-lg font-semibold">Report Terbaru</h2>
+            @endif
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 mt-4">
+                @foreach($performanceMetrics['recent_reporters'] as $reporter)
+                <div class="flex items-center p-4 bg-primary/25 rounded-lg shadow-md cursor-pointer" onclick="window.location.href='{{ url('daily-reports') }}'">
+                    <div class="avatar">
+                        <div class="mask mask-squircle w-16">
+                            <img src="{{ $reporter['photo'] }}" alt="{{ $reporter['name'] }}" />
+                        </div>
+                    </div>
+                    <div class="ml-4">
+                        <div class="text-sm font-semibold">{{ $reporter['report_date'] ?? '-' }}</div>
+                        <div class="text-sm font-semibold">{{ $reporter['name'] }}</div>
+                        <div class="text-xs text-gray-500">Report: {{ $reporter['task_count'] }}</div>
+                        <div class="text-xs text-gray-500">{{ $reporter['report_time'] }}</div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
+
         <!-- Time Period Selector -->
-        <div class="flex gap-2 mb-4 justify-between">
-            <div class="flex gap-2">
-                <select id="timePeriod" class="select select-bordered w-full max-w-xs" onchange="updateCharts(this.value)">
+        <div class="flex flex-col lg:flex-row gap-4 mb-4 justify-between">
+            <div class="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+                <select id="timePeriod" class="select select-bordered w-full sm:max-w-xs" onchange="updateCharts(this.value)">
                     <option value="week">Mingguan</option>
                     <option value="month">Bulanan</option>
                     <option value="year">Tahunan</option>
                     <option value="custom">Sesuikan tanggal</option>
                 </select>
                 
-                <div id="dateRangeInputs" class="flex gap-2" style="display: none;">
-                    <input type="date" id="startDate" class="input input-bordered" value="{{ date('Y-m-d') }}">
-                    <input type="date" id="endDate" class="input input-bordered" value="{{ date('Y-m-d') }}">
-                    <button onclick="updateCustomRange()" class="btn btn-primary">Terapkan</button>
+                <div id="dateRangeInputs" class="flex flex-col sm:flex-row gap-2 w-full" style="display: none;">
+                    <input type="date" id="startDate" class="input input-bordered w-full" value="{{ date('Y-m-d') }}">
+                    <input type="date" id="endDate" class="input input-bordered w-full" value="{{ date('Y-m-d') }}">
+                    <button onclick="updateCustomRange()" class="btn btn-primary w-full sm:w-auto">Terapkan</button>
                 </div>
             </div>
-            <form action="{{ route('daily-reports.export') }}" method="GET">
-                <div class="flex gap-2">
-                    <input type="date" name="start_date" class="input input-bordered" placeholder="Start Date" value="{{ date('Y-m-d') }}" required />
-                    <input type="date" name="end_date" class="input input-bordered" placeholder="End Date" value="{{ date('Y-m-d') }}" required />
-                    <button type="submit" class="btn btn-primary">
+            <form action="{{ route('daily-reports.export') }}" method="GET" class="w-full lg:w-auto">
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="date" name="start_date" class="input input-bordered w-full" placeholder="Start Date" value="{{ date('Y-m-d') }}" required />
+                    <input type="date" name="end_date" class="input input-bordered w-full" placeholder="End Date" value="{{ date('Y-m-d') }}" required />
+                    <button type="submit" class="btn btn-primary w-full sm:w-auto">
                         <i class="fas fa-file-excel mr-2"></i>Export Excel
                     </button>
                 </div>
             </form>
         </div>
+
+
 <!-- Category Cards with Responsive Tabs -->
-<div class="w-full">
+<div class="w-full px-16 mx-auto">
     @php
         $groupedCategories = $categories->groupBy(function($category) {
             return explode(' ', $category->name)[0];
@@ -142,7 +180,7 @@
             </div>
         </div>
     </div>
-
+</div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
 document.addEventListener('DOMContentLoaded', function() {

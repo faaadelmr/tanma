@@ -56,16 +56,16 @@ class UserSeeder extends Seeder
         $ryand->assignRole('pengguna');
 
 
-        $faker = Faker::create('id_ID');
-        for ($i = 1; $i <= 9; $i++) {
-            $user = User::create([
-                'name' => $faker->name,
-                'username' => $faker->unique()->userName,
-                'email' => $faker->unique()->safeEmail,
-                'password' => bcrypt('pengguna')
-            ]);
-            $user->assignRole('pengguna');
-        }
+        // $faker = Faker::create('id_ID');
+        // for ($i = 1; $i <= 9; $i++) {
+        //     $user = User::create([
+        //         'name' => $faker->name,
+        //         'username' => $faker->unique()->userName,
+        //         'email' => $faker->unique()->safeEmail,
+        //         'password' => bcrypt('pengguna')
+        //     ]);
+        //     $user->assignRole('pengguna');
+        // }
 
     }
 }

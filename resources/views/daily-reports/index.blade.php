@@ -78,13 +78,10 @@
                                                         <span class="badge badge-primary badge-sm">Report</span>
                                                     @endrole
                                                     <span class="font-medium">{{ $report->user->name }}</span>
-                                                    <div class="indicator {{ $report->is_approved ? 'block' : 'hidden' }}">
-                                                        <span id="checkmark-{{ $report->id }}"
-                                                            class="text-green-500 ">
-                                                            <i class="fas fa-check-circle"></i>
-                                                            <span class="mb-4 text-primary pb-6 indicator-item opacity-0 transition-opacity duration-300 hover:opacity-100">{{ $report->approved_by ? 'approve by: ' . \App\Models\User::find($report->approved_by)->name : '' }}
-                                                            </span>
-                                                        </span>
+                                                    <div class="tooltip tooltip-right {{ $report->is_approved ? 'block' : 'hidden' }}" data-tip="{{ $report->approved_by ? '👍 dari ' . ucwords(\App\Models\User::find($report->approved_by)->name) : '' }}">
+                                                        <button id="checkmark-{{ $report->id }}" class="btn btn-ghost btn-xs">
+                                                            <i class="fas fa-check-circle text-green-500"></i>
+                                                        </button>
                                                     </div>
                                                 </div>
                                                 <div class="mt-2 opacity-10 sm:mt-0 hover:opacity-100">
