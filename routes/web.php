@@ -21,6 +21,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard/export/', [DailyReportController::class, 'exportToExcel'])->name('daily-reports.export');
+    Route::get('/chart-data/{period}', [DashboardController::class, 'getChartData'])->name('chart.data');
 });
 
 
@@ -51,4 +52,6 @@ Route::middleware(['auth'])->group(function () {
 
 
 require __DIR__.'/auth.php';
+
+
 
