@@ -16,21 +16,31 @@
         </div>
 
         <!-- Time Period Selector -->
-        <div class="flex gap-2 mb-4">
-            <select id="timePeriod" class="select select-bordered w-full max-w-xs" onchange="updateCharts(this.value)">
-                <option value="week">Mingguan</option>
-                <option value="month">Bulanan</option>
-                <option value="year">Tahunan</option>
-                <option value="custom">Sesuikan tanggal</option>
-            </select>
-
-            <div id="dateRangeInputs" class="flex gap-2" style="display: none;">
-                <input type="date" id="startDate" class="input input-bordered" value="{{ date('Y-m-d') }}">
-                <input type="date" id="endDate" class="input input-bordered" value="{{ date('Y-m-d') }}">
-                <button onclick="updateCustomRange()" class="btn btn-primary">Terapkan</button>
+        <div class="flex gap-2 mb-4 justify-between">
+            <div class="flex gap-2">
+                <select id="timePeriod" class="select select-bordered w-full max-w-xs" onchange="updateCharts(this.value)">
+                    <option value="week">Mingguan</option>
+                    <option value="month">Bulanan</option>
+                    <option value="year">Tahunan</option>
+                    <option value="custom">Sesuikan tanggal</option>
+                </select>
+                
+                <div id="dateRangeInputs" class="flex gap-2" style="display: none;">
+                    <input type="date" id="startDate" class="input input-bordered" value="{{ date('Y-m-d') }}">
+                    <input type="date" id="endDate" class="input input-bordered" value="{{ date('Y-m-d') }}">
+                    <button onclick="updateCustomRange()" class="btn btn-primary">Terapkan</button>
+                </div>
             </div>
+            <form action="{{ route('daily-reports.export') }}" method="GET">
+                <div class="flex gap-2">
+                    <input type="date" name="start_date" class="input input-bordered" placeholder="Start Date" value="{{ date('Y-m-d') }}" required />
+                    <input type="date" name="end_date" class="input input-bordered" placeholder="End Date" value="{{ date('Y-m-d') }}" required />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-file-excel mr-2"></i>Export Excel
+                    </button>
+                </div>
+            </form>
         </div>
-
 <!-- Category Cards with Responsive Tabs -->
 <div class="w-full">
     @php
