@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\DailyReport;
 use App\Models\TaskCategory;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -18,177 +17,55 @@ class DashboardController extends Controller
             'reports_this_month' => DailyReport::whereMonth('report_date', now()->month)->count(),
         ];
 
-        // Group categories
-        $categories = TaskCategory::all();
-        $groupedCategories = $categories->groupBy(function ($category) {
-            return explode(' ', $category->name)[0];
-        });
-
-        return view('dashboard', compact('categories','performanceMetrics', 'groupedCategories'));
+        // Get all categories
+        $categories = TaskCategory::orderBy('name')->get();
+        
+        return view('dashboard', compact('categories', 'performanceMetrics'));
     }
 
-    
     public function getChartData($period)
-{
-    $query = DailyReport::with(['tasks.category']);
-    
-    switch ($period) {
-        case 'day':
-            $reports = $query->whereDate('report_date', Carbon::today())
-                           ->orderBy('report_date', 'asc')
-                           ->get();
-            break;
-
-        case 'week':
-            $startOfWeek = Carbon::now()->startOfWeek();
-            $endOfWeek = Carbon::now()->endOfWeek();
-            
-            $dates = collect();
-            for ($date = $startOfWeek->copy(); $date->lte($endOfWeek); $date->addDay()) {
-                $dates->push($date->format('Y-m-d'));
-            }
-            
-            $reports = $query->whereBetween('report_date', [$startOfWeek, $endOfWeek])
-                           ->orderBy('report_date', 'asc')
-                           ->get();
-            
-            foreach ($dates as $date) {
-                foreach (TaskCategory::all() as $category) {
-                    $categoryGroup = explode(' ', $category->name)[0];
-                    if (!isset($chartData[$categoryGroup])) {
-                        $chartData[$categoryGroup] = [];
-                    }
-                    $chartData[$categoryGroup][] = [
-                        'date' => $date,
-                        'batch_count' => 0,
-                        'claim_count' => 0,
-                        'sheet_count' => 0,
-                        'email' => 0,
-                        'form' => 0
-                    ];
-                }
-            }
-            break;
-
-        case 'month':
-            $startOfMonth = Carbon::now()->startOfMonth();
-            $endOfMonth = Carbon::now()->endOfMonth();
-            
-            $dates = collect();
-            for ($date = $startOfMonth->copy(); $date->lte($endOfMonth); $date->addDay()) {
-                $dates->push($date->format('Y-m-d'));
-            }
-            
-            $reports = $query->whereMonth('report_date', Carbon::now()->month)
-                           ->orderBy('report_date', 'asc')
-                           ->get();
-            
-            foreach ($dates as $date) {
-                foreach (TaskCategory::all() as $category) {
-                    $categoryGroup = explode(' ', $category->name)[0];
-                    if (!isset($chartData[$categoryGroup])) {
-                        $chartData[$categoryGroup] = [];
-                    }
-                    $chartData[$categoryGroup][] = [
-                        'date' => $date,
-                        'batch_count' => 0,
-                        'claim_count' => 0,
-                        'sheet_count' => 0,
-                        'email' => 0,
-                        'form' => 0
-                    ];
-                }
-            }
-            break;
-
-        case 'year':
-            $startOfYear = Carbon::now()->startOfYear();
-            $endOfYear = Carbon::now()->endOfYear();
-            
-            $months = collect();
-            for ($date = $startOfYear->copy(); $date->lte($endOfYear); $date->addMonth()) {
-                $months->push($date->format('Y-m'));
-            }
-            
-            $reports = $query->whereYear('report_date', Carbon::now()->year)
-                           ->orderBy('report_date', 'asc')
-                           ->get();
-            
-            foreach ($months as $month) {
-                foreach (TaskCategory::all() as $category) {
-                    $categoryGroup = explode(' ', $category->name)[0];
-                    if (!isset($chartData[$categoryGroup])) {
-                        $chartData[$categoryGroup] = [];
-                    }
-                    $chartData[$categoryGroup][] = [
-                        'date' => $month,
-                        'batch_count' => 0,
-                        'claim_count' => 0,
-                        'sheet_count' => 0,
-                        'email' => 0,
-                        'form' => 0
-                    ];
-                }
-            }
-            break;
-    }
-
-    // Fill in actual data using DOR date when available
-    foreach ($reports as $report) {
-        foreach ($report->tasks as $task) {
-            $categoryGroup = explode(' ', $task->category->name)[0];
-            
-            // Use DOR date if category has DOR and task_date exists
-            $date = ($task->category->has_dor_date && $task->task_date) 
-                ? Carbon::parse($task->task_date)->format($period === 'year' ? 'Y-m' : 'Y-m-d')
-                : $report->report_date->format($period === 'year' ? 'Y-m' : 'Y-m-d');
-            
-            $dateIndex = collect($chartData[$categoryGroup])->search(function($item) use($date) {
-                return $item['date'] === $date;
-            });
-            
-            if ($dateIndex !== false) {
-                $chartData[$categoryGroup][$dateIndex]['batch_count'] += $task->batch_count ?? 0;
-                $chartData[$categoryGroup][$dateIndex]['claim_count'] += $task->claim_count ?? 0;
-                $chartData[$categoryGroup][$dateIndex]['sheet_count'] += $task->sheet_count ?? 0;
-                $chartData[$categoryGroup][$dateIndex]['email'] += $task->email ?? 0;
-                $chartData[$categoryGroup][$dateIndex]['form'] += $task->form ?? 0;
-            }
-        }
-    }
-
-    return response()->json($chartData);
-}
-
-
-    public function getCustomChartData($start, $end)
     {
-        $startDate = Carbon::parse($start);
-        $endDate = Carbon::parse($end);
-        
         $query = DailyReport::with(['tasks.category']);
-        
-        // Get all dates in range
-        $dates = collect();
-        for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
-            $dates->push($date->format('Y-m-d'));
-        }
-        
-        $reports = $query->whereBetween('report_date', [$startDate, $endDate])
-                        ->orderBy('report_date', 'asc')
-                        ->get();
-        
         $chartData = [];
         
-        // Initialize data structure for all dates
-        foreach ($dates as $date) {
-            foreach (TaskCategory::all() as $category) {
-                $categoryGroup = explode(' ', $category->name)[0];
-                if (!isset($chartData[$categoryGroup])) {
-                    $chartData[$categoryGroup] = [];
-                }
+        // Set date range based on period
+        switch ($period) {
                 
-                $chartData[$categoryGroup][] = [
+            case 'week':
+                $startDate = Carbon::now()->startOfWeek();
+                $endDate = Carbon::now()->endOfWeek();
+                $dateFormat = 'l';
+                break;
+            case 'month':
+                $startDate = Carbon::now()->startOfMonth();
+                $endDate = Carbon::now()->endOfMonth();
+                $dateFormat = 'M-d';
+                break;
+
+            case 'year':
+                $startDate = Carbon::now()->startOfYear();
+                $endDate = Carbon::now()->endOfYear();
+                $dateFormat = 'M';
+                break;
+
+            default:
+                return response()->json(['error' => 'Invalid period'], 400);
+        }
+
+        // Initialize data structure for each category
+        $categories = TaskCategory::all();
+        $dates = collect();
+        
+        // Generate date range
+        for ($date = $startDate->copy(); $date->lte($endDate); $period === 'year' ? $date->addMonth() : $date->addDay()) {
+            $dates->push($date->format($dateFormat));
+        }
+
+        // Initialize chart data structure
+        foreach ($categories as $category) {
+            $chartData[$category->name] = [];
+            foreach ($dates as $date) {
+                $chartData[$category->name][] = [
                     'date' => $date,
                     'batch_count' => 0,
                     'claim_count' => 0,
@@ -199,72 +76,93 @@ class DashboardController extends Controller
             }
         }
 
-        // Fill in actual data
+        // Get reports for the period
+        $reports = $query->whereBetween('report_date', [$startDate, $endDate])
+                        ->orderBy('report_date', 'asc')
+                        ->get();
+
+        // Fill in the actual data
         foreach ($reports as $report) {
-            $date = $report->report_date->format('Y-m-d');
             foreach ($report->tasks as $task) {
-                $categoryGroup = explode(' ', $task->category->name)[0];
+                $date = ($task->category->has_dor_date && $task->task_date) 
+                    ? Carbon::parse($task->task_date)->format($dateFormat)
+                    : $report->report_date->format($dateFormat);
                 
-                $dateIndex = collect($chartData[$categoryGroup])->search(function($item) use($date) {
+                $dateIndex = collect($chartData[$task->category->name])->search(function($item) use($date) {
                     return $item['date'] === $date;
                 });
                 
                 if ($dateIndex !== false) {
-                    $chartData[$categoryGroup][$dateIndex]['batch_count'] += $task->batch_count ?? 0;
-                    $chartData[$categoryGroup][$dateIndex]['claim_count'] += $task->claim_count ?? 0;
-                    $chartData[$categoryGroup][$dateIndex]['sheet_count'] += $task->sheet_count ?? 0;
-                    $chartData[$categoryGroup][$dateIndex]['email'] += $task->email ?? 0;
-                    $chartData[$categoryGroup][$dateIndex]['form'] += $task->form ?? 0;
+                    $chartData[$task->category->name][$dateIndex]['batch_count'] += $task->batch_count ?? 0;
+                    $chartData[$task->category->name][$dateIndex]['claim_count'] += $task->claim_count ?? 0;
+                    $chartData[$task->category->name][$dateIndex]['sheet_count'] += $task->sheet_count ?? 0;
+                    $chartData[$task->category->name][$dateIndex]['email'] += $task->email ?? 0;
+                    $chartData[$task->category->name][$dateIndex]['form'] += $task->form ?? 0;
                 }
             }
         }
-        
+
         return response()->json($chartData);
     }
 
-    public function processChartData($data, $selectedCategory) 
-{
-    $filteredData = [];
-    
-    foreach ($data as $category => $categoryData) {
-        if ($selectedCategory === 'all' || $category === $selectedCategory) {
-            $filteredData[$category] = $categoryData;
+    public function getCustomChartData($start, $end)
+    {
+        try {
+            $startDate = Carbon::parse($start);
+            $endDate = Carbon::parse($end);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Invalid date format'], 400);
         }
+
+        $query = DailyReport::with(['tasks.category']);
+        $chartData = [];
+        
+        // Generate date range
+        $dates = collect();
+        for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+            $dates->push($date->format('Y-m-d'));
+        }
+
+        // Initialize data structure
+        foreach (TaskCategory::all() as $category) {
+            $chartData[$category->name] = [];
+            foreach ($dates as $date) {
+                $chartData[$category->name][] = [
+                    'date' => $date,
+                    'batch_count' => 0,
+                    'claim_count' => 0,
+                    'sheet_count' => 0,
+                    'email' => 0,
+                    'form' => 0
+                ];
+            }
+        }
+
+        // Get and process reports
+        $reports = $query->whereBetween('report_date', [$startDate, $endDate])
+                        ->orderBy('report_date', 'asc')
+                        ->get();
+
+        foreach ($reports as $report) {
+            foreach ($report->tasks as $task) {
+                $date = ($task->category->has_dor_date && $task->task_date) 
+                    ? Carbon::parse($task->task_date)->format('Y-m-d')
+                    : $report->report_date->format('Y-m-d');
+                
+                $dateIndex = collect($chartData[$task->category->name])->search(function($item) use($date) {
+                    return $item['date'] === $date;
+                });
+                
+                if ($dateIndex !== false) {
+                    $chartData[$task->category->name][$dateIndex]['batch_count'] += $task->batch_count ?? 0;
+                    $chartData[$task->category->name][$dateIndex]['claim_count'] += $task->claim_count ?? 0;
+                    $chartData[$task->category->name][$dateIndex]['sheet_count'] += $task->sheet_count ?? 0;
+                    $chartData[$task->category->name][$dateIndex]['email'] += $task->email ?? 0;
+                    $chartData[$task->category->name][$dateIndex]['form'] += $task->form ?? 0;
+                }
+            }
+        }
+
+        return response()->json($chartData);
     }
-    
-    return $filteredData;
 }
-
-
-private function createDatasets($labels, $filteredData, $totals) 
-{
-    return [
-        [
-            'label' => "Batch (Total: {$totals['batch']})",
-            'borderColor' => '#9333EA',
-            'backgroundColor' => '#9333EA20',
-            'data' => $this->calculateDataPoints($labels, $filteredData, 'batch_count'),
-            'tension' => 0.4,
-            'fill' => true
-        ],
-        // Similar entries for claim, sheet, email, form
-    ];
-}
-
-private function calculateDataPoints($labels, $filteredData, $field) 
-{
-    return array_map(function($date) use ($filteredData, $field) {
-        return array_sum(
-            array_column(
-                array_filter($filteredData, fn($item) => $item['date'] === $date),
-                $field
-            )
-        );
-    }, $labels);
-}
-
-
-
-
-}
-
