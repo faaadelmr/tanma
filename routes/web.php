@@ -23,6 +23,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/export/', [DailyReportController::class, 'exportToExcel'])->name('daily-reports.export');
     Route::get('/chart-data/custom/{start}/{end}', [DashboardController::class, 'getCustomChartData']);
     Route::get('/chart-data/{period}', [DashboardController::class, 'getChartData'])->name('chart.data');
+    Route::get('/pdfmerge', function () {return view('pdftools.pdfmerge');})->name('pdftools.merge');
+    Route::get('/pdfselected', function () {return view('pdftools.pdfselected');})->name('pdftools.selected');
 });
 
 
@@ -49,6 +51,9 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/topics/{topic}/toggle', [MeetingController::class, 'toggleComplete'])->name('topics.toggle');
     Route::post('/topics/{topic}/continue', [MeetingController::class, 'continueTopic'])->name('topics.continue');
 });
+
+
+
 
 
 

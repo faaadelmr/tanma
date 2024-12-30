@@ -39,8 +39,16 @@
             <li><a href="{{ route('dashboard') }}">Beranda</a></li>
             <li><a href="{{ route('daily-reports.index') }}">Report Harian</a></li>
             <li><a href="{{ route('meetings.index') }}">Meeting</a></li>
-
-            <li><a href="{{ url('/chats') }}">Chat</a></li>
+            <li>
+                <details>
+                    <summary>Alat</summary>
+                    <ul class="p-2 rounded-t-none bg-base-100">
+                        <li><a class="text-md" href="{{ route('pdftools.merge') }}">PdfMerge</a></li>
+                        <li><a class="text-md" href="{{route('pdftools.selected')}}" >PdfSelected</a></li>
+                    </ul>
+                </details>
+            </li>
+            {{-- <li><a href="{{ url('/chats') }}">Chat</a></li> --}}
             @role('admin')
                 <li>
                     <details>
