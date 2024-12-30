@@ -5,6 +5,18 @@
         </div>
     </x-slot>
 
+    <style>
+        @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+        }
+
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class=" bg-base-100 rounded-xl shadow-xl mx-4 px-4 ">
             <div class="card">

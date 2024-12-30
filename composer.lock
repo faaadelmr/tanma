@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a46f663fdabaf4da918698dea247a0ba",
+    "content-hash": "80f2ee569021660e5298518e543720d1",
     "packages": [
         {
             "name": "brick/math",
@@ -2808,16 +2808,16 @@
         },
         {
             "name": "namu/wirechat",
-            "version": "v0.0.6",
+            "version": "v0.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/namumakwembo/wirechat.git",
-                "reference": "77136712000188a781cb8d04e87cfdd42172acfa"
+                "reference": "db0091e0324f7558b35b5a6a2a2a828516333c87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/namumakwembo/wirechat/zipball/77136712000188a781cb8d04e87cfdd42172acfa",
-                "reference": "77136712000188a781cb8d04e87cfdd42172acfa",
+                "url": "https://api.github.com/repos/namumakwembo/wirechat/zipball/db0091e0324f7558b35b5a6a2a2a828516333c87",
+                "reference": "db0091e0324f7558b35b5a6a2a2a828516333c87",
                 "shasum": ""
             },
             "require": {
@@ -2857,7 +2857,7 @@
             "description": "A Laravel Livewire messaging app for teams with private chats and group conversations.",
             "support": {
                 "issues": "https://github.com/namumakwembo/wirechat/issues",
-                "source": "https://github.com/namumakwembo/wirechat/tree/v0.0.6"
+                "source": "https://github.com/namumakwembo/wirechat/tree/v0.0.7"
             },
             "funding": [
                 {
@@ -2865,7 +2865,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-12-16T10:22:14+00:00"
+            "time": "2024-12-19T23:04:04+00:00"
         },
         {
             "name": "nesbot/carbon",
@@ -10839,12 +10839,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

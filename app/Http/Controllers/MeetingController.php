@@ -24,20 +24,11 @@ class MeetingController extends Controller
 
     public function generateMeetings()
     {
-        $startDate = now();
-        $endOfCentury = Carbon::create(2100, 12, 31);
-        $generatedCount = 0;
+        $nextFriday = now()->next(Carbon::FRIDAY);
+        
+        $meeting = Meeting::firstOrCreate(['meeting_date' => $nextFriday]);
 
-        while ($startDate <= $endOfCentury) {
-            $nextFriday = $startDate->copy()->next(Carbon::FRIDAY);
-            $meeting = Meeting::firstOrCreate(['meeting_date' => $nextFriday]);
-
-            if ($meeting->wasRecentlyCreated) {
-                $generatedCount++;
-            }
-
-            $startDate = $nextFriday;
-        }
+        $generatedCount = $meeting->wasRecentlyCreated ? 1 : 0;
 
         return response()->json([
             'success' => true,

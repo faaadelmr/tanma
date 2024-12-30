@@ -21,7 +21,7 @@ class DailyReportSeeder extends Seeder
                 $report = DailyReport::create([
                     'user_id' => $user->id,
                     'report_date' => Carbon::now()->subDays($i),
-                    'is_approved' => 0,
+                    'is_approved' => 1,
                     'approved_at' => rand(0, 1) ? Carbon::now()->subDays(rand(0, 30)) : null,
                     'approved_by' => rand(1, 2) ? User::role('admin')->get()->random()->id : null,
                 ]);

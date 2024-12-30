@@ -380,16 +380,16 @@ class TaskCategorySeeder extends Seeder
             //     'has_form' => false,
             //     'has_dor_date' => false
             // ],
-            // [
-            //     'name' => 'Reprosess Approve/Reject',
-            //     'has_batch' => false,
-            //     'has_claim' => true,
-            //     'has_time_range' => false,
-            //     'has_sheets' => false,
-            //     'has_email' => false,
-            //     'has_form' => false,
-            //     'has_dor_date' => false
-            // ],
+            [
+                'name' => 'Reprosess Approve/Reject',
+                'has_batch' => false,
+                'has_claim' => true,
+                'has_time_range' => false,
+                'has_sheets' => false,
+                'has_email' => false,
+                'has_form' => false,
+                'has_dor_date' => false
+            ],
             [
                 'name' => 'Scan Dokumen AdMedika',
                 'has_batch' => true,

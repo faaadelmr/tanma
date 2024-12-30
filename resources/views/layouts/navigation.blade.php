@@ -77,7 +77,7 @@
                 <li>
                     <a href={{ route('profile.edit') }} class="justify-between">
                         Profil
-                        <span class="badge">New</span>
+                        <span class="badge text-accent">New</span>
                     </a>
                 </li>
 
