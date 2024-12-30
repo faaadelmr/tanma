@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             TaskCategorySeeder::class,
             UserSeeder::class,
-            //DailyReportSeeder::class,
+            DailyReportSeeder::class,
             //MeetingsTableSeeder::class,
         ]);
     }

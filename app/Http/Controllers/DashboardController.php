@@ -41,7 +41,7 @@ class DashboardController extends Controller
 
         // Get all categories
         $categories = TaskCategory::orderBy('name')->get();
-        
+
         return view('dashboard', compact('categories', 'performanceMetrics'));
     }
 
@@ -49,35 +49,35 @@ class DashboardController extends Controller
     {
         $query = DailyReport::with(['tasks.category']);
         $chartData = [];
-        
+
         // Set date range based on period
         switch ($period) {
-                
+
             case 'week':
                 $startDate = Carbon::now()->startOfWeek();
                 $endDate = Carbon::now()->endOfWeek();
-                $dateFormat = 'd-l';
+                $dateFormat = 'd l';
                 break;
             case 'month':
                 $startDate = Carbon::now()->startOfMonth();
                 $endDate = Carbon::now()->endOfMonth();
-                $dateFormat = 'M-d';
+                $dateFormat = 'd M';
                 break;
 
                 case 'year':
                     $startDate = Carbon::now()->startOfYear();
                     $endDate = Carbon::now()->endOfYear();
                     $dateFormat = 'm-M';
-                    
+
                     $months = collect();
                     for ($date = $startDate->copy(); $date->lte($endDate); $date->addMonth()) {
                         $months->push($date->format($dateFormat));
                     }
-                    
+
                     $reports = $query->whereYear('report_date', Carbon::now()->year)
                                    ->orderBy('report_date', 'asc')
                                    ->get();
-                    
+
                     foreach ($months as $month) {
                         foreach (TaskCategory::all() as $category) {
                             $categoryGroup = explode(' ', $category->name)[0];
@@ -103,7 +103,7 @@ class DashboardController extends Controller
         // Initialize data structure for each category
         $categories = TaskCategory::all();
         $dates = collect();
-        
+
         // Generate date range
         for ($date = $startDate->copy(); $date->lte($endDate); $period === 'year' ? $date->addMonth() : $date->addDay()) {
             $dates->push($date->format($dateFormat));
@@ -132,14 +132,14 @@ class DashboardController extends Controller
         // Fill in the actual data
         foreach ($reports as $report) {
             foreach ($report->tasks as $task) {
-                $date = ($task->category->has_dor_date && $task->task_date) 
+                $date = ($task->category->has_dor_date && $task->task_date)
                     ? Carbon::parse($task->task_date)->format($dateFormat)
                     : $report->report_date->format($dateFormat);
-                
+
                 $dateIndex = collect($chartData[$task->category->name])->search(function($item) use($date) {
                     return $item['date'] === $date;
                 });
-                
+
                 if ($dateIndex !== false) {
                     $chartData[$task->category->name][$dateIndex]['batch_count'] += $task->batch_count ?? 0;
                     $chartData[$task->category->name][$dateIndex]['claim_count'] += $task->claim_count ?? 0;
@@ -164,11 +164,11 @@ class DashboardController extends Controller
 
         $query = DailyReport::with(['tasks.category']);
         $chartData = [];
-        
+
         // Generate date range
         $dates = collect();
         for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
-            $dates->push($date->format('Y-m-d'));
+            $dates->push($date->format('m-d-y'));
         }
 
         // Initialize data structure
@@ -193,14 +193,14 @@ class DashboardController extends Controller
 
         foreach ($reports as $report) {
             foreach ($report->tasks as $task) {
-                $date = ($task->category->has_dor_date && $task->task_date) 
-                    ? Carbon::parse($task->task_date)->format('Y-m-d')
-                    : $report->report_date->format('Y-m-d');
-                
+                $date = ($task->category->has_dor_date && $task->task_date)
+                    ? Carbon::parse($task->task_date)->format('m-d-y')
+                    : $report->report_date->format('m-d-y');
+
                 $dateIndex = collect($chartData[$task->category->name])->search(function($item) use($date) {
                     return $item['date'] === $date;
                 });
-                
+
                 if ($dateIndex !== false) {
                     $chartData[$task->category->name][$dateIndex]['batch_count'] += $task->batch_count ?? 0;
                     $chartData[$task->category->name][$dateIndex]['claim_count'] += $task->claim_count ?? 0;

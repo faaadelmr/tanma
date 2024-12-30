@@ -17,13 +17,13 @@ class DailyReportController extends Controller
     public function index()
     {
         $reports = DailyReport::with(['user', 'tasks.category'])
-            ->orderBy('is_approved', 'asc')
             ->orderBy('report_date', 'desc')
+            ->orderBy('is_approved', 'asc')
             ->paginate(user::distinct('id')->count());
         return view('daily-reports.index', compact('reports'));
     }
 
-    
+
 
     public function create()
 {
@@ -57,7 +57,7 @@ public function store(Request $request)
         'tasks' => 'required|array',
         'tasks.*.category_id' => 'required|exists:task_categories,id',
         'tasks.*.date' => 'nullable|date',
-        'tasks.*.batch_count' => 'nullable|integer', 
+        'tasks.*.batch_count' => 'nullable|integer',
         'tasks.*.claim_count' => 'nullable|integer',
         'tasks.*.start_time' => 'nullable|date_format:H:i',
         'tasks.*.end_time' => 'nullable|date_format:H:i',
@@ -375,22 +375,22 @@ public function exportToExcel(Request $request)
 {
     $startDate = Carbon::parse($request->start_date);
     $endDate = Carbon::parse($request->end_date);
-    
+
     $categories = TaskCategory::all();
     $spreadsheet = new Spreadsheet();
-    
+
     foreach ($categories as $index => $category) {
         if ($index > 0) {
             $spreadsheet->createSheet();
         }
         $spreadsheet->setActiveSheetIndex($index);
         $sheet = $spreadsheet->getActiveSheet();
-        
+
         $sheetName = preg_replace('/[\[\]\*\/\\\?:]/', '', $category->name);
         $sheetName = substr($sheetName, 0, 31);
-        
+
         $sheet->setTitle($sheetName);
-        
+
         // Set headers
         $sheet->setCellValue('A1', 'Date');
         $sheet->setCellValue('B1', 'User');
@@ -401,14 +401,14 @@ public function exportToExcel(Request $request)
         $sheet->setCellValue('G1', 'Form');
         $sheet->setCellValue('H1', 'Start Time');
         $sheet->setCellValue('I1', 'End Time');
-        
+
         $reports = DailyReport::with(['user', 'tasks' => function($query) use ($category) {
             $query->where('task_category_id', $category->id);
         }])
         ->whereBetween('report_date', [$startDate, $endDate])
         ->orderBy('report_date')
         ->get();
-        
+
         $row = 2;
         $totalBatch = 0;
         $totalClaim = 0;
@@ -420,38 +420,38 @@ public function exportToExcel(Request $request)
             foreach ($report->tasks as $task) {
                 $sheet->setCellValue('A' . $row, Carbon::parse($report->report_date)->format('d-m-Y'));
                 $sheet->setCellValue('B' . $row, $report->user->name);
-                
+
                 if (($task->batch_count ?? 0) > 0) {
                     $sheet->setCellValue('C' . $row, $task->batch_count);
                     $totalBatch += $task->batch_count;
                 }
-                
+
                 if (($task->claim_count ?? 0) > 0) {
                     $sheet->setCellValue('D' . $row, $task->claim_count);
                     $totalClaim += $task->claim_count;
                 }
-                
+
                 if (($task->sheet_count ?? 0) > 0) {
                     $sheet->setCellValue('E' . $row, $task->sheet_count);
                     $totalSheet += $task->sheet_count;
                 }
-                
+
                 if (($task->email ?? 0) > 0) {
                     $sheet->setCellValue('F' . $row, $task->email);
                     $totalEmail += $task->email;
                 }
-                
+
                 if (($task->form ?? 0) > 0) {
                     $sheet->setCellValue('G' . $row, $task->form);
                     $totalForm += $task->form;
                 }
-                
+
                 $sheet->setCellValue('H' . $row, $task->start_time);
                 $sheet->setCellValue('I' . $row, $task->end_time);
                 $row++;
             }
         }
-        
+
         // Add totals row
         $totalRow = $row;
         $sheet->setCellValue('A' . $totalRow, 'Total');
@@ -460,22 +460,22 @@ public function exportToExcel(Request $request)
         $sheet->setCellValue('E' . $totalRow, $totalSheet);
         $sheet->setCellValue('F' . $totalRow, $totalEmail);
         $sheet->setCellValue('G' . $totalRow, $totalForm);
-        
+
         // Make total row bold
         $sheet->getStyle('A'.$totalRow.':G'.$totalRow)->getFont()->setBold(true);
-        
+
         foreach (range('A', 'I') as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
     }
-    
+
     $writer = new Xlsx($spreadsheet);
     $filename = 'Tanma:Report ' . $startDate->format('d-M-Y') .' - '. $endDate->format('d-M-Y') . '.xlsx';
-    
+
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     header('Content-Disposition: attachment;filename="' . $filename . '"');
     header('Cache-Control: max-age=0');
-    
+
     $writer->save('php://output');
 }
 
@@ -485,11 +485,11 @@ public function exportToExcel(Request $request)
 // {
 //     $startDate = Carbon::parse($request->start_date);
 //     $endDate = Carbon::parse($request->end_date);
-    
+
 //     $spreadsheet = new Spreadsheet();
 //     $sheet = $spreadsheet->getActiveSheet();
 //     $sheet->setTitle('Tasks Report');
-    
+
 //     // Set headers
 //     $sheet->setCellValue('A1', 'Date');
 //     $sheet->setCellValue('B1', 'User');
@@ -501,12 +501,12 @@ public function exportToExcel(Request $request)
 //     $sheet->setCellValue('H1', 'Form');
 //     $sheet->setCellValue('I1', 'Start Time');
 //     $sheet->setCellValue('J1', 'End Time');
-    
+
 //     $reports = DailyReport::with(['user', 'tasks.category'])
 //     ->whereBetween('report_date', [$startDate, $endDate])
 //     ->orderBy('report_date')
 //     ->get();
-    
+
 //     $row = 2;
 //     $totalBatch = 0;
 //     $totalClaim = 0;
@@ -519,38 +519,38 @@ public function exportToExcel(Request $request)
 //             $sheet->setCellValue('A' . $row, Carbon::parse($report->report_date)->format('d-m-Y'));
 //             $sheet->setCellValue('B' . $row, $report->user->name);
 //             $sheet->setCellValue('C' . $row, $task->category->name);
-            
+
 //             if (($task->batch_count ?? 0) > 0) {
 //                 $sheet->setCellValue('D' . $row, $task->batch_count);
 //                 $totalBatch += $task->batch_count;
 //             }
-            
+
 //             if (($task->claim_count ?? 0) > 0) {
 //                 $sheet->setCellValue('E' . $row, $task->claim_count);
 //                 $totalClaim += $task->claim_count;
 //             }
-            
+
 //             if (($task->sheet_count ?? 0) > 0) {
 //                 $sheet->setCellValue('F' . $row, $task->sheet_count);
 //                 $totalSheet += $task->sheet_count;
 //             }
-            
+
 //             if (($task->email ?? 0) > 0) {
 //                 $sheet->setCellValue('G' . $row, $task->email);
 //                 $totalEmail += $task->email;
 //             }
-            
+
 //             if (($task->form ?? 0) > 0) {
 //                 $sheet->setCellValue('H' . $row, $task->form);
 //                 $totalForm += $task->form;
 //             }
-            
+
 //             $sheet->setCellValue('I' . $row, $task->start_time);
 //             $sheet->setCellValue('J' . $row, $task->end_time);
 //             $row++;
 //         }
 //     }
-    
+
 //     // Add totals row
 //     $totalRow = $row;
 //     $sheet->setCellValue('A' . $totalRow, 'Total');
@@ -559,21 +559,21 @@ public function exportToExcel(Request $request)
 //     $sheet->setCellValue('F' . $totalRow, $totalSheet);
 //     $sheet->setCellValue('G' . $totalRow, $totalEmail);
 //     $sheet->setCellValue('H' . $totalRow, $totalForm);
-    
+
 //     // Make total row bold
 //     $sheet->getStyle('A'.$totalRow.':H'.$totalRow)->getFont()->setBold(true);
-    
+
 //     foreach (range('A', 'J') as $column) {
 //         $sheet->getColumnDimension($column)->setAutoSize(true);
 //     }
-    
+
 //     $writer = new Xlsx($spreadsheet);
 //     $filename = 'Tanma:Report ' . $startDate->format('d-M-Y') .' - '. $endDate->format('d-M-Y') . '.xlsx';
-    
+
 //     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 //     header('Content-Disposition: attachment;filename="' . $filename . '"');
 //     header('Cache-Control: max-age=0');
-    
+
 //     $writer->save('php://output');
 // }
 }
