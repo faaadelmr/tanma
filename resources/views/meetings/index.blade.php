@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="text-primary font-bold text-2xl">{{ __('Meeting Mingguan') }}</h2>
-            <button onclick="generateMeetings()" class="btn btn-primary btn-sm gap-2">
+            <h2 class="text-2xl font-bold text-primary">{{ __('Meeting Mingguan') }}</h2>
+            <button onclick="generateMeetings()" class="gap-2 btn btn-primary btn-sm">
                 <i class="fa-solid fa-calendar-plus"></i>
                 Buat Meeting
             </button>
@@ -31,19 +31,19 @@
             </script>
         @endif
 
-    <div class="py-6 bg-base-200/50 min-h-screen">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="py-6 min-h-screen bg-base-200/50">
+        <div class="px-4 mx-auto max-w-5xl sm:px-6 lg:px-8">
             <div class="grid gap-4 sm:gap-6">
                 @forelse ($meetings as $meeting)
-                    <div class="card bg-base-100 shadow-md hover:shadow-lg transition-all duration-300">
-                        <div class="card-body p-4 sm:p-6">
-                            <div class="flex flex-wrap justify-between items-center gap-4 border-b border-base-200 pb-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="badge badge-primary p-3">
-                                        <i class="fa-solid fa-calendar-week text-lg"></i>
+                    <div class="shadow-md transition-all duration-300 card bg-base-100 hover:shadow-lg">
+                        <div class="p-4 card-body sm:p-6">
+                            <div class="flex flex-wrap gap-4 justify-between items-center pb-4 border-b border-base-200">
+                                <div class="flex gap-3 items-center">
+                                    <div class="p-3 badge badge-primary">
+                                        <i class="text-lg fa-solid fa-calendar-week"></i>
                                     </div>
                                     <div>
-                                        <h2 class="text-lg sm:text-xl font-bold">
+                                        <h2 class="text-lg font-bold sm:text-xl">
                                             {{ $meeting->meeting_date->isoFormat('dddd', 'id') }}
                                         </h2>
                                         <p class="text-sm text-base-content/70">
@@ -51,8 +51,8 @@
                                         </p>
                                     </div>
                                 </div>
-                                <button 
-                                    onclick="openTopicModal({{ $meeting->id }})" 
+                                <button
+                                    onclick="openTopicModal({{ $meeting->id }})"
                                     class="btn btn-primary btn-sm">
                                     <i class="fa-solid fa-plus"></i>
                                     <span class="hidden sm:inline">Tambah Pembahasan</span>
@@ -64,62 +64,62 @@
                                     <div class="group relative bg-base-100 rounded-lg border-2 p-4
                                         {{ $topic->is_completed ? 'border-success/30 bg-success/5' : 'border-base-200' }}
                                         hover:border-primary/30 transition-colors">
-                                        <div class="flex items-start gap-3">
-                                            <button 
+                                        <div class="flex gap-3 items-start">
+                                            <button
                                                 onclick="toggleComplete({{ $topic->id }})"
                                                 class="btn btn-circle btn-xs {{ $topic->is_completed ? 'btn-success' : 'btn-warning' }} mt-1">
                                                 <i class="fa-solid {{ $topic->is_completed ? 'fa-check' : 'fa-clock' }}"></i>
                                             </button>
-                                            
+
                                             <div class="flex-1 min-w-0">
-                                                <div class="flex items-center justify-between gap-2">
+                                                <div class="flex gap-2 justify-between items-center">
                                                     <h3 class="font-medium {{ $topic->is_completed | $topic->is_continued ? 'line-through opacity-50' : '' }}">
                                                         {{ $topic->title }}
                                                         <span class="inline-flex gap-2 ml-2">
- 
+
                                                             @if($topic->continued_from_id)
                                                                 <span class="badge badge-info badge-sm">
-                                                                    <i class="fa-solid fa-arrow-left mr-1"></i>
+                                                                    <i class="mr-1 fa-solid fa-arrow-left"></i>
                                                                     Dari meeting sebelumnya
                                                                 </span>
                                                             @endif
-                                                            
+
                                                             @if($topic->is_completed && $topic->is_completed = 2)
                                                             <span class="badge badge-success badge-sm">
-                                                                <i class="fa-solid fa-check mr-1"></i>
+                                                                <i class="mr-1 fa-solid fa-check"></i>
                                                                 Selesai
                                                             </span>
                                                         @elseif($topic->is_completed == 0 && $topic->continued_from_id == false && $topic->is_continued == false)
                                                             <span class="badge badge-warning badge-sm">
-                                                                <i class="fa-solid fa-magnifying-glass mr-1"></i>
-                                                                Pembahasan baru!
+                                                                <i class="fa-regular fa-comment mr-1"></i>
+                                                                 Pembahasan baru!
                                                             </span>
-                                                        @endif      
+                                                        @endif
                                                         @if($topic->is_continued)
                                                         <span class="badge badge-warning badge-sm">
-                                                            <i class="fa-solid fa-arrow-right mr-1"></i>
-                                                            Dilanjutkan ke meeting berikutnya
+                                                            <i class="mr-1 fa-solid fa-arrow-right"></i>
+                                                            Dilanjutkan ke meeting selanjutnya
                                                         </span>
-                                                        @endif                             
+                                                        @endif
                                                         </span>
                                                     </h3>
                                                     @unless($topic->is_completed || $topic->is_continued)
-                                                        <button 
+                                                        <button
                                                             onclick="continueTopic({{ $topic->id }})"
-                                                            class="btn hover:btn-info btn-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            class="opacity-0 transition-opacity btn hover:btn-info btn-xs group-hover:opacity-100">
                                                             Teruskan
                                                             <i class="fa-solid fa-arrow-right"></i>
                                                         </button>
                                                     @endunless
                                                 </div>
-                                                
+
                                                 @if($topic->description)
                                                     <p class="text-sm text-base-content/70 mt-1 {{ $topic->is_completed ? 'line-through opacity-50' : '' }}">
                                                         {{ $topic->description }}
                                                     </p>
                                                 @endif
 
-                                                <div class="flex items-center gap-2 mt-2">
+                                                <div class="flex gap-2 items-center mt-2">
                                                     <span class="text-xs text-base-content/50">
                                                         <i class="fa-solid fa-user-pen text-primary/70"></i>
                                                         {{ ucwords(strtolower($topic->user->name)) }}
@@ -134,44 +134,45 @@
                                         </div>
 
                                         @if($topic->files->count() > 0)
-                                            <div class="mt-3 pt-3 border-t border-base-200">
-                                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                            <div class="pt-3 mt-3 border-t border-base-200">
+                                                <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
                                                     @foreach($topic->files as $file)
-                                                        <div class="aspect-square rounded-lg overflow-hidden bg-base-200/50">
-                                                            @if(Str::startsWith($file->type, 'image/'))
-                                                                <img 
-                                                                    src="{{ Storage::url($file->path) }}"
-                                                                    alt="{{ $file->filename }}"
-                                                                    class="w-full h-full object-cover hover:scale-105 transition-transform"
-                                                                />
-                                                            @else
-                                                                <div class="w-full h-full flex flex-col items-center justify-center p-2">
-                                                                    <i class="fa-solid fa-file-lines text-xl text-primary/70"></i>
-                                                                    <span class="text-xs text-center mt-1 line-clamp-2">
-                                                                        {{ $file->filename }}
-                                                                    </span>
-                                                                </div>
-                                                            @endif
-                                                        </div>
-                                                    @endforeach
+        <div class="overflow-hidden rounded-lg cursor-pointer aspect-square bg-base-200/50"
+             onclick="openFilePreviewModal('{{ Storage::url($file->path) }}', '{{ $file->filename }}', '{{ $file->type }}')">
+            @if(Str::startsWith($file->type, 'image/'))
+                <img
+                    src="{{ Storage::url($file->path) }}"
+                    alt="{{ $file->filename }}"
+                    class="object-cover w-full h-full transition-transform hover:scale-105"
+                />
+            @else
+                <div class="flex flex-col justify-center items-center p-2 w-full h-full">
+                    <i class="text-xl fa-solid fa-file-lines text-primary/70"></i>
+                    <span class="mt-1 text-xs text-center line-clamp-2">
+                        {{ $file->filename }}
+                    </span>
+                </div>
+            @endif
+        </div>
+    @endforeach
                                                 </div>
                                             </div>
                                         @endif
                                     </div>
                                 @empty
-                                    <div class="text-center py-8 text-base-content/50">
-                                        <i class="fa-regular fa-clipboard text-3xl mb-2"></i>
-                                        <p>No topics yet</p>
+                                    <div class="py-8 text-center text-base-content/50">
+                                        <i class="mb-2 text-3xl fa-regular fa-clipboard"></i>
+                                        <p>Belum ada pembahasan yang ditambahkan</p>
                                     </div>
                                 @endforelse
                             </div>
                         </div>
                     </div>
                 @empty
-                    <div class="card bg-base-100 shadow-md p-8">
+                    <div class="p-8 shadow-md card bg-base-100">
                         <div class="text-center text-base-content/50">
-                            <i class="fa-regular fa-calendar-xmark text-4xl mb-3"></i>
-                            <p class="text-lg">No meetings scheduled</p>
+                            <i class="mb-3 text-4xl fa-regular fa-calendar-xmark"></i>
+                            <p class="text-lg">Belum ada jadwal meeting</p>
                         </div>
                     </div>
                 @endforelse
@@ -184,75 +185,75 @@
     </div>
 
     <dialog id="topicModal" class="modal modal-bottom sm:modal-middle">
-        <div class="modal-box max-w-2xl bg-base-100">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-2xl font-bold text-primary">New Discussion Topic</h3>
+        <div class="max-w-2xl modal-box bg-base-100">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-primary">Buat pembahasan baru</h3>
                 <button onclick="closeTopicModal()" class="btn btn-ghost btn-sm btn-circle">
-                    <i class="fa-solid fa-xmark text-lg"></i>
+                    <i class="text-lg fa-solid fa-xmark"></i>
                 </button>
             </div>
 
             <form method="POST" enctype="multipart/form-data" id="topicForm" class="space-y-6">
                 @csrf
-                
+
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text font-medium">Topic Title</span>
+                        <span class="font-medium label-text">Judul</span>
                         <span class="label-text-alt text-error">*</span>
                     </label>
-                    <input 
-                        type="text" 
-                        name="title" 
-                        class="input input-bordered w-full" 
-                        placeholder="Enter topic title"
+                    <input
+                        type="text"
+                        name="title"
+                        class="w-full input input-bordered"
+                        placeholder="Masukan judul pembahasan"
                         required
                     >
                 </div>
 
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text font-medium">Description</span>
+                        <span class="font-medium label-text">Detail</span>
                     </label>
-                    <textarea 
-                        name="description" 
-                        class="textarea textarea-bordered min-h-[120px]" 
-                        placeholder="Provide additional details about the topic"
+                    <textarea
+                        name="description"
+                        class="textarea textarea-bordered min-h-[120px]"
+                        placeholder="Masukan detail pembahasan disini"
                     ></textarea>
                 </div>
 
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text font-medium">Attachments</span>
-                        <span class="label-text-alt text-base-content/60">Optional</span>
+                        <span class="font-medium label-text">File</span>
+                        <span class="label-text-alt text-base-content/60">Jika diperlukan</span>
                     </label>
-                    
+
                     <div class="flex flex-col gap-4">
-                        <input 
-                            type="file" 
-                            name="files[]" 
-                            multiple 
-                            class="file-input file-input-bordered w-full"
-                            onchange="previewFiles(this)" 
+                        <input
+                            type="file"
+                            name="files[]"
+                            multiple
+                            class="w-full file-input file-input-bordered"
+                            onchange="previewFiles(this)"
                         />
-                        
-                        <div id="filePreview" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+
+                        <div id="filePreview" class="grid grid-cols-2 gap-3 sm:grid-cols-4"></div>
                     </div>
                 </div>
 
-                <div class="modal-action flex justify-end gap-2 pt-4 border-t border-base-200">
-                    <button 
-                        type="button" 
-                        onclick="closeTopicModal()" 
+                <div class="flex gap-2 justify-end pt-4 border-t modal-action border-base-200">
+                    <button
+                        type="button"
+                        onclick="closeTopicModal()"
                         class="btn btn-ghost"
                     >
-                        Cancel
+                        Batal
                     </button>
-                    <button 
-                        type="submit" 
+                    <button
+                        type="submit"
                         class="btn btn-primary"
                     >
                         <i class="fa-solid fa-plus"></i>
-                        Create Topic
+                        Buat
                     </button>
                 </div>
             </form>
@@ -263,7 +264,64 @@
         </form>
     </dialog>
 
+    <dialog id="filePreviewModal" class="modal modal-bottom sm:modal-middle">
+        <div class="p-0 max-w-4xl modal-box bg-base-100">
+            <div class="flex justify-between items-center p-4 border-b border-base-200">
+                <h3 class="text-lg font-medium" id="previewFileName"></h3>
+                <button onclick="closeFilePreviewModal()" class="btn btn-ghost btn-sm btn-circle">
+                    <i class="text-lg fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-4">
+                <div id="previewContent" class="flex justify-center items-center">
+                    <!-- Content File Meeting inside here -->
+                </div>
+            </div>
+        </div>
+
+        <form method="dialog" class="modal-backdrop bg-base-200/80">
+            <button>close</button>
+        </form>
+    </dialog>
+
     <script>
+        function openFilePreviewModal(fileUrl, fileName, fileType) {
+        const modal = document.getElementById('filePreviewModal');
+        const previewContent = document.getElementById('previewContent');
+        const fileNameElement = document.getElementById('previewFileName');
+
+        fileNameElement.textContent = fileName;
+
+        if (fileType.startsWith('image/')) {
+            previewContent.innerHTML = `
+                <img
+                    src="${fileUrl}"
+                    alt="${fileName}"
+                    class="max-w-full max-h-[70vh] object-contain"
+                />
+            `;
+        } else {
+            previewContent.innerHTML = `
+                <div class="p-8 text-center">
+                    <i class="mb-3 text-4xl fa-solid fa-file-lines text-primary"></i>
+                    <p class="mb-4">${fileName}</p>
+                    <a href="${fileUrl}" class="btn btn-primary" download="${fileName}">
+                        <i class="mr-2 fa-solid fa-download"></i>
+                        Download File
+                    </a>
+                </div>
+            `;
+        }
+
+        modal.showModal();
+    }
+
+    function closeFilePreviewModal() {
+        const modal = document.getElementById('filePreviewModal');
+        modal.close();
+    }
+
         function generateMeetings() {
             fetch('/meetings/generate', {
                 method: 'POST',
@@ -302,7 +360,7 @@
             const modal = document.getElementById('topicModal');
             const form = document.getElementById('topicForm');
             const preview = document.getElementById('filePreview');
-            
+
             form.reset();
             preview.innerHTML = '';
             modal.close();
@@ -320,19 +378,19 @@
 
                     if (file.type.startsWith('image/')) {
                         div.innerHTML = `
-                            <img 
-                                src="${e.target.result}" 
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            <img
+                                src="${e.target.result}"
+                                class="object-cover w-full h-full transition-transform group-hover:scale-105"
                                 alt="${file.name}"
                             />
-                            <div class="absolute inset-0 bg-base-100/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <span class="text-xs text-center px-2 line-clamp-2">${file.name}</span>
+                            <div class="flex absolute inset-0 justify-center items-center opacity-0 transition-opacity bg-base-100/80 group-hover:opacity-100">
+                                <span class="px-2 text-xs text-center line-clamp-2">${file.name}</span>
                             </div>
                         `;
                     } else {
                         div.innerHTML = `
-                            <div class="w-full h-full flex flex-col items-center justify-center p-3 group-hover:bg-base-200/50 transition-colors">
-                                <i class="fa-solid fa-file-lines text-2xl text-primary mb-2"></i>
+                            <div class="flex flex-col justify-center items-center p-3 w-full h-full transition-colors group-hover:bg-base-200/50">
+                                <i class="mb-2 text-2xl fa-solid fa-file-lines text-primary"></i>
                                 <span class="text-xs text-center line-clamp-2">${file.name}</span>
                             </div>
                         `;
