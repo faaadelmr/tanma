@@ -59,7 +59,7 @@
                             </div>
                             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                 @foreach ($dateReports as $report)
-                                    <div class="shadow-sm transition-shadow card bg-base-100 hover:shadow-md border-2 hover:border-white-500/100">
+                                    <div class="border-2 shadow-sm transition-shadow card bg-base-100 hover:shadow-md hover:border-white-500/100">
                                         <div class="p-3 card-body">
                                             <div class="flex flex-wrap justify-between items-center mb-2">
                                                 <div class="flex flex-wrap gap-1 items-center text-sm">
@@ -80,7 +80,7 @@
                                                     <span class="font-medium">{{ $report->user->name }}</span>
                                                     <div class="tooltip tooltip-right {{ $report->is_approved ? 'block' : 'hidden' }}" data-tip="{{ $report->approved_by ? '👍 dari ' . ucwords(\App\Models\User::find($report->approved_by)->name) : '' }}">
                                                         <button id="checkmark-{{ $report->id }}" class="btn btn-ghost btn-xs">
-                                                            <i class="fas fa-check-circle text-green-500"></i>
+                                                            <i class="text-green-500 fas fa-check-circle"></i>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -93,9 +93,11 @@
                                                     <div class="flex gap-1">
                                                         <span>{{ $index + 1 }}.</span>
                                                         <div class="flex-1">
-                                                            <span class="font-medium">{{ $task->category->name }}</span>
+                                                            <span class="font-medium">{{ $task->category->name }}
+                                                                @if (!$task->task_date) :@endif
+                                                            </span>
                                                             @if ($task->category->id && $task->task_date)
-                                                                <span class="text-xs">DOR {{ $task->task_date }}</span>
+                                                                <span class="text-xs">DOR {{ \Carbon\Carbon::parse($task->task_date)->format('d-m-Y') }} :</span>
                                                             @endif
                                                             <span class="text-xs text-accent-500">
                                                                 @if ($task->batch_count){{ $task->batch_count }} Batch,@endif
