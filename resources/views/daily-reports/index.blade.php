@@ -77,7 +77,7 @@
                                                     @else
                                                         <span class="badge badge-primary badge-sm">Report</span>
                                                     @endrole
-                                                    <span class="font-medium">{{ $report->user->name }}</span>
+                                                    <span class="font-medium">{{ ucwords($report->user->name) }}</span>
                                                     <div class="tooltip tooltip-right {{ $report->is_approved ? 'block' : 'hidden' }}" data-tip="{{ $report->approved_by ? '👍 dari ' . ucwords(\App\Models\User::find($report->approved_by)->name) : '' }}">
                                                         <button id="checkmark-{{ $report->id }}" class="btn btn-ghost btn-xs">
                                                             <i class="text-green-500 fas fa-check-circle"></i>

@@ -47,7 +47,7 @@ class DashboardController extends Controller
 
     public function getChartData($period)
     {
-        $query = DailyReport::with(['tasks.category']);
+        $query = DailyReport::with(['tasks.category'])->where('is_approved', 1);
         $chartData = [];
 
         // Set date range based on period
@@ -56,7 +56,7 @@ class DashboardController extends Controller
             case 'week':
                 $startDate = Carbon::now()->startOfWeek();
                 $endDate = Carbon::now()->endOfWeek();
-                $dateFormat = 'd l';
+                $dateFormat = 'd D M';
                 break;
             case 'month':
                 $startDate = Carbon::now()->startOfMonth();
@@ -152,7 +152,6 @@ class DashboardController extends Controller
 
         return response()->json($chartData);
     }
-
     public function getCustomChartData($start, $end)
     {
         try {
