@@ -58,12 +58,12 @@ class User extends Authenticatable
      // Custom logic for allowing chat creation
      public function canCreateChats(): bool
      {
-         return $this->hasRole(['admin','pengguna']);
+         return $this->hasRole(['TeamAdmin','PIC','Leader']);
      }
 
      public function canCreateGroups(): bool
      {
-         return $this->hasRole(['admin','pengguna']);
+         return $this->hasRole(['TeamAdmin','PIC','Leader']);
      }
 
     public function daily_reports()

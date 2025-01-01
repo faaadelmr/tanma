@@ -17,7 +17,7 @@ class DashboardController extends Controller
         $performanceMetrics = [
             'total_reports' => DailyReport::count(),
             'report_bulan_ini' => DailyReport::whereMonth('report_date', now()->month)->count(),
-            'report_minggu_ini' => DailyReport::whereBetween('report_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count(),
+            'tugas_minggu_ini' => DailyReport::whereBetween('report_date', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count(),
             'recent_reporters' => DailyReport::with('user', 'tasks')
             ->orderBy('report_date', 'desc')
             ->where('is_approved', '0')

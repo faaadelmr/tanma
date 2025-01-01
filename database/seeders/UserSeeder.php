@@ -15,13 +15,13 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $dandy = User::create([
+        $fadel = User::create([
             'name' => 'fadel',
             'username' => 'fadel',
             'email' => 'fadel@gmail.com',
             'password' => bcrypt('fadel')
         ]);
-        $dandy->assignRole('admin');
+        $fadel->assignRole('PIC');
 
         $dandy = User::create([
             'name' => 'Dandy',
@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
             'email' => 'dandy@gmail.com',
             'password' => bcrypt('dandy')
         ]);
-        $dandy->assignRole('admin');
+        $dandy->assignRole('Leader');
 
         $eva = User::create([
             'name' => 'Evan',
@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
             'email' => 'eva@gmail.com',
             'password' => bcrypt('evan')
         ]);
-        $eva->assignRole('pengguna');
+        $eva->assignRole('TeamAdmin');
 
         $ryand = User::create([
             'name' => 'Ryand',
@@ -45,7 +45,15 @@ class UserSeeder extends Seeder
             'email' => 'ryand@gmail.com',
             'password' => bcrypt('ryand')
         ]);
-        $ryand->assignRole('pengguna');
+        $ryand->assignRole('TeamAdmin');
+
+        $dev = User::create([
+            'name' => 'dev',
+            'username' => 'dev',
+            'email' => 'dev@gmail.com',
+            'password' => bcrypt('dev')
+        ]);
+        $dev->assignRole('dev');
 
 
         // $faker = Faker::create('id_ID');
@@ -54,9 +62,9 @@ class UserSeeder extends Seeder
         //         'name' => $faker->name,
         //         'username' => $faker->unique()->userName,
         //         'email' => $faker->unique()->safeEmail,
-        //         'password' => bcrypt('pengguna')
+        //         'password' => bcrypt('TeamAdmin')
         //     ]);
-        //     $user->assignRole('pengguna');
+        //     $user->assignRole('TeamAdmin');
         // }
 
     }

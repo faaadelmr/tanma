@@ -28,6 +28,7 @@
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 @foreach($users as $user)
+                                @if(!$user->roles->pluck('name')->contains('dev'))
                                 <tr class="hover:bg-gray-50/50 transition-colors duration-150">
                                     <td class="px-3 sm:px-4 py-2 sm:py-3">
                                         <div class="text-sm text-gray-900">{{ $user->name }}</div>
@@ -48,7 +49,7 @@
                                         <div class="flex gap-2">
                                             <a href="{{ route('users.edit', $user) }}"
                                                class="btn btn-xs bg-indigo-500 hover:bg-indigo-600 text-white border-0">Edit</a>
-                                            @if(!$user->roles->pluck('name')->contains('admin'))
+                                            @if(!$user->roles->pluck('name')->contains('PIC'))
                                             <form action="{{ route('users.destroy', $user) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -60,6 +61,7 @@
                                         </div>
                                     </td>
                                 </tr>
+                                @endif
                                 @endforeach
                             </tbody>
                         </table>

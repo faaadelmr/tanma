@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use SebastianBergmann\CodeCoverage\Report\Xml\Report;
 
 class TaskCategory extends Model
 {   
@@ -37,5 +38,10 @@ class TaskCategory extends Model
     public function tasks()
 {
     return $this->hasMany(ReportTask::class);
+}
+
+public function reportTasks()
+{
+    return $this->hasMany(TaskCategory::class, 'category_id');
 }
 }

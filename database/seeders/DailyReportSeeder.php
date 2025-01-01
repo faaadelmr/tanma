@@ -17,14 +17,13 @@ class DailyReportSeeder extends Seeder
 
         foreach ($users as $user) {
             // Create reports for last 30 days
-            for ($i = 0; $i < 120; $i++) {
+            for ($i = 0; $i < 30; $i++) {
                 $report = DailyReport::create([
                     'user_id' => $user->id,
                     'report_date' => Carbon::now()->subDays($i),
                     'is_approved' => 1,
                     'approved_at' => rand(0, 1) ? Carbon::now()->subDays(rand(0, 30)) : null,
-                    'approved_by' => rand(1, 2) ? User::role('admin')->get()->random()->id : null,
-                ]);
+                    'approved_by' => rand(0, 1) ? User::role('leader')->get()->random()->id : null,                ]);
 
                 // Create 1-3 tasks per report
                 for ($j = 0; $j < rand(2, 4); $j++) {

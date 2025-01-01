@@ -45,7 +45,7 @@
                             <x-input-label for="role" value="Role" class="text-sm" />
                             <select name="role" id="role" class="mt-1 block w-full text-sm border-gray-300 rounded-md shadow-sm">
                                 @foreach($roles as $role)
-                                    <option value="{{ $role->name }}" {{ $role->name === 'pengguna' ? 'selected' : '' }}>{{ $role->name }}</option>
+                                    <option value="{{ $role->name }}" {{ $role->name === 'TeamAdmin' ? 'selected' : '' }}>{{ $role->name }}</option>
                                 @endforeach
                             </select>
                         </div>

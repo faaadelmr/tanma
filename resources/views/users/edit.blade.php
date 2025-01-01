@@ -53,12 +53,13 @@
                             <x-input-label for="role" value="Role" />
                             <select name="role" id="role" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
                                 @foreach($roles as $role)
-                                    <option value="{{ $role->name }}"
-                                        {{ $user->hasRole($role->name) ? 'selected' : '' }}>
-                                        {{ $role->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                                    @if($role->name !== 'dev')
+                                        <option value="{{ $role->name }}"
+                                            {{ $user->hasRole($role->name) ? 'selected' : '' }}>
+                                            {{ $role->name }}
+                                        </option>
+                                    @endif
+                                @endforeach                            </select>
                         </div>
 
                         <div class="flex items-center gap-4 mt-6">

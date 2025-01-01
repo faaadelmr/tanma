@@ -8,7 +8,7 @@
     <div class="py-12">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="flex justify-between px-4 mb-6">
-                @role('admin')
+                @role('PIC')
                     <h2 class="btn btn-accent"><a href="{{ route('task-categories.index') }}">Tambah Kategori Tugas</a></h2>
                 @endrole
                 <a href="{{ route('daily-reports.create') }}" class="btn btn-primary">
@@ -63,7 +63,7 @@
                                         <div class="p-3 card-body">
                                             <div class="flex flex-wrap justify-between items-center mb-2">
                                                 <div class="flex flex-wrap gap-1 items-center text-sm">
-                                                    @role('admin')
+                                                    @role(['PIC','Leader'])
                                                         <form id="approveForm-{{ $report->id }}"
                                                             action="{{ route('daily-reports.approve', $report->id) }}"
                                                             method="POST" class="inline">
@@ -115,7 +115,7 @@
                                             </div>
                                         </div>
                                         <div class="flex justify-between items-center px-3 pb-2">
-                                            @role('admin')
+                                            @role(['PIC','Leader'])
                                                 <button
                                                     onclick="document.getElementById('delete-modal-{{ $report->id }}').showModal()"
                                                     class="btn btn-error btn-xs">

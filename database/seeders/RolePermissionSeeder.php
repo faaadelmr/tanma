@@ -32,19 +32,18 @@ class RolePermissionSeeder extends Seeder
 
         // Create roles
         $roles = [
-            'admin',
-            'pengguna',
+            'TeamAdmin','PIC','Leader','dev'
         ];
         foreach ($roles as $role) {
             Role::create(['name' => $role]);
         }
 
         // Assign permissions to roles
-        // $roleAdmin = Role::findByName('admin');
-        // // $roleAdmin->givePermissionTo(['tambah-user', 'lihat-user', 'edit-user', 'hapus-user', 'bolehchat']);
+        // $rolepic = Role::findByName('pic');
+        // // $rolepic->givePermissionTo(['tambah-user', 'lihat-user', 'edit-user', 'hapus-user', 'bolehchat']);
 
-        // $rolePengguna = Role::findByName('pengguna');
-        // $rolePengguna->givePermissionTo(['tambah-tulisan', 'lihat-tulisan', 'edit-tulisan', 'hapus-tulisan', 'bolehchat']);
+        // $roleTeamAdmin = Role::findByName('TeamAdmin');
+        // $roleTeamAdmin->givePermissionTo(['tambah-tulisan', 'lihat-tulisan', 'edit-tulisan', 'hapus-tulisan', 'bolehchat']);
     }
 
 }

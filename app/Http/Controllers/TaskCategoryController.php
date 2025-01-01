@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\TaskCategory;
 use Illuminate\Http\Request;
+use App\Models\ReportTask;
+
+
 
 class TaskCategoryController extends Controller
 {
@@ -33,7 +36,7 @@ class TaskCategoryController extends Controller
         $validated['has_form'] = $request->has('has_form');
 
         TaskCategory::create($validated);
-        return redirect()->route('task-categories.index')->with('success', 'Category created successfully');
+        return redirect()->route('task-categories.index')->with('success', 'Kategori berhasil ditambahkan');
     }
 
 
@@ -61,15 +64,37 @@ public function update(Request $request, string $id)
     $validated['has_form'] = $request->has('has_form');
 
     $category->update($validated);
-    return redirect()->route('task-categories.index')->with('success', 'Category updated successfully');
+    return redirect()->route('task-categories.index')->with('success', 'Kategori berhasil diperbarui');
 }
 
 
 public function destroy(string $id)
 {
     $category = TaskCategory::findOrFail($id);
+    $tasksCount = ReportTask::where('task_category_id', $id)->count();
+
+    if ($tasksCount > 0) {
+        return response()->json([
+            'needsConfirmation' => true,
+            'tasksCount' => $tasksCount
+        ]);
+    }
+
     $category->delete();
-    return redirect()->route('task-categories.index')->with('success', 'Category deleted successfully');
+    return redirect()->route('task-categories.index')
+        ->with('success', 'Kategori berhasil dihapus');
 }
+
+public function forceDestroy(string $id) 
+{
+    $category = TaskCategory::findOrFail($id);
+    ReportTask::where('task_category_id', $id)->delete();
+    $category->delete();
+    
+    return redirect()->route('task-categories.index')
+        ->with('success', 'Kategori dan semua tugas terkait berhasil dihapus');
+}
+
+
 
 }

@@ -15,7 +15,16 @@
             <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
                 <li><a href="{{ route('daily-reports.index') }}">Report Harian</a></li>
                 <li><a href="{{ route('meetings.index') }}">Meeting</a></li>
-                @role('admin')
+                <li>
+                    <details>
+                        <summary>Alat</summary>
+                        <ul class="p-2 rounded-t-none bg-base-100">
+                            <li><a class="text-md" href="{{ route('pdftools.merge') }}">PdfMerge</a></li>
+                            <li><a class="text-md" href="{{route('pdftools.selected')}}" >PdfSelected</a></li>
+                        </ul>
+                    </details>
+                </li>
+                @role('PIC')
                     <li>
                         <details>
                             <summary>Pengaturan</summary>
@@ -49,7 +58,7 @@
                 </details>
             </li>
             {{-- <li><a href="{{ url('/chats') }}">Chat</a></li> --}}
-            @role('admin')
+            @role('PIC')
                 <li>
                     <details>
                         <summary>Pengaturan</summary>
