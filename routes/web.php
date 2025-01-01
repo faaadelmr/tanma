@@ -7,6 +7,7 @@ use App\Http\Controllers\DailyReportController;
 use App\Http\Controllers\TaskCategoryController;
 use App\Http\Controllers\MeetingController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FeedbackController;
 
 
 Route::get('/', function () {
@@ -23,11 +24,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/chart-data/{period}', [DashboardController::class, 'getChartData'])->name('chart.data');
     Route::get('/pdfmerge', function () {return view('pdftools.pdfmerge');})->name('pdftools.merge');
     Route::get('/pdfselected', function () {return view('pdftools.pdfselected');})->name('pdftools.selected');
+    Route::post('/masukan', [FeedbackController::class, 'store'])->name('feedback.store');
 });
 
 
-Route::middleware(['auth', 'role:PIC'])->group(function () {
-    Route::resource('users', UserManagementController::class);
+Route::middleware(['auth', 'role:PIC', ])->group(function () {    Route::resource('users', UserManagementController::class);
+});
+
+Route::middleware(['auth', 'role:dev'])->group(function () {
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::patch('/feedback/{feedback}/toggle-done', [FeedbackController::class, 'toggleDone'])->name('feedback.toggle-done');
 });
 
 Route::middleware(['auth','role:PIC'])->group(function () {

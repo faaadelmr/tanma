@@ -4,7 +4,6 @@
 
 
 
-
     <div class="navbar-start">
         <div class="dropdown lg:hidden">
             <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
@@ -89,7 +88,6 @@
                         <span class="badge text-accent">New</span>
                     </a>
                 </li>
-
                 <li>
                     <div class="flex gap-2 items-center">
                         <label for="theme-selector" class="text-sm font-medium leading-6">Tema:</label>
@@ -117,7 +115,45 @@
                         </select>
                     </div>
                 </li>
+                <li>
+                    <div class="mr-4">
+                        <a class="" onclick="feedback_modal.showModal()">Masukan</a>
+                        <dialog id="feedback_modal" class="modal">
+                            <div class="modal-box">
+                                <h3 class="font-bold text-lg">Kirim Masukan Aplikasi</h3>
+                                <form action="{{ route('feedback.store') }}" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text">Judul</span>
+                                        </label>
+                                        <input type="text" name="title" class="input input-bordered" required />
+                                    </div>
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text">Detail</span>
+                                        </label>
+                                        <textarea name="detail" class="textarea textarea-bordered" required></textarea>
+                                    </div>
+                                    <div class="form-control">
+                                        <label class="label">
+                                            <span class="label-text">File (Opsional)</span>
+                                        </label>
+                                        <input type="file" name="file" class="file-input file-input-bordered w-full" />
+                                    </div>
+                                    <div class="modal-action">
+                                        <button type="submit" class="btn btn-primary">Kirim</button>
+                                        <button type="button" class="btn" onclick="feedback_modal.close()">Tutup</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </dialog>
+                    </div>
+                </li>
 
+                <div class="dropdown dropdown-end">
+                    <!-- Existing dropdown content -->
+                </div>
                 <li>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -130,3 +166,16 @@
         </div>
     </div>
 </div>
+
+
+@if(session('feedback_success'))
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!',
+            text: "{{ session('feedback_success') }}",
+            timer: 3000,
+            showConfirmButton: false
+        });
+    </script>
+@endif

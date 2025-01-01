@@ -44,7 +44,7 @@
     });
 @endphp
                 @foreach ($groupedReports as $date => $dateReports)
-                    <div class="border-2 shadow-sm transition-shadow card border-white-500/100 bg-base-100 hover:shadow-md">
+                    <div class="border-2 shadow-sm transition-shadow card border-accent bg-base-100 hover:shadow-md">
                         <div class="p-4 card-body">
                             <div class="flex flex-wrap gap-2 justify-between items-center mb-3">
                                 <h3 class="text-lg font-semibold">{{ $date }}</h3>
@@ -59,7 +59,7 @@
                             </div>
                             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                                 @foreach ($dateReports as $report)
-                                    <div class="border-2 shadow-sm transition-shadow card bg-base-100 hover:shadow-md hover:border-white-500/100">
+                                    <div class="border-2 border-accent shadow-sm transition-shadow card bg-base-100 hover:shadow-md hover:border-primary">
                                         <div class="p-3 card-body">
                                             <div class="flex flex-wrap justify-between items-center mb-2">
                                                 <div class="flex flex-wrap gap-1 items-center text-sm">
