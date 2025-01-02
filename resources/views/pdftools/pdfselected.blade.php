@@ -103,6 +103,15 @@
             }
         });
 
+        // Add invert selection event listener
+        invertSelection.addEventListener('click', () => {
+            const allPages = Array.from(pageGrid.children);
+            allPages.forEach(pageDiv => {
+                const pageNum = parseInt(pageDiv.dataset.pageNum);
+                togglePage(pageNum, pageDiv);
+            });
+        });
+
         // Existing event listeners remain the same
         [['dragover', handleDragOver], ['dragleave', handleDragLeave], ['drop', handleDrop]]
             .forEach(([event, handler]) => dropZone.addEventListener(event, handler));
