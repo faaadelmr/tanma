@@ -47,6 +47,9 @@
                             </svg>
                             Hapus Semua
                         </button>
+                        <button id="sortByName" class="shadow-lg transition-all duration-300 btn btn-secondary btn-sm hover:btn-secondary-focus">
+                            Urutkan berdasarkan nama
+                        </button>
                         <button id="mergeButton" class="shadow-lg transition-all duration-300 btn btn-primary btn-sm hover:btn-primary-focus">
                             Gabung PDF
                         </button>
@@ -72,8 +75,10 @@
         const fileGrid = document.getElementById('fileGrid');
         const mergeButton = document.getElementById('mergeButton');
         const clearFiles = document.getElementById('clearFiles');
+        const sortByName = document.getElementById('sortByName');
 
         let pdfFiles = [];
+        let pdfThumbnails = new Map();
 
         // Initialize Sortable
         new Sortable(fileGrid, {
@@ -97,9 +102,15 @@
 
         clearFiles.addEventListener('click', () => {
             pdfFiles = [];
+            pdfThumbnails.clear();
             fileGrid.innerHTML = '';
             fileContainer.classList.add('hidden');
             fileInput.value = '';
+        });
+
+        sortByName.addEventListener('click', () => {
+            pdfFiles.sort((a, b) => a.name.localeCompare(b.name));
+            refreshFileGrid();
         });
 
         function handleDragOver(e) {
@@ -140,12 +151,19 @@
                         viewport: viewport
                     }).promise;
 
+                    const thumbnail = canvas.toDataURL();
+                    pdfThumbnails.set(file.name, {
+                        thumbnail: thumbnail,
+                        numPages: pdf.numPages
+                    });
+
                     const fileDiv = document.createElement('div');
                     fileDiv.dataset.index = pdfFiles.length;
                     fileDiv.className = 'relative group cursor-move';
                     fileDiv.innerHTML = `
                         <div class="relative aspect-[0.707] rounded-box overflow-hidden border-2 border-primary transition-all">
-                            <img src="${canvas.toDataURL()}" class="object-contain w-full h-full" alt="PDF ${file.name}">
+
+                            <img src="${thumbnail}" class="object-contain w-full h-full" alt="PDF ${file.name}">
                             <div class="absolute inset-0 opacity-0 transition-opacity bg-base-300 group-hover:opacity-50"></div>
                             <div class="absolute right-0 bottom-0 left-0 p-2 text-center bg-opacity-75 bg-base-300">
                                 ${file.name} (${pdf.numPages} halaman)
@@ -168,17 +186,20 @@
             }
         }
 
-        function removeFile(index) {
-            pdfFiles.splice(index, 1);
+        function refreshFileGrid() {
             fileGrid.innerHTML = '';
             pdfFiles.forEach((file, i) => {
+                const fileInfo = pdfThumbnails.get(file.name);
                 const fileDiv = document.createElement('div');
                 fileDiv.dataset.index = i;
-                // Recreate the preview (simplified for brevity)
+                fileDiv.className = 'relative group cursor-move';
                 fileDiv.innerHTML = `
                     <div class="relative aspect-[0.707] rounded-box overflow-hidden border-2 border-primary transition-all">
+                        <img src="${fileInfo.thumbnail}" class="object-contain w-full h-full" alt="PDF ${file.name}">
+                        <div class="absolute inset-0 opacity-0 transition-opacity bg-base-300 group-hover:opacity-50"></div>
                         <div class="absolute right-0 bottom-0 left-0 p-2 text-center bg-opacity-75 bg-base-300">
-                            ${file.name}
+
+                            ${file.name} (${fileInfo.numPages} halaman)
                         </div>
                         <button class="absolute top-2 right-2 btn btn-error btn-sm btn-circle" onclick="removeFile(${i})">
                             ×
@@ -187,6 +208,13 @@
                 `;
                 fileGrid.appendChild(fileDiv);
             });
+        }
+
+        function removeFile(index) {
+            const fileName = pdfFiles[index].name;
+            pdfFiles.splice(index, 1);
+            pdfThumbnails.delete(fileName);
+            refreshFileGrid();
             if (pdfFiles.length === 0) {
                 fileContainer.classList.add('hidden');
             }
