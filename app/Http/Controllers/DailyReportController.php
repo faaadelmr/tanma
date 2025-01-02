@@ -418,7 +418,7 @@ public function exportToExcel(Request $request)
 
         foreach ($reports as $report) {
             foreach ($report->tasks as $task) {
-                $sheet->setCellValue('A' . $row, Carbon::parse($report->report_date)->format('d-m-Y'));
+                $sheet->setCellValue('A' . $row, $task->task_date ? Carbon::parse($task->task_date)->format('d-m-Y') : Carbon::parse($report->report_date)->format('d-m-Y'));
                 $sheet->setCellValue('B' . $row, $report->user->name);
 
                 if (($task->batch_count ?? 0) > 0) {
@@ -479,7 +479,6 @@ public function exportToExcel(Request $request)
     $writer->save('php://output');
 }
 
-
 // fungsi untuk export excel 1 lembar dan menambahkan nama category cell
 // //public function exportToExcel(Request $request)
 // {
@@ -516,7 +515,7 @@ public function exportToExcel(Request $request)
 
 //     foreach ($reports as $report) {
 //         foreach ($report->tasks as $task) {
-//             $sheet->setCellValue('A' . $row, Carbon::parse($report->report_date)->format('d-m-Y'));
+//             $sheet->setCellValue('A' . $row, $task->task_date ? Carbon::parse($task->task_date)->format('d-m-Y') : Carbon::parse($report->report_date)->format('d-m-Y'));
 //             $sheet->setCellValue('B' . $row, $report->user->name);
 //             $sheet->setCellValue('C' . $row, $task->category->name);
 
