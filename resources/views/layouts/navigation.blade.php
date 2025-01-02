@@ -20,6 +20,7 @@
                         <ul class="p-2 rounded-t-none bg-base-100">
                             <li><a class="text-md" href="{{ route('pdftools.merge') }}">PdfMerge</a></li>
                             <li><a class="text-md" href="{{route('pdftools.selected')}}" >PdfSelected</a></li>
+                            <li><a class="text-md" href="{{route('splitbill')}}" >Split Bill</a></li>
                         </ul>
                     </details>
                 </li>
@@ -50,9 +51,10 @@
             <li>
                 <details>
                     <summary>Alat</summary>
-                    <ul class="p-2 rounded-t-none bg-base-100">
+                    <ul class="p-2 pb-2 rounded-t-none bg-base-100">
                         <li><a class="text-md" href="{{ route('pdftools.merge') }}">PdfMerge</a></li>
                         <li><a class="text-md" href="{{route('pdftools.selected')}}" >PdfSelected</a></li>
+                        <li><a class="text-md" href="{{route('splitbill')}}" >Split Bill</a></li>
                     </ul>
                 </details>
             </li>
@@ -120,7 +122,7 @@
                         <a class="" onclick="feedback_modal.showModal()">Masukan</a>
                         <dialog id="feedback_modal" class="modal">
                             <div class="modal-box">
-                                <h3 class="font-bold text-lg">Kirim Masukan Aplikasi</h3>
+                                <h3 class="font-bold text-lg">Kirim Masukan untuk Aplikasi</h3>
                                 <form action="{{ route('feedback.store') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
                                     <div class="form-control">

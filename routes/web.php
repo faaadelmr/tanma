@@ -22,8 +22,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/export/', [DailyReportController::class, 'exportToExcel'])->name('daily-reports.export');
     Route::get('/chart-data/custom/{start}/{end}', [DashboardController::class, 'getCustomChartData']);
     Route::get('/chart-data/{period}', [DashboardController::class, 'getChartData'])->name('chart.data');
-    Route::get('/pdfmerge', function () {return view('pdftools.pdfmerge');})->name('pdftools.merge');
-    Route::get('/pdfselected', function () {return view('pdftools.pdfselected');})->name('pdftools.selected');
+    Route::get('/pdfmerge', function () {return view('tools.pdfmerge');})->name('pdftools.merge');
+    Route::get('/pdfselected', function () {return view('tools.pdfselected');})->name('pdftools.selected');
+    Route::get('/splitbill', function () {return view('tools.splitbill');})->name('splitbill');
     Route::post('/masukan', [FeedbackController::class, 'store'])->name('feedback.store');
 });
 
