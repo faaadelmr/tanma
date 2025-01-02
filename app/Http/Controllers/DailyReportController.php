@@ -405,6 +405,7 @@ public function exportToExcel(Request $request)
         $reports = DailyReport::with(['user', 'tasks' => function($query) use ($category) {
             $query->where('task_category_id', $category->id);
         }])
+        ->where('is_approved', true)
         ->whereBetween('report_date', [$startDate, $endDate])
         ->orderBy('report_date')
         ->get();
@@ -477,8 +478,8 @@ public function exportToExcel(Request $request)
     header('Cache-Control: max-age=0');
 
     $writer->save('php://output');
-}
 
+}
 // fungsi untuk export excel 1 lembar dan menambahkan nama category cell
 // //public function exportToExcel(Request $request)
 // {
