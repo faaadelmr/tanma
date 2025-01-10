@@ -8,12 +8,37 @@
     <style>
         @keyframes float {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-10px); }dragover
             100% { transform: translateY(0px); }
         }
 
         .floating {
             animation: float 3s ease-in-out infinite;
+        }
+
+        .file-preview {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .file-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .file-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
         }
     </style>
 
@@ -22,15 +47,16 @@
             <div class="card">
                 <div class="mb-8">
                     <div id="dropZone" class="p-8 border-2 border-dashed shadow-xl transition-all duration-300 card bg-base-100 border-primary/50 hover:border-primary">
-                        <input type="file" id="fileInput" multiple accept=".pdf" class="hidden">
+                        <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" class="hidden">
                         <label for="fileInput" class="block text-center cursor-pointer">
                             <div class="floating">
                                 <svg class="mx-auto w-16 h-16 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                                 </svg>
                             </div>
-                            <h3 class="mt-4 text-xl font-semibold">Jatuhkan file PDF disini</h3>
+                            <h3 class="mt-4 text-xl font-semibold">Jatuhkan file disini</h3>
                             <p class="mt-2 text-sm text-base-content/70">atau klik disini untuk memilih beberapa berkas</p>
+                            <p class="mt-1 text-xs text-base-content/50">Mendukung: PDF, DOCX, PNG, JPG</p>
                         </label>
                     </div>
                 </div>
@@ -51,7 +77,7 @@
                             Urutkan berdasarkan nama
                         </button>
                         <button id="mergeButton" class="shadow-lg transition-all duration-300 btn btn-primary btn-sm hover:btn-primary-focus">
-                            Gabung PDF
+                            Gabung File
                         </button>
                     </div>
 
@@ -64,6 +90,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -77,179 +104,335 @@
         const clearFiles = document.getElementById('clearFiles');
         const sortByName = document.getElementById('sortByName');
 
-        let pdfFiles = [];
-        let pdfThumbnails = new Map();
+        let files = [];
+        let thumbnails = new Map();
 
         // Initialize Sortable
-        new Sortable(fileGrid, {
-            animation: 150,
-            ghostClass: 'bg-base-500',
-            onEnd: function(evt) {
-                const items = Array.from(fileGrid.children);
-                pdfFiles = items.map(item => pdfFiles[parseInt(item.dataset.index)]);
-            }
-        });
+new Sortable(fileGrid, {
+    animation: 150,
+    ghostClass: 'bg-base-500',
+    onEnd: function(evt) {
+        // Get the old and new positions
+        const oldIndex = evt.oldIndex;
+        const newIndex = evt.newIndex;
+
+        // Update the files array to match the new visual order
+        const itemMoved = files.splice(oldIndex, 1)[0];
+        files.splice(newIndex, 0, itemMoved);
+    }
+});
+
+// Add this event listener for the sort by name button
+sortByName.addEventListener('click', () => {
+    // Sort the files array by filename
+    files.sort((a, b) => {
+        return a.file.name.localeCompare(b.file.name);
+    });
+
+    // Refresh the grid to show the new order
+    refreshFileGrid();
+});
+
 
         // Event Listeners
-        [['dragover', handleDragOver], ['dragleave', handleDragLeave], ['drop', handleDrop]]
-            .forEach(([event, handler]) => dropZone.addEventListener(event, handler));
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-primary/70', 'bg-base-200');
+        });
 
-        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-primary/70', 'bg-base-200');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-primary/70', 'bg-base-200');
+            const droppedFiles = Array.from(e.dataTransfer.files);
+            if (droppedFiles.length > 0) handleFiles(droppedFiles);
+        });
+
         fileInput.addEventListener('change', (e) => {
-            const files = Array.from(e.target.files).filter(file => file.type === 'application/pdf');
-            if (files.length > 0) handleFiles(files);
+            const selectedFiles = Array.from(e.target.files);
+            if (selectedFiles.length > 0) handleFiles(selectedFiles);
         });
 
         clearFiles.addEventListener('click', () => {
-            pdfFiles = [];
-            pdfThumbnails.clear();
+            files = [];
+            thumbnails.clear();
             fileGrid.innerHTML = '';
             fileContainer.classList.add('hidden');
             fileInput.value = '';
         });
 
-        sortByName.addEventListener('click', () => {
-            pdfFiles.sort((a, b) => a.name.localeCompare(b.name));
-            refreshFileGrid();
-        });
+        // File preview generator
+        async function generatePreview(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    let preview = '';
+                    let details = '';
 
-        function handleDragOver(e) {
-            e.preventDefault();
-            dropZone.classList.add('border-primary/70', 'bg-base-200');
+                    if (file.type.includes('pdf')) {
+                        const arrayBuffer = await file.arrayBuffer();
+                        const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                        const page = await pdf.getPage(1);
+                        const viewport = page.getViewport({ scale: 1 });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+                        await page.render({ canvasContext: context, viewport }).promise;
+                        preview = canvas.toDataURL();
+                        details = `PDF - ${pdf.numPages} halaman`;
+                    } else if (file.type.includes('image')) {
+                        preview = e.target.result;
+                        details = `Image - ${file.type.split('/')[1].toUpperCase()}`;
+                    } else if (file.type.includes('word')) {
+                        // Use a generic document icon for Word files
+                        preview = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzODQgNTEyIj48cGF0aCBkPSJNMzY1LjMgOTMuMzggbC03NC42OS03NC42OUEzMiAzMiAwIDAgMCAyNTguOSAwSDQ4QzIxLjUgMCAwIDIxLjUgMCA0OHY0MTZjMCAyNi41IDIxLjUgNDggNDggNDhoMjg4YzI2LjUgMCA0OC0yMS41IDQ4LTQ4di0zNDEuM2MwLTguNDgtMy4zNy0xNi42Mi05LjM3LTIyLjYzek0zMzYgNDQ4SDQ4di00MTZoMjA4djkwLjMxYzAgMjEuNDkgMjUuNzEgMzIuMjQgNDAuODEgMTcuMTRMMzM2IDEwMC4zdjM0Ny43eiIvPjwvc3ZnPg==';
+                        details = 'Word Document';
+                    }
+
+                    resolve({ preview, details });
+                };
+                reader.readAsDataURL(file);
+            });
         }
 
-        function handleDragLeave(e) {
-            e.preventDefault();
-            dropZone.classList.remove('border-primary/70', 'bg-base-200');
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            dropZone.classList.remove('border-primary/70', 'bg-base-200');
-            const files = Array.from(e.dataTransfer.files).filter(file => file.type === 'application/pdf');
-            if (files.length > 0) handleFiles(files);
-        }
-
-        async function handleFiles(files) {
+        // Handle files
+        async function handleFiles(newFiles) {
             loading.classList.remove('hidden');
-            fileContainer.classList.add('hidden');
-
             try {
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    const arrayBuffer = await file.arrayBuffer();
-                    const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
-                    const firstPage = await pdf.getPage(1);
-                    const viewport = firstPage.getViewport({ scale: 0.5 });
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
+                for (const file of newFiles) {
+                    if (!isValidFile(file)) continue;
 
-                    await firstPage.render({
-                        canvasContext: context,
-                        viewport: viewport
-                    }).promise;
-
-                    const thumbnail = canvas.toDataURL();
-                    pdfThumbnails.set(file.name, {
-                        thumbnail: thumbnail,
-                        numPages: pdf.numPages
+                    const preview = await generatePreview(file);
+                    files.push({
+                        file: file,
+                        preview: preview.preview,
+                        details: preview.details
                     });
-
-                    const fileDiv = document.createElement('div');
-                    fileDiv.dataset.index = pdfFiles.length;
-                    fileDiv.className = 'relative group cursor-move';
-                    fileDiv.innerHTML = `
-                        <div class="relative aspect-[0.707] rounded-box overflow-hidden border-2 border-primary transition-all">
-
-                            <img src="${thumbnail}" class="object-contain w-full h-full" alt="PDF ${file.name}">
-                            <div class="absolute inset-0 opacity-0 transition-opacity bg-base-300 group-hover:opacity-50"></div>
-                            <div class="absolute right-0 bottom-0 left-0 p-2 text-center bg-opacity-75 bg-base-300">
-                                ${file.name} (${pdf.numPages} halaman)
-                            </div>
-                            <button class="absolute top-2 right-2 btn btn-error btn-sm btn-circle" onclick="removeFile(${pdfFiles.length})">
-                                ×
-                            </button>
-                        </div>
-                    `;
-
-                    pdfFiles.push(file);
-                    fileGrid.appendChild(fileDiv);
                 }
 
-                fileContainer.classList.remove('hidden');
+                refreshFileGrid();
+                if (files.length > 0) {
+                    fileContainer.classList.remove('hidden');
+                }
             } catch (error) {
-                console.error('Error loading PDFs:', error);
+                console.error('Error handling files:', error);
+                showToast('Error processing files', 'error');
             } finally {
                 loading.classList.add('hidden');
             }
         }
 
+        // Refresh file grid
         function refreshFileGrid() {
             fileGrid.innerHTML = '';
-            pdfFiles.forEach((file, i) => {
-                const fileInfo = pdfThumbnails.get(file.name);
-                const fileDiv = document.createElement('div');
-                fileDiv.dataset.index = i;
-                fileDiv.className = 'relative group cursor-move';
-                fileDiv.innerHTML = `
-                    <div class="relative aspect-[0.707] rounded-box overflow-hidden border-2 border-primary transition-all">
-                        <img src="${fileInfo.thumbnail}" class="object-contain w-full h-full" alt="PDF ${file.name}">
-                        <div class="absolute inset-0 opacity-0 transition-opacity bg-base-300 group-hover:opacity-50"></div>
-                        <div class="absolute right-0 bottom-0 left-0 p-2 text-center bg-opacity-75 bg-base-300">
-
-                            ${file.name} (${fileInfo.numPages} halaman)
-                        </div>
-                        <button class="absolute top-2 right-2 btn btn-error btn-sm btn-circle" onclick="removeFile(${i})">
-                            ×
-                        </button>
+            files.forEach((fileData, index) => {
+                const div = document.createElement('div');
+                div.className = 'file-preview';
+                div.innerHTML = `
+                    <img src="${fileData.preview}" alt="${fileData.file.name}">
+                    <div class="file-info">
+                        <div class="text-sm truncate">${fileData.file.name}</div>
+                        <div class="text-xs opacity-75">${fileData.details}</div>
                     </div>
+                    <button onclick="removeFile(${index})" class="absolute top-2 right-2 btn btn-error btn-sm btn-circle">×</button>
                 `;
-                fileGrid.appendChild(fileDiv);
+                fileGrid.appendChild(div);
             });
         }
 
+        // File validation
+        function isValidFile(file) {
+            const validTypes = [
+                'application/pdf',
+                'image/jpeg',
+                'image/png',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ];
+
+            if (!validTypes.includes(file.type)) {
+                showToast(`${file.name} memiliki format yang tidak didukung`, 'warning');
+                return false;
+            }
+
+            const maxSize = 10 * 1024 * 1024; // 10MB
+            if (file.size > maxSize) {
+                showToast(`${file.name} terlalu besar (maksimal 10MB)`, 'warning');
+                return false;
+            }
+
+            return true;
+        }
+
+        // Remove file
         function removeFile(index) {
-            const fileName = pdfFiles[index].name;
-            pdfFiles.splice(index, 1);
-            pdfThumbnails.delete(fileName);
+            files.splice(index, 1);
             refreshFileGrid();
-            if (pdfFiles.length === 0) {
+            if (files.length === 0) {
                 fileContainer.classList.add('hidden');
             }
         }
 
-        mergeButton.addEventListener('click', async () => {
-            if (pdfFiles.length === 0) return;
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                type === 'error' ? 'bg-error text-error-content' :
+                type === 'warning' ? 'bg-warning text-warning-content' :
+                'bg-success text-success-content'
+            }`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
 
-            mergeButton.disabled = true;
-            mergeButton.innerHTML = '<span class="loading loading-spinner"></span> Processing...';
+        // Merge files
+        mergeButton.addEventListener('click', async () => {
+    if (files.length === 0) return;
+
+    mergeButton.disabled = true;
+    mergeButton.innerHTML = '<span class="loading loading-spinner"></span> Processing...';
+    loading.classList.remove('hidden');
+
+    try {
+        const mergedPdf = await PDFLib.PDFDocument.create();
+
+        for (const fileData of files) {
+            const file = fileData.file;
+            let pdfBytes;
 
             try {
-                const mergedPdf = await PDFLib.PDFDocument.create();
+                // Handle PDF files
+                if (file.type === 'application/pdf') {
+                    pdfBytes = await file.arrayBuffer();
+                }
+                // Handle image files
+                else if (file.type.includes('image')) {
+                    const img = await createImageBitmap(file);
+                    const tempPdf = await PDFLib.PDFDocument.create();
 
-                for (const file of pdfFiles) {
+                    // Create a new page with standard dimensions (e.g., A4 size)
+                    const pageWidth = 595.28; // A4 width in points (8.27 inches * 72)
+                    const pageHeight = 841.89; // A4 height in points (11.69 inches * 72)
+                    const page = tempPdf.addPage([pageWidth, pageHeight]);
+
+                    const imageBytes = await file.arrayBuffer();
+                    let pdfImage;
+
+                    if (file.type === 'image/jpeg') {
+                        pdfImage = await tempPdf.embedJpg(imageBytes);
+                    } else if (file.type === 'image/png') {
+                        pdfImage = await tempPdf.embedPng(imageBytes);
+                    }
+
+                    // Draw the image, stretching it to fill the entire page
+                    page.drawImage(pdfImage, {
+                        x: 0,
+                        y: 0,
+                        width: pageWidth,
+                        height: pageHeight,
+                    });
+
+                    pdfBytes = await tempPdf.save();
+                }
+                // Handle Word documents (DOC/DOCX)
+                else if (file.type.includes('word')) {
+                    // First convert Word to HTML using Mammoth
                     const arrayBuffer = await file.arrayBuffer();
-                    const pdf = await PDFLib.PDFDocument.load(arrayBuffer);
-                    const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                    pages.forEach(page => mergedPdf.addPage(page));
+                    const result = await mammoth.convertToHtml({ arrayBuffer });
+                    const htmlContent = result.value;
+
+                    // Create a temporary PDF for the Word content
+                    const tempPdf = await PDFLib.PDFDocument.create();
+                    const page = tempPdf.addPage();
+                    const { width, height } = page.getSize();
+
+                    // Convert HTML content to plain text and draw it on the PDF
+                    const text = htmlContent.replace(/<[^>]*>/g, ' ')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+
+                    // Split text into lines that fit the page width
+                    const fontSize = 12;
+                    const margin = 50;
+                    const maxWidth = width - margin * 2;
+                    const lineHeight = fontSize * 1.2;
+                    let currentY = height - margin;
+                    let currentPage = page;
+
+                    const words = text.split(' ');
+                    let currentLine = '';
+
+                    for (const word of words) {
+                        const testLine = currentLine ? `${currentLine} ${word}` : word;
+                        const textWidth = testLine.length * fontSize * 0.6; // Approximate width
+
+                        if (textWidth > maxWidth) {
+                            currentPage.drawText(currentLine, {
+                                x: margin,
+                                y: currentY,
+                                size: fontSize,
+                            });
+
+                            currentY -= lineHeight;
+                            currentLine = word;
+
+                            // Create new page if needed
+                            if (currentY < margin) {
+                                currentPage = tempPdf.addPage();
+                                currentY = height - margin;
+                            }
+                        } else {
+                            currentLine = testLine;
+                        }
+                    }
+
+                    // Draw remaining text
+                    if (currentLine) {
+                        currentPage.drawText(currentLine, {
+                            x: margin,
+                            y: currentY,
+                            size: fontSize,
+                        });
+                    }
+
+                    pdfBytes = await tempPdf.save();
                 }
 
-                const mergedPdfBytes = await mergedPdf.save();
-                const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = 'MergedDocument.pdf';
-                link.click();
-                URL.revokeObjectURL(url);
+                // Merge the converted PDF into the main document
+                const pdf = await PDFLib.PDFDocument.load(pdfBytes);
+                const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                pages.forEach(page => mergedPdf.addPage(page));
+
             } catch (error) {
-                console.error('Error merging PDFs:', error);
-            } finally {
-                mergeButton.disabled = false;
-                mergeButton.textContent = 'Gabung PDF';
+                console.error(`Error processing file ${file.name}:`, error);
+                showToast(`Failed to process ${file.name}`, 'error');
             }
-        });
+        }
+
+        const mergedPdfBytes = await mergedPdf.save();
+        const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'TanmaMergedPdf.pdf';
+        link.click();
+        URL.revokeObjectURL(url);
+
+        showToast('File berhasil digabung!');
+    } catch (error) {
+        console.error('Error merging files:', error);
+        showToast('Gagal menggabung file. Silakan coba lagi.', 'error');
+    } finally {
+        mergeButton.disabled = false;
+        mergeButton.textContent = 'Gabung File';
+        loading.classList.add('hidden');
+    }
+});
     </script>
 </x-app-layout>

@@ -258,7 +258,7 @@
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = 'Selectedpdf.pdf';
+                link.download = 'TanmaSelectedPdf.pdf';
                 link.click();
                 URL.revokeObjectURL(url);
             } catch (error) {
