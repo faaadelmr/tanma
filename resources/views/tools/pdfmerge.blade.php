@@ -177,7 +177,7 @@ sortByName.addEventListener('click', () => {
                         const arrayBuffer = await file.arrayBuffer();
                         const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
                         const page = await pdf.getPage(1);
-                        const viewport = page.getViewport({ scale: 1 });
+                        const viewport = page.getViewport({ scale: 1.5 });
                         const canvas = document.createElement('canvas');
                         const context = canvas.getContext('2d');
                         canvas.width = viewport.width;
@@ -316,9 +316,9 @@ sortByName.addEventListener('click', () => {
                     const img = await createImageBitmap(file);
                     const tempPdf = await PDFLib.PDFDocument.create();
 
-                    // Create a new page with standard dimensions (e.g., A4 size)
-                    const pageWidth = 595.28; // A4 width in points (8.27 inches * 72)
-                    const pageHeight = 841.89; // A4 height in points (11.69 inches * 72)
+                    // Create a new page with standard dimensions (A4 size)
+                    const pageWidth = 595.28; // A4 width in points
+                    const pageHeight = 841.89; // A4 height in points
                     const page = tempPdf.addPage([pageWidth, pageHeight]);
 
                     const imageBytes = await file.arrayBuffer();
@@ -330,79 +330,108 @@ sortByName.addEventListener('click', () => {
                         pdfImage = await tempPdf.embedPng(imageBytes);
                     }
 
-                    // Draw the image, stretching it to fill the entire page
+                    // Get the dimensions of the image
+                    const { width: imgWidth, height: imgHeight } = await pdfImage.scale(1);
+
+                    // Calculate the scale to fit the image within A4 dimensions while maintaining aspect ratio
+                    const scale = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+                    const scaledWidth = imgWidth * scale;
+                    const scaledHeight = imgHeight * scale;
+
+                    // Center the image on the page
+                    const xOffset = (pageWidth - scaledWidth) / 2;
+                    const yOffset = (pageHeight - scaledHeight) / 2;
+
+                    // Draw the image
                     page.drawImage(pdfImage, {
-                        x: 0,
-                        y: 0,
-                        width: pageWidth,
-                        height: pageHeight,
+                        x: xOffset,
+                        y: yOffset,
+                        width: scaledWidth,
+                        height: scaledHeight,
                     });
 
                     pdfBytes = await tempPdf.save();
                 }
-                // Handle Word documents (DOC/DOCX)
-                else if (file.type.includes('word')) {
-                    // First convert Word to HTML using Mammoth
-                    const arrayBuffer = await file.arrayBuffer();
-                    const result = await mammoth.convertToHtml({ arrayBuffer });
-                    const htmlContent = result.value;
 
-                    // Create a temporary PDF for the Word content
-                    const tempPdf = await PDFLib.PDFDocument.create();
-                    const page = tempPdf.addPage();
-                    const { width, height } = page.getSize();
+            // Handle Word documents (DOC/DOCX)
+            else if (file.type.includes('word')) {
+                // First convert Word to HTML using Mammoth
+                const arrayBuffer = await file.arrayBuffer();
+                const result = await mammoth.convertToHtml({ arrayBuffer });
+                const htmlContent = result.value;
 
-                    // Convert HTML content to plain text and draw it on the PDF
-                    const text = htmlContent.replace(/<[^>]*>/g, ' ')
-                        .replace(/\s+/g, ' ')
-                        .trim();
+                // Create a temporary PDF for the Word content
+                const pdfDoc = await PDFLib.PDFDocument.create();
+                const page = pdfDoc.addPage();
+                const { width, height } = page.getSize();
+                const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
 
-                    // Split text into lines that fit the page width
-                    const fontSize = 12;
-                    const margin = 50;
-                    const maxWidth = width - margin * 2;
-                    const lineHeight = fontSize * 1.2;
-                    let currentY = height - margin;
-                    let currentPage = page;
+                // Convert HTML content to plain text with line breaks preserved
+                let text = htmlContent.replace(/<[^>]*>/g, ' ');
+                // Collapse multiple spaces to single spaces
+                text = text.replace(/\s+/g, ' ');
+                // Preserve line breaks
+                text = text.replace(/(\r\n|\n|\r)/gm, '\n');
+                text = text.trim();
 
-                    const words = text.split(' ');
-                    let currentLine = '';
+                const fontSize = 20;
+                const margin = 50;
+                const maxWidth = width - margin * 2;
+                const lineHeight = fontSize * 1.2;
+                let currentY = height - margin;
+                let textLines = text.split('\n');
 
-                    for (const word of words) {
-                        const testLine = currentLine ? `${currentLine} ${word}` : word;
-                        const textWidth = testLine.length * fontSize * 0.6; // Approximate width
 
-                        if (textWidth > maxWidth) {
-                            currentPage.drawText(currentLine, {
-                                x: margin,
-                                y: currentY,
-                                size: fontSize,
-                            });
+                for (const line of textLines) {
+                    // Wrap long lines
+                    const wrappedLines = wrapLines(line, maxWidth, fontSize, font);
 
-                            currentY -= lineHeight;
-                            currentLine = word;
+                    for (const wrappedLine of wrappedLines) {
 
-                            // Create new page if needed
-                            if (currentY < margin) {
-                                currentPage = tempPdf.addPage();
-                                currentY = height - margin;
-                            }
-                        } else {
-                            currentLine = testLine;
-                        }
-                    }
-
-                    // Draw remaining text
-                    if (currentLine) {
-                        currentPage.drawText(currentLine, {
+                        page.drawText(wrappedLine, {
                             x: margin,
                             y: currentY,
                             size: fontSize,
+                            font,
                         });
+
+                        currentY -= lineHeight;
+
+                        if (currentY < margin) {
+                            page = pdfDoc.addPage();
+                            currentY = height - margin;
+                        }
                     }
 
-                    pdfBytes = await tempPdf.save();
                 }
+
+                pdfBytes = await pdfDoc.save();
+            }
+
+            // Helper function to wrap long lines of text
+            function wrapLines(text, maxWidth, fontSize, font) {
+
+                const words = text.split(' ');
+                const lines = [];
+                let currentLine = '';
+
+                for (const word of words) {
+                    const testLine = currentLine.length > 0 ? `${currentLine} ${word}` : word;
+                    const textWidth = font.widthOfTextAtSize(testLine, fontSize);
+
+                    if (textWidth > maxWidth) {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = testLine;
+                    }
+                }
+
+                lines.push(currentLine);
+                return lines;
+
+            }
+
 
                 // Merge the converted PDF into the main document
                 const pdf = await PDFLib.PDFDocument.load(pdfBytes);
@@ -415,24 +444,24 @@ sortByName.addEventListener('click', () => {
             }
         }
 
-        const mergedPdfBytes = await mergedPdf.save();
-        const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'TanmaMergedPdf.pdf';
-        link.click();
-        URL.revokeObjectURL(url);
+            const mergedPdfBytes = await mergedPdf.save();
+            const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'TanmaMergedPdf.pdf';
+            link.click();
+            URL.revokeObjectURL(url);
 
-        showToast('File berhasil digabung!');
-    } catch (error) {
-        console.error('Error merging files:', error);
-        showToast('Gagal menggabung file. Silakan coba lagi.', 'error');
-    } finally {
-        mergeButton.disabled = false;
-        mergeButton.textContent = 'Gabung File';
-        loading.classList.add('hidden');
-    }
-});
+            showToast('File berhasil digabung!');
+        } catch (error) {
+            console.error('Error merging files:', error);
+            showToast('Gagal menggabung file. Silakan coba lagi.', 'error');
+        } finally {
+            mergeButton.disabled = false;
+            mergeButton.textContent = 'Gabung File';
+            loading.classList.add('hidden');
+        }
+    });
     </script>
 </x-app-layout>
