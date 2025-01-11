@@ -40,9 +40,9 @@ class MeetingController extends Controller
     public function storeTopic(Meeting $meeting, Request $request)
 {
     $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'files.*' => 'nullable|file|max:10240'
+        'title' => 'required|string|max:20',
+        'description' => 'nullable|string|max:200',
+        'files.*' => 'nullable|file|max:6048'
     ]);
 
     $topic = $meeting->topics()->create([

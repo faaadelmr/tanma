@@ -29,9 +29,9 @@ class UserManagementController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'unique:users'],
-            'email' => ['nullable', 'string', 'lowercase', 'max:255', 'unique:users'],
+            'name' => ['required', 'string', 'max:100'],
+            'username' => ['required', 'string', 'min:5', 'max:15', 'unique:users', 'regex:/^[a-zA-Z0-9_]+$/'],
+            'email' => ['nullable', 'string', 'lowercase', 'max:100', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => 'required|exists:roles,name'
         ]);
@@ -59,9 +59,9 @@ class UserManagementController extends Controller
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users,username,'.$user->id,
-            'email' => 'nullable|string|email:rfc,dns|max:255|unique:users,email,'.$user->id,
+            'name' => 'required|string|max:50',
+            'username' => 'required|string|min:5|max:15|unique:users,username,'.$user->id.'|regex:/^[a-zA-Z0-9_]+$/',
+            'email' => 'nullable|string|email:rfc,dns|max:100|unique:users,email,'.$user->id,
             'role' => 'required|exists:roles,name'
         ]);
 

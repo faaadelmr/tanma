@@ -24,7 +24,7 @@ class TaskCategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:50',
         ]);
         // Handle boolean fields with proper default values
         $validated['has_dor_date'] = $request->has('has_dor_date');
@@ -51,7 +51,7 @@ public function update(Request $request, string $id)
     $category = TaskCategory::findOrFail($id);
 
     $validated = $request->validate([
-        'name' => 'required|string|max:255',
+        'name' => 'required|string|max:50',
     ]);
 
     // Handle boolean fields with proper default values

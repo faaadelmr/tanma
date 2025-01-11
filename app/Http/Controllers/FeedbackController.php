@@ -17,8 +17,8 @@ class FeedbackController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|max:255',
-            'detail' => 'required',
+            'title' => 'required|max:20',
+            'detail' => 'required|max:500',
             'file' => 'nullable|file|max:2048'
         ]);
 
