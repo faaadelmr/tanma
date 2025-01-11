@@ -59,6 +59,11 @@
                 </details>
             </li>
             {{-- <li><a href="{{ url('/chats') }}">Chat</a></li> --}}
+            @role('dev')
+            <li>
+                <a href="{{ route('feedback')}}">Masukan User</a>
+            </li>
+            @endrole
             @role('PIC')
                 <li>
                     <details>

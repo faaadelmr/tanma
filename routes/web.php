@@ -29,11 +29,12 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::middleware(['auth', 'role:PIC', ])->group(function () {    Route::resource('users', UserManagementController::class);
+Route::middleware(['auth', 'role:PIC'])->group(function () {    
+    Route::resource('users', UserManagementController::class);
 });
 
 Route::middleware(['auth', 'role:dev'])->group(function () {
-    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback.index');
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('feedback');
     Route::patch('/feedback/{feedback}/toggle-done', [FeedbackController::class, 'toggleDone'])->name('feedback.toggle-done');
 });
 

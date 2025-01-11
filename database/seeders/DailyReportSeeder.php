@@ -17,7 +17,7 @@ class DailyReportSeeder extends Seeder
 
         foreach ($users as $user) {
             // Create reports for last 30 days
-            for ($i = 0; $i < 30; $i++) {
+            for ($i = 0; $i < 720; $i++) {
                 $report = DailyReport::create([
                     'user_id' => $user->id,
                     'report_date' => Carbon::now()->subDays($i),
