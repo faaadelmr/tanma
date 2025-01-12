@@ -56,7 +56,7 @@
                             </div>
                             <h3 class="mt-4 text-xl font-semibold">Jatuhkan file disini</h3>
                             <p class="mt-2 text-sm text-base-content/70">atau klik disini untuk memilih beberapa berkas</p>
-                            <p class="mt-1 text-xs text-base-content/50">Mendukung: PDF, DOCX, PNG, JPG</p>
+                            <p class="mt-1 text-xs text-base-content/50">Mendukung: PDF, PNG, JPG</p>
                         </label>
                     </div>
                 </div>

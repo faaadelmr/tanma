@@ -15,6 +15,8 @@
     <link href="https://cdn.jsdelivr.net/npm/chart.js@4/dist/Chart.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.min.css" rel="stylesheet" type="text/css" />
     <link rel="icon" href="{{ asset('tanma.png') }}" type="image/png"/>
 
 
