@@ -57,13 +57,13 @@ public function store(Request $request)
         'tasks' => 'required|array',
         'tasks.*.category_id' => 'required|exists:task_categories,id',
         'tasks.*.date' => 'nullable|date',
-        'tasks.*.batch_count' => 'nullable|integer|max:7',
-        'tasks.*.claim_count' => 'nullable|integer|max:7',
+        'tasks.*.batch_count' => 'nullable|integer',
+        'tasks.*.claim_count' => 'nullable|integer',
         'tasks.*.start_time' => 'nullable|date_format:H:i',
         'tasks.*.end_time' => 'nullable|date_format:H:i',
-        'tasks.*.sheet_count' => 'nullable|integer|max:7',
-        'tasks.*.email' => 'nullable|integer|max:7',
-        'tasks.*.form' => 'nullable|integer|max:7',
+        'tasks.*.sheet_count' => 'nullable|integer',
+        'tasks.*.email' => 'nullable|integer',
+        'tasks.*.form' => 'nullable|integer',
     ]);
     
 
