@@ -108,30 +108,30 @@
         let thumbnails = new Map();
 
         // Initialize Sortable
-new Sortable(fileGrid, {
-    animation: 150,
-    ghostClass: 'bg-base-500',
-    onEnd: function(evt) {
-        // Get the old and new positions
-        const oldIndex = evt.oldIndex;
-        const newIndex = evt.newIndex;
+        new Sortable(fileGrid, {
+            animation: 150,
+            ghostClass: 'bg-base-500',
+            onEnd: function(evt) {
+                // Get the old and new positions
+                const oldIndex = evt.oldIndex;
+                const newIndex = evt.newIndex;
 
-        // Update the files array to match the new visual order
-        const itemMoved = files.splice(oldIndex, 1)[0];
-        files.splice(newIndex, 0, itemMoved);
-    }
-});
+                // Update the files array to match the new visual order
+                const itemMoved = files.splice(oldIndex, 1)[0];
+                files.splice(newIndex, 0, itemMoved);
+            }
+        });
 
-// Add this event listener for the sort by name button
-sortByName.addEventListener('click', () => {
-    // Sort the files array by filename
-    files.sort((a, b) => {
-        return a.file.name.localeCompare(b.file.name);
-    });
+        // Add this event listener for the sort by name button
+        sortByName.addEventListener('click', () => {
+            // Sort the files array by filename
+            files.sort((a, b) => {
+                return a.file.name.localeCompare(b.file.name);
+            });
 
-    // Refresh the grid to show the new order
-    refreshFileGrid();
-});
+            // Refresh the grid to show the new order
+            refreshFileGrid();
+        });
 
 
         // Event Listeners
@@ -293,175 +293,175 @@ sortByName.addEventListener('click', () => {
 
         // Merge files
         mergeButton.addEventListener('click', async () => {
-    if (files.length === 0) return;
+            if (files.length === 0) return;
 
-    mergeButton.disabled = true;
-    mergeButton.innerHTML = '<span class="loading loading-spinner"></span> Processing...';
-    loading.classList.remove('hidden');
-
-    try {
-        const mergedPdf = await PDFLib.PDFDocument.create();
-
-        for (const fileData of files) {
-            const file = fileData.file;
-            let pdfBytes;
+            mergeButton.disabled = true;
+            mergeButton.innerHTML = '<span class="loading loading-spinner"></span> Processing...';
+            loading.classList.remove('hidden');
 
             try {
-                // Handle PDF files
-                if (file.type === 'application/pdf') {
-                    pdfBytes = await file.arrayBuffer();
-                }
-                // Handle image files
-                else if (file.type.includes('image')) {
-                    const img = await createImageBitmap(file);
-                    const tempPdf = await PDFLib.PDFDocument.create();
+                const mergedPdf = await PDFLib.PDFDocument.create();
 
-                    // Create a new page with standard dimensions (A4 size)
-                    const pageWidth = 595.28; // A4 width in points
-                    const pageHeight = 841.89; // A4 height in points
-                    const page = tempPdf.addPage([pageWidth, pageHeight]);
+                for (const fileData of files) {
+                    const file = fileData.file;
+                    let pdfBytes;
 
-                    const imageBytes = await file.arrayBuffer();
-                    let pdfImage;
-
-                    if (file.type === 'image/jpeg') {
-                        pdfImage = await tempPdf.embedJpg(imageBytes);
-                    } else if (file.type === 'image/png') {
-                        pdfImage = await tempPdf.embedPng(imageBytes);
-                    }
-
-                    // Get the dimensions of the image
-                    const { width: imgWidth, height: imgHeight } = await pdfImage.scale(1);
-
-                    // Calculate the scale to fit the image within A4 dimensions while maintaining aspect ratio
-                    const scale = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
-                    const scaledWidth = imgWidth * scale;
-                    const scaledHeight = imgHeight * scale;
-
-                    // Center the image on the page
-                    const xOffset = (pageWidth - scaledWidth) / 2;
-                    const yOffset = (pageHeight - scaledHeight) / 2;
-
-                    // Draw the image
-                    page.drawImage(pdfImage, {
-                        x: xOffset,
-                        y: yOffset,
-                        width: scaledWidth,
-                        height: scaledHeight,
-                    });
-
-                    pdfBytes = await tempPdf.save();
-                }
-
-            // Handle Word documents (DOC/DOCX)
-            else if (file.type.includes('word')) {
-                // First convert Word to HTML using Mammoth
-                const arrayBuffer = await file.arrayBuffer();
-                const result = await mammoth.convertToHtml({ arrayBuffer });
-                const htmlContent = result.value;
-
-                // Create a temporary PDF for the Word content
-                const pdfDoc = await PDFLib.PDFDocument.create();
-                const page = pdfDoc.addPage();
-                const { width, height } = page.getSize();
-                const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
-
-                // Convert HTML content to plain text with line breaks preserved
-                let text = htmlContent.replace(/<[^>]*>/g, ' ');
-                // Collapse multiple spaces to single spaces
-                text = text.replace(/\s+/g, ' ');
-                // Preserve line breaks
-                text = text.replace(/(\r\n|\n|\r)/gm, '\n');
-                text = text.trim();
-
-                const fontSize = 20;
-                const margin = 50;
-                const maxWidth = width - margin * 2;
-                const lineHeight = fontSize * 1.2;
-                let currentY = height - margin;
-                let textLines = text.split('\n');
-
-
-                for (const line of textLines) {
-                    // Wrap long lines
-                    const wrappedLines = wrapLines(line, maxWidth, fontSize, font);
-
-                    for (const wrappedLine of wrappedLines) {
-
-                        page.drawText(wrappedLine, {
-                            x: margin,
-                            y: currentY,
-                            size: fontSize,
-                            font,
-                        });
-
-                        currentY -= lineHeight;
-
-                        if (currentY < margin) {
-                            page = pdfDoc.addPage();
-                            currentY = height - margin;
+                    try {
+                        // Handle PDF files
+                        if (file.type === 'application/pdf') {
+                            pdfBytes = await file.arrayBuffer();
                         }
+                        // Handle image files
+                        else if (file.type.includes('image')) {
+                            const img = await createImageBitmap(file);
+                            const tempPdf = await PDFLib.PDFDocument.create();
+
+                            // Create a new page with standard dimensions (A4 size)
+                            const pageWidth = 595.28; // A4 width in points
+                            const pageHeight = 841.89; // A4 height in points
+                            const page = tempPdf.addPage([pageWidth, pageHeight]);
+
+                            const imageBytes = await file.arrayBuffer();
+                            let pdfImage;
+
+                            if (file.type === 'image/jpeg') {
+                                pdfImage = await tempPdf.embedJpg(imageBytes);
+                            } else if (file.type === 'image/png') {
+                                pdfImage = await tempPdf.embedPng(imageBytes);
+                            }
+
+                            // Get the dimensions of the image
+                            const { width: imgWidth, height: imgHeight } = await pdfImage.scale(1);
+
+                            // Calculate the scale to fit the image within A4 dimensions while maintaining aspect ratio
+                            const scale = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+                            const scaledWidth = imgWidth * scale;
+                            const scaledHeight = imgHeight * scale;
+
+                            // Center the image on the page
+                            const xOffset = (pageWidth - scaledWidth) / 2;
+                            const yOffset = (pageHeight - scaledHeight) / 2;
+
+                            // Draw the image
+                            page.drawImage(pdfImage, {
+                                x: xOffset,
+                                y: yOffset,
+                                width: scaledWidth,
+                                height: scaledHeight,
+                            });
+
+                            pdfBytes = await tempPdf.save();
+                        }
+
+                    // Handle Word documents (DOC/DOCX)
+                    else if (file.type.includes('word')) {
+                        // First convert Word to HTML using Mammoth
+                        const arrayBuffer = await file.arrayBuffer();
+                        const result = await mammoth.convertToHtml({ arrayBuffer });
+                        const htmlContent = result.value;
+
+                        // Create a temporary PDF for the Word content
+                        const pdfDoc = await PDFLib.PDFDocument.create();
+                        const page = pdfDoc.addPage();
+                        const { width, height } = page.getSize();
+                        const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+
+                        // Convert HTML content to plain text with line breaks preserved
+                        let text = htmlContent.replace(/<[^>]*>/g, ' ');
+                        // Collapse multiple spaces to single spaces
+                        text = text.replace(/\s+/g, ' ');
+                        // Preserve line breaks
+                        text = text.replace(/(\r\n|\n|\r)/gm, '\n');
+                        text = text.trim();
+
+                        const fontSize = 20;
+                        const margin = 50;
+                        const maxWidth = width - margin * 2;
+                        const lineHeight = fontSize * 1.2;
+                        let currentY = height - margin;
+                        let textLines = text.split('\n');
+
+
+                        for (const line of textLines) {
+                            // Wrap long lines
+                            const wrappedLines = wrapLines(line, maxWidth, fontSize, font);
+
+                            for (const wrappedLine of wrappedLines) {
+
+                                page.drawText(wrappedLine, {
+                                    x: margin,
+                                    y: currentY,
+                                    size: fontSize,
+                                    font,
+                                });
+
+                                currentY -= lineHeight;
+
+                                if (currentY < margin) {
+                                    page = pdfDoc.addPage();
+                                    currentY = height - margin;
+                                }
+                            }
+
+                        }
+
+                        pdfBytes = await pdfDoc.save();
                     }
 
-                }
+                    // Helper function to wrap long lines of text
+                    function wrapLines(text, maxWidth, fontSize, font) {
 
-                pdfBytes = await pdfDoc.save();
-            }
+                        const words = text.split(' ');
+                        const lines = [];
+                        let currentLine = '';
 
-            // Helper function to wrap long lines of text
-            function wrapLines(text, maxWidth, fontSize, font) {
+                        for (const word of words) {
+                            const testLine = currentLine.length > 0 ? `${currentLine} ${word}` : word;
+                            const textWidth = font.widthOfTextAtSize(testLine, fontSize);
 
-                const words = text.split(' ');
-                const lines = [];
-                let currentLine = '';
+                            if (textWidth > maxWidth) {
+                                lines.push(currentLine);
+                                currentLine = word;
+                            } else {
+                                currentLine = testLine;
+                            }
+                        }
 
-                for (const word of words) {
-                    const testLine = currentLine.length > 0 ? `${currentLine} ${word}` : word;
-                    const textWidth = font.widthOfTextAtSize(testLine, fontSize);
-
-                    if (textWidth > maxWidth) {
                         lines.push(currentLine);
-                        currentLine = word;
-                    } else {
-                        currentLine = testLine;
+                        return lines;
+
+                    }
+
+
+                        // Merge the converted PDF into the main document
+                        const pdf = await PDFLib.PDFDocument.load(pdfBytes);
+                        const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                        pages.forEach(page => mergedPdf.addPage(page));
+
+                    } catch (error) {
+                        console.error(`Error processing file ${file.name}:`, error);
+                        showToast(`Failed to process ${file.name}`, 'error');
                     }
                 }
 
-                lines.push(currentLine);
-                return lines;
+                    const mergedPdfBytes = await mergedPdf.save();
+                    const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'TanmaMergedPdf.pdf';
+                    link.click();
+                    URL.revokeObjectURL(url);
 
-            }
-
-
-                // Merge the converted PDF into the main document
-                const pdf = await PDFLib.PDFDocument.load(pdfBytes);
-                const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                pages.forEach(page => mergedPdf.addPage(page));
-
-            } catch (error) {
-                console.error(`Error processing file ${file.name}:`, error);
-                showToast(`Failed to process ${file.name}`, 'error');
-            }
-        }
-
-            const mergedPdfBytes = await mergedPdf.save();
-            const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'TanmaMergedPdf.pdf';
-            link.click();
-            URL.revokeObjectURL(url);
-
-            showToast('File berhasil digabung!');
-        } catch (error) {
-            console.error('Error merging files:', error);
-            showToast('Gagal menggabung file. Silakan coba lagi.', 'error');
-        } finally {
-            mergeButton.disabled = false;
-            mergeButton.textContent = 'Gabung File';
-            loading.classList.add('hidden');
-        }
-    });
+                    showToast('File berhasil digabung!');
+                } catch (error) {
+                    console.error('Error merging files:', error);
+                    showToast('Gagal menggabung file. Silakan coba lagi.', 'error');
+                } finally {
+                    mergeButton.disabled = false;
+                    mergeButton.textContent = 'Gabung File';
+                    loading.classList.add('hidden');
+                }
+            });
     </script>
 </x-app-layout>
