@@ -32,13 +32,13 @@
                         </div>
 
                         <div class="mt-6">
-                            <button type="button" id="add-task" class="bg-primary hover:bg-red-500 text-white font-bold py-2 px-4 rounded">
+                            <button type="button" id="add-task" class="bg-red-400 hover:bg-red-600 text-white font-bold py-1 px-2 rounded">
                                 Tambah Tugas
                             </button>
                         </div>
 
                         <div class="mt-6">
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            <button type="submit" class="bg-accent hover:bg-accent text-white font-bold py-2 px-4 rounded">
                                 Buat Tugas
                             </button>
                         </div>
@@ -73,7 +73,7 @@
 
                 <div class="dor-field hidden">
                     <label class="block mb-2">DOR</label>
-                    <input type="date" name="tasks[INDEX][date]" class="rounded-md shadow-sm border-gray-300 w-full">
+                    <input value="{{ now()->format('Y-m-d') }}" type="date" name="tasks[INDEX][date]" class="rounded-md shadow-sm border-gray-300 w-full">
                 </div>
             </div>
 
