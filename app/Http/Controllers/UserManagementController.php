@@ -29,7 +29,7 @@ class UserManagementController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'username' => ['required', 'string', 'min:5', 'max:15', 'unique:users', 'regex:/^[a-zA-Z0-9_]+$/'],
-            'email' => ['nullable', 'string', 'lowercase', 'max:100', 'unique:users'],
+            'email' => ['nullable', 'string', 'lowercase', 'max:100','email','unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => 'required|exists:roles,name'
         ]);
