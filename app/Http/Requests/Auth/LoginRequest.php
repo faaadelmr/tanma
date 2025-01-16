@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\User;
 
 class LoginRequest extends FormRequest
 {
@@ -38,19 +39,29 @@ class LoginRequest extends FormRequest
      * @throws \Illuminate\Validation\ValidationException
      */
     public function authenticate(): void
-    {
-        $this->ensureIsNotRateLimited();
+{
+    $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('username', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+    $credentials = $this->only('username', 'password');
+    $user = User::where('username', $credentials['username'])->first();
 
-            throw ValidationException::withMessages([
-                'username' => trans('auth.failed'), // Ubah pesan error ke 'username'
-            ]);
-        }
-
-        RateLimiter::clear($this->throttleKey());
+    if ($user && !$user->is_active) {
+        RateLimiter::hit($this->throttleKey());
+        throw ValidationException::withMessages([
+            'username' => 'Akun ini telah dinonaktifkan.',
+        ]);
     }
+
+    if (!Auth::attempt($credentials, $this->boolean('remember'))) {
+        RateLimiter::hit($this->throttleKey());
+        throw ValidationException::withMessages([
+            'username' => trans('auth.failed'),
+        ]);
+    }
+
+    RateLimiter::clear($this->throttleKey());
+}
+
 
     /**
      * Ensure the login request is not rate limited.

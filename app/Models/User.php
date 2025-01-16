@@ -30,6 +30,7 @@ class User extends Authenticatable
         'photo',
         'path',
         // 'type',
+        'is_active',
     ];
 
     /**
@@ -70,5 +71,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(DailyReport::class);
     }
+
+    public function canLogin()
+    {
+        return $this->is_active=1;
+    }
+
     
 }

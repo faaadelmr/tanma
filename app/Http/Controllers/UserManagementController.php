@@ -6,11 +6,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 
 class UserManagementController extends Controller
 {
@@ -47,7 +45,7 @@ class UserManagementController extends Controller
 
         event(new Registered($user));
 
-        return redirect()->route('users.index')->with('success', 'User created successfully');
+        return redirect()->route('users.index')->with('success', 'Akun berhasil dibuat.');
     }
 
     public function edit(User $user)
@@ -62,23 +60,41 @@ class UserManagementController extends Controller
             'name' => 'required|string|max:50',
             'username' => 'required|string|min:5|max:15|unique:users,username,'.$user->id.'|regex:/^[a-zA-Z0-9_]+$/',
             'email' => 'nullable|string|email:rfc,dns|max:100|unique:users,email,'.$user->id,
-            'role' => 'required|exists:roles,name'
+            'role' => 'required|exists:roles,name',
+            'is_active' => 'required|boolean',
         ]);
 
         $user->update([
             'name' => $validated['name'],
             'username' => $validated['username'],
-            'email' => $validated['email'], // This can be null
+            'email' => $validated['email'],
+            'is_active' => $validated['is_active'],
         ]);
 
         $user->syncRoles([$validated['role']]);
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully');
+        return redirect()->route('users.index')->with('success', 'Pengguna berhasil diperbarui');
     }
 
     public function destroy(User $user)
-    {
-        $user->delete();
-        return redirect()->route('users.index')->with('success', 'User deleted successfully');
+{
+    DB::beginTransaction();
+    try {
+        // Deactivate user instead of deleting
+        $user->update([
+            'is_active' => true,
+        ]);
+        
+        DB::commit();
+        return redirect()->route('users.index')
+            ->with('success', 'Akun pengguna berhasil diaktfikan');
+            
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->route('users.index')
+            ->with('error', 'Gagal mengaktifkan pengguna');
     }
+}
+
+
 }

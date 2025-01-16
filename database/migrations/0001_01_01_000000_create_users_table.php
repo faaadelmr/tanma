@@ -17,10 +17,11 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('photo')->nullable();
             $table->string('path')->nullable();
-            // $table->string('type')->nullable();
+            // $table->string('type')->nullable(); untuk fungsi tipe gambar
             $table->string('email')->unique()->nullable();;
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('is_active')->default(true); 
             $table->rememberToken();
             $table->timestamps();
         });
