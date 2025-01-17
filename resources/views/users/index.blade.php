@@ -32,7 +32,23 @@
 
     <div class="py-4 sm:py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-end mb-4">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                <div class="flex items-center gap-4 w-full sm:w-auto">
+                    <div class="form-control">
+                        <label class="cursor-pointer label gap-2">
+                            <span class="label-text font-medium">Status User</span>
+                            <select id="userFilter" class="select select-bordered select-sm">
+                                <option value="all">Semua User</option>
+                                <option value="active">User Aktif</option>
+                                <option value="inactive">User Tidak Aktif</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="form-control flex-1 sm:flex-none">
+                        <input type="text" id="searchUser" placeholder="Cari user..." 
+                               class="input input-bordered input-sm w-full">
+                    </div>
+                </div>
                 <a href="users/create" class="btn btn-sm sm:btn-md bg-secondary w-full sm:w-auto">
                     Tambah Akun
                 </a>
@@ -43,24 +59,20 @@
                         <table class="table w-full">
                             <thead>
                                 <tr class="bg-gray-50 border-b">
-                                    <th
-                                        class="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 tracking-wider">
+                                    <th class="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 tracking-wider">
                                         Name</th>
-                                    <th
-                                        class="hidden sm:table-cell px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 tracking-wider">
+                                    <th class="hidden sm:table-cell px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 tracking-wider">
                                         Username & Email</th>
-                                    <th
-                                        class="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 tracking-wider">
+                                    <th class="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 tracking-wider">
                                         Role</th>
-                                    <th
-                                        class="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 tracking-wider">
+                                    <th class="px-3 sm:px-4 py-2 sm:py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 tracking-wider">
                                         Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
                                 @foreach($users as $user)
                                     @if(!$user->roles->pluck('name')->contains('dev'))
-                                        <tr class="hover:bg-gray-50/50 transition-colors duration-150 @if(!$user->is_active) opacity-60  @endif">
+                                        <tr class="hover:bg-gray-50/50 transition-colors duration-150 @if(!$user->is_active) opacity-60 inactive-user @endif">
                                             <td class="px-3 sm:px-4 py-2 sm:py-3">
                                                 <div class="text-sm text-gray-900">{{ $user->name }}</div>
                                                 <div class="sm:hidden text-xs text-gray-500">
@@ -101,6 +113,9 @@
                         </table>
                     </div>
                 </div>
+                <div id="noResults" class="hidden text-center py-8 text-gray-500">
+                    Tidak ada user yang ditemukan
+                </div>
             </div>
         </div>
     </div>
@@ -122,5 +137,41 @@
                 }
             });
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const userFilter = document.getElementById('userFilter');
+            const searchInput = document.getElementById('searchUser');
+            const userRows = document.querySelectorAll('tbody tr');
+            const noResults = document.getElementById('noResults');
+
+            function filterUsers() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const filterValue = userFilter.value;
+                let visibleCount = 0;
+
+                userRows.forEach(row => {
+                    const name = row.querySelector('td:first-child').textContent.toLowerCase();
+                    const username = row.querySelector('.text-gray-500').textContent.toLowerCase();
+                    const isInactive = row.classList.contains('opacity-60');
+                    
+                    const matchesSearch = name.includes(searchTerm) || username.includes(searchTerm);
+                    const matchesFilter = filterValue === 'all' || 
+                                        (filterValue === 'active' && !isInactive) || 
+                                        (filterValue === 'inactive' && isInactive);
+
+                    if (matchesSearch && matchesFilter) {
+                        row.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        row.classList.add('hidden');
+                    }
+                });
+
+                noResults.classList.toggle('hidden', visibleCount > 0);
+            }
+
+            userFilter.addEventListener('change', filterUsers);
+            searchInput.addEventListener('input', filterUsers);
+        });
     </script>
 </x-app-layout>
