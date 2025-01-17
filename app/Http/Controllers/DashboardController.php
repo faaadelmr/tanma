@@ -167,7 +167,7 @@ class DashboardController extends Controller
         // Generate date range
         $dates = collect();
         for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
-            $dates->push($date->format('m-d-y'));
+            $dates->push($date->format('y-m-d'));
         }
 
         // Initialize data structure
@@ -193,8 +193,8 @@ class DashboardController extends Controller
         foreach ($reports as $report) {
             foreach ($report->tasks as $task) {
                 $date = ($task->category->has_dor_date && $task->task_date)
-                    ? Carbon::parse($task->task_date)->format('m-d-y')
-                    : $report->report_date->format('m-d-y');
+                    ? Carbon::parse($task->task_date)->format('y-m-d ')
+                    : $report->report_date->format('y-m-d');
 
                 $dateIndex = collect($chartData[$task->category->name])->search(function($item) use($date) {
                     return $item['date'] === $date;
