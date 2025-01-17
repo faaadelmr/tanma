@@ -15,9 +15,9 @@
                     <!-- Member Input -->
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text font-medium">Nama Anggota</span>
+                            <span class="label-text font-medium">Nama</span>
                         </label>
-                        <input type="text" id="memberName" placeholder="Masukkan nama anggota"
+                        <input type="text" id="memberName" placeholder="Masukkan nama"
                             class="input input-bordered input-primary w-full" />
                     </div>
 
@@ -69,7 +69,7 @@
                             </div>
                             <div class="form-control">
                                 <label class="label">
-                                    <span class="label-text">Biaya Kemasan</span>
+                                    <span class="label-text">Biaya Ongkos Kirim</span>
                                 </label>
                                 <input type="number" id="packagingFee"
                                     class="input input-bordered input-secondary"

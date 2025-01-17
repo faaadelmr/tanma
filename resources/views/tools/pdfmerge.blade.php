@@ -47,7 +47,7 @@
             <div class="card">
                 <div class="mb-8">
                     <div id="dropZone" class="p-8 border-2 border-dashed shadow-xl transition-all duration-300 card bg-base-100 border-primary/50 hover:border-primary">
-                        <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" class="hidden">
+                        <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.webp" class="hidden">
                         <label for="fileInput" class="block text-center cursor-pointer">
                             <div class="floating">
                                 <svg class="mx-auto w-16 h-16 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -316,11 +316,12 @@
                             const img = await createImageBitmap(file);
                             const tempPdf = await PDFLib.PDFDocument.create();
 
-                            // Create a new page with standard dimensions (A4 size)
-                            const pageWidth = 595.28; // A4 width in points
-                            const pageHeight = 841.89; // A4 height in points
-                            const page = tempPdf.addPage([pageWidth, pageHeight]);
 
+
+
+
+
+                            // Create a new page with image dimensions
                             const imageBytes = await file.arrayBuffer();
                             let pdfImage;
 
@@ -333,21 +334,28 @@
                             // Get the dimensions of the image
                             const { width: imgWidth, height: imgHeight } = await pdfImage.scale(1);
 
-                            // Calculate the scale to fit the image within A4 dimensions while maintaining aspect ratio
-                            const scale = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
-                            const scaledWidth = imgWidth * scale;
-                            const scaledHeight = imgHeight * scale;
 
-                            // Center the image on the page
-                            const xOffset = (pageWidth - scaledWidth) / 2;
-                            const yOffset = (pageHeight - scaledHeight) / 2;
 
-                            // Draw the image
+
+
+                            // Create page with original image dimensions
+                            const page = tempPdf.addPage([imgWidth, imgHeight]);
+
+
+
+
+
+
+                            // Draw the image at original size
                             page.drawImage(pdfImage, {
-                                x: xOffset,
-                                y: yOffset,
-                                width: scaledWidth,
-                                height: scaledHeight,
+
+
+
+
+                                x: 0,
+                                y: 0,
+                                width: imgWidth,
+                                height: imgHeight,
                             });
 
                             pdfBytes = await tempPdf.save();
