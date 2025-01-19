@@ -58,7 +58,7 @@
                     </ul>
                 </details>
             </li>
-            {{-- <li><a href="{{ url('/chats') }}">Chat</a></li> --}}
+            <li><a href="{{ url('/obrolan') }}">Chat</a></li>
             @role('dev')
             <li>
                 <a href="{{ route('feedback')}}">Masukan User</a>

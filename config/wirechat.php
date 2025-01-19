@@ -40,7 +40,7 @@ return [
      * Configures the URL prefix and middleware for Wirechat routes.
      */
     'routes' => [
-        'prefix' => '/chats',
+        'prefix' => '/obrolan',
         'middleware' => ['web', 'auth'],
     ],
 
