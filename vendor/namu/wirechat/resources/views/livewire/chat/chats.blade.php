@@ -131,7 +131,7 @@
                         <a href="{{ route(WireChat::viewRouteName(), $conversation->id) }}" class="shrink-0">
                             <x-wirechat::avatar disappearing="{{ $conversation->hasDisappearingTurnedOn() }}"
                                 group="{{ $conversation->isGroup() }}"
-                                src="{{ $group ? $group?->cover_url : $receiver?->cover_url ?? null }}"
+                                src="{{ $group ? $group?->cover_url : ($receiver?->path ? '/storage/' . $receiver?->path : asset('image.webp')) }}"
                                 class="w-12 h-12" />
                         </a>
 
@@ -240,7 +240,7 @@
             @endif
         @else
             <div class="w-full flex items-center h-full justify-center">
-                <h6 class=" font-bold text-gray-700 dark:text-white">No conversations yet</h6>
+                <h6 class=" font-bold text-gray-700 dark:text-white">Belum ada Percakapan</h6>
             </div>
 
         @endif

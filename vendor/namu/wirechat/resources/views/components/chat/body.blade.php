@@ -109,7 +109,7 @@
                                 $previousMessage &&
                                 $message?->sendable?->is($previousMessage?->sendable),
                         ])>
-                            <x-wirechat::avatar src="{{ $message->sendable?->cover_url ?? null }}" class="h-8 w-8" />
+                            <x-wirechat::avatar src="{{ $message->sendable?->path ? '/storage/' . $message->sendable?->path : asset('image.webp') }}" class="h-8 w-8" />
                         </div>
                     @endif
 

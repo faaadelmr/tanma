@@ -105,7 +105,7 @@
                          @endif
         
                             class="flex cursor-pointer gap-2 items-center w-full">
-                            <x-wirechat::avatar src="{{$user->cover_url}}" class="w-10 h-10" />
+                            <x-wirechat::avatar src="{{$user->path ? '/storage/' . $user->path : asset('image.webp')}}" class="w-10 h-10" />
 
                            <div @class(['opacity-70' => $isAlreadyAParticipant]) >
                             <p

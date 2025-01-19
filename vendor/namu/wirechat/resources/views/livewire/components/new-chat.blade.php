@@ -7,7 +7,7 @@
     <header class=" sticky top-0 bg-white dark:bg-gray-800 z-10 py-2">
         <div class="flex justify-between items-center justify-between pb-2">
 
-            <h3 class="text-lg font-semibold">New Chat</h3>
+            <h3 class="text-lg font-semibold">Chat Baru</h3>
 
             <button
              dusk="close_modal_button"
@@ -50,7 +50,7 @@
 
         </span>
 
-        <p class="dark:text-white">New group</p>
+        <p class="dark:text-white">Buat group</p>
      </button>
      @endif
     {{-- <h5 class="text font-semibold text-gray-800 dark:text-gray-100">Recent Chats</h5> --}}
@@ -64,7 +64,7 @@
                             wire:click="createConversation('{{ $user->id }}',{{ json_encode(get_class($user)) }})"
                             class="flex cursor-pointer group gap-2 items-center p-2">
 
-                            <x-wirechat::avatar src="{{ $user->cover_url }}" class="w-10 h-10" />
+                            <x-wirechat::avatar src="{{ $user->path ? '/storage/' . $user->path : asset('image.webp') }}" class="w-10 h-10" />
 
                             <p class="group-hover:underline transition-all">
                                 {{ $user->display_name }}</p>

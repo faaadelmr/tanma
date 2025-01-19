@@ -200,7 +200,7 @@
                 <div class="mx-auto items-center justify-center grid">
 
                     <a href="{{ $receiver->profile_url }}">
-                        <x-wirechat::avatar src="{{ $cover_url }}" class=" h-32 w-32 mx-auto" />
+                        <x-wirechat::avatar src="{{ $receiver?->path ? '/storage/' . $receiver?->path : asset('image.webp')}}" class=" h-32 w-32 mx-auto" />
                     </a>
                 </div>
 

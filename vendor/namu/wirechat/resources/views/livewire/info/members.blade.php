@@ -58,7 +58,7 @@
                             class="flex cursor-pointer group gap-2 items-center overflow-x-hidden p-2 py-3">
 
                             <label class="flex cursor-pointer gap-2 items-center w-full">
-                                <x-wirechat::avatar src="{{ $participant->participantable->cover_url }}"
+                                <x-wirechat::avatar src="{{ $participant->participantable->path ? '/storage/' . $participant->participantable->path : asset('image.webp') }}"
                                     class="w-10 h-10" />
 
                                 <div class="grid grid-cols-12 w-full ">

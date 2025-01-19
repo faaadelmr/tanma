@@ -28,7 +28,7 @@
                 <div wire:click="$dispatch('openChatDrawer', {component: 'info',arguments: { conversation: {{ $conversation->id }} }})"
                     class="flex items-center gap-2 cursor-pointer ">
                     <x-wirechat::avatar disappearing="{{$conversation->hasDisappearingTurnedOn()}}" group="{{ $conversation->isGroup() }}"
-                        src="{{ $group ? $group?->cover_url : $receiver?->cover_url ?? null }}"
+                        src="{{ $group ? $group?->cover_url : ($receiver?->path ? '/storage/' . $receiver?->path : asset('image.webp')) }}"
                         class="h-8 w-8 lg:w-10 lg:h-10 " />
                     <h6 class="font-bold text-base text-gray-800 dark:text-white w-full truncate">
                         {{ $group ? $group?->name : $receiver?->display_name }} @if ($conversation->isSelfConversation())
