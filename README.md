@@ -3,46 +3,63 @@
 </p>
 
 <h1 align="center">TANMA - Report System</h1>
+<p align="center">TANMA adalah project kampus untuk tugas besar matakuliah pengembangan perangkat lunak. yang berisikan informasi report harian kerja serta alat-alat penunjang kerja.</p>
 
-<p align="center">
-     •<a href="#about">Tentang</a> •
-    <a href="#features">Fitur</a> •
-    <a href="#installation">Cara Install</a> •
-    <!-- <a href="#usage">Usage</a> • -->
-</p>
 
-## About
 
-TANMA adalah project kampus untuk tugas besar matakuliah pengembangan perangkat lunak. yang berisikan informasi report harian kerja serta alat-alat menunjang kerja.
 
-## Features
-✨ **Core Features**
-- User & Role Management
-- Report Daily
-- Meetings Topic
-- Tools (MergePDF, SelectPDF, SplitBill)
+## Fitur
 
-🔒 **Security**
+ - Dashboard
+ - Report Harian, Kategori Report
+ - Tools (PDFmerge, PDFselected, SplitBill)
+ - User Management
+
+
+
+## Screenshots
+
+<img src="public/ss/0.jpg" alt="Tanma SS">
+<img src="public/ss/1.jpg" alt="Tanma SS">
+<img src="public/ss/2.jpg" alt="Tanma SS">
+<img src="public/ss/3.jpg" alt="Tanma SS">
+<img src="public/ss/4.jpg" alt="Tanma SS">
+<img src="public/ss/5.jpg" alt="Tanma SS">
+<img src="public/ss/6.jpg" alt="Tanma SS">
+<img src="public/ss/7.jpg" alt="Tanma SS">
+<img src="public/ss/8.jpg" alt="Tanma SS">
+
+
+
+
+
+## Teknologi
+
+Backend Framework & Language:
+
+**Laravel 11**
+
+Database: **MySQL**
+
+
+**Frontend Technologies:**
+
+- Blade Template Engine
+- JavaScript
+- SweetAlert2 (Library untuk modal/popup)
+- Font Awesome (Icon library)
+- Tailwind CSS (Utility-first CSS framework)
+- DaisyUI (Tailwind CSS component library)
+
+**Development Tools & Libraries:**
+- Composer (PHP package manager)
+- NPM (Node package manager)
+- PHPSpreadsheet (untuk export Excel)
+- Security & Authentication:
+
+**Laravel Built-in Authentication**
+- CSRF Protection
 - Role-Based Access Control
-- Secure Authentication
-- Activity Logging
+- Breeze
 
-📱 **Technology**
-- Laravel 11
-- MySQL Database
-- Mobile Responsive Design
 
-## Installation
-
-1. Clone repository:
-```bash
-git clone https://github.com/fravadearu/tanma.git
-cd tanma
-composer install
-npm install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate --seed
-php artisan storage:link
-npm run build
-composer run dev
