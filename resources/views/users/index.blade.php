@@ -1,9 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <h2 class="font-bold text-2xl sm:text-3xl leading-tight">
-                {{ __('Daftar User') }}
-            </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-primary">{{ __('Daftar User') }}</h2>
         </div>
     </x-slot>
 

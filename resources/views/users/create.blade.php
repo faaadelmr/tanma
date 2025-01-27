@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-primary font-semibold text-2xl leading-tight">
-            {{ __('Rapat Mingguan') }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-primary">{{ __('Buat User Baru') }}</h2>
+        </div>
     </x-slot>
 
     <div class="">
