@@ -19,7 +19,7 @@ class DailyReportController extends Controller
         $reports = DailyReport::with(['user', 'tasks.category'])
             ->orderBy('report_date', 'desc')
             ->orderBy('is_approved', 'asc')
-            ->paginate(User::distinct('id')->count() * 2 - 2);
+            ->paginate(User::distinct('id')->count() * 2 - 6);
         return view('daily-reports.index', compact('reports'));
     }
 
