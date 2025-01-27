@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="retro" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html data-theme="" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="utf-8">
@@ -12,20 +12,94 @@
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans text-gray-900 antialiased">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-        <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-            {{ $slot }}
+
+<body class="">
+    <div class="navbar bg-base-100">
+        <div class="navbar-start">
+            <div class="dropdown lg:hidden">
+                <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                    </svg>
+                </div>
+                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <li><a class="text-md" href="{{ route('tanma.merge') }}">PdfMerge</a></li>
+                    <li><a class="text-md" href="{{route('tanma.selected')}}" >PdfSelected</a></li>
+                    <li><a class="text-md" href="{{route('tanmasplitbill')}}" >Split Bill</a></li>
+                </ul>
+            </div>
+            <a class="text-xl text-red-600 btn btn-ghost" href="{{ route('dashboard') }}">
+                Tanma
+            </a>
+        </div>
+    
+        <div class="hidden navbar-center lg:flex">
+            <ul class="px-1 menu menu-horizontal">
+                
+                <li><a class="text-md" href="{{ route('tanma.merge') }}">Pdf Merge</a></li>
+                <li><a class="text-md" href="{{route('tanma.selected')}}" >Pdf Selected</a></li>
+                <li><a class="text-md" href="{{route('tanmasplitbill')}}" >Split Bill</a></li>
+            </ul>
+        </div>
+        <div class="navbar-end">
+            <ul>
+                    <label for="theme-selector" class="text-sm font-medium leading-6">Tema:</label>
+                    <select id="theme-selector" class="max-w-xs text-sm select select-bordered select-sm">
+                        <option value="light">light</option>
+                        <option value="cupcake">cupcake</option>
+                        <option value="bumblebee">bumblebee</option>
+                        <option value="emerald">emerald</option>
+                        <option value="corporate">corporate</option>
+                        <option value="retro">retro</option>
+                        <option value="cyberpunk">cyberpunk</option>
+                        <option value="valentine">valentine</option>
+                        <option value="halloween">halloween</option>
+                        <option value="garden">garden</option>
+                        <option value="forest">forest</option>
+                        <option value="lofi">lofi</option>
+                        <option value="pastel">pastel</option>
+                        <option value="fantasy">fantasy</option>
+                        <option value="wireframe">wireframe</option>
+                        <option value="luxury">luxury</option>
+                        <option value="cmyk">cmyk</option>
+                        <option value="autumn">autumn</option>
+                        <option value="business">business</option>
+                        <option value="lemonade">lemonade</option>
+                    </select>
+                </div>
+            </ul>
+                <ul class="pl-2">
+                    <a href="{{ url('login') }}" class="text-xl">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                    </a>
+                </ul>
         </div>
     </div>
+    
+    <main data-theme="" class="border-accent rounded-md">
+        {{ $slot }}
+    </main>
+
 </body>
 <script>
+    const themeSelector = document.getElementById('theme-selector');
+
+// Load theme on page load
+document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') ||
+    'autumn'); // 'default' is the fallback
+
+themeSelector.addEventListener('change', function() {
+    const selectedTheme = this.value;
+    document.documentElement.setAttribute('data-theme', selectedTheme);
+    localStorage.setItem('theme', selectedTheme);
+});
  // Auto dismiss error alert after 5 seconds
 setTimeout(function() {
     const alert = document.querySelector('.bg-red-50');
@@ -181,6 +255,7 @@ function getRandomQuote(greeting) {
 const greeting = getGreeting();
 document.getElementById("greeting").innerText = greeting;
 document.getElementById("quote").innerHTML = getRandomQuote(greeting);
+
 </script>
 
 </html>

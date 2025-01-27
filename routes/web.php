@@ -13,6 +13,9 @@ use App\Http\Controllers\FeedbackController;
 Route::get('/', function () {
     return view('auth.login');
 });
+Route::get('/tanmamerge', function () {return view('toolsguest.pdfmerge');})->name('tanma.merge');
+Route::get('/tanmaselected', function () {return view('toolsguest.pdfselected');})->name('tanma.selected');
+Route::get('/tanmasplitbill', function () {return view('toolsguest.splitbill');})->name('tanmasplitbill');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
