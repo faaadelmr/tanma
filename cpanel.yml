@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/menq1949/repositories/tanma/
+    - /bin/cp -R * $DEPLOYPATH
