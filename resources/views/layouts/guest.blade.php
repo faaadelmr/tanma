@@ -128,119 +128,59 @@ function getGreeting() {
 
 // Daftar kutipan yang berbeda dengan <br> untuk pemisahan
 const quotes = [
-    "'Kita semua memiliki kekuatan untuk menciptakan keajaiban, selama kita percaya pada diri kita sendiri dan tidak takut untuk bermimpi lebih besar.' <br> — Frozen II, Elsa —",
-
-    "'Aku tidak ingin menjadi raja, aku hanya ingin menjadi baik dan melakukan yang benar untuk orang-orang di sekitarku, karena itu yang sebenarnya penting dalam hidup.' <br> — The Lion King, Simba —",
-
-    "'Satu-satunya batasan adalah batasan yang kita buat untuk diri kita sendiri; jika kita berani mengambil langkah pertama, tidak ada yang tidak mungkin.' <br> — Big Hero 6, Hiro —",
-
-    "'Cinta adalah hal terkuat di dunia; ia bisa mengalahkan segala rintangan dan membawa kita pada perjalanan yang tak terduga.' <br> — Beauty and the Beast, Belle —",
-
-    "'Jangan takut untuk terbang dan menjelajahi dunia; setiap mimpi dimulai dengan satu langkah berani, dan kamu tidak pernah tahu apa yang bisa kamu capai.' <br> — Peter Pan, Peter —",
-
-    "'Hidup ini seperti kotak cokelat; kamu tidak pernah tahu apa yang akan kamu dapatkan, jadi nikmatilah setiap rasa yang datang kepadamu.' <br> — Forrest Gump, Forrest —",
-
-    "'Tidak ada yang tidak mungkin jika kamu percaya pada dirimu sendiri dan berusaha keras untuk mencapai apa yang kamu inginkan.' <br> — Mulan, Mulan —",
-
-    "'Kamu tidak perlu menjadi sempurna; cukup jadilah dirimu sendiri dan terima segala sesuatu yang membuatmu unik.' <br> — Zootopia, Judy Hopps —",
-
-    "'Jadilah cahaya dalam kegelapan; dengan kebaikanmu, kamu bisa mengubah dunia dan memberi inspirasi kepada orang lain.' <br> — Tangled, Rapunzel —",
-
-    "'Setiap keajaiban dimulai dengan keinginan yang sederhana; jadi jangan pernah meremehkan kekuatan dari harapan dan impianmu.' <br> — Cinderella, Cinderella —",
-
-    "'Hidup adalah petualangan yang harus dijelajahi; jangan takut untuk menghadapi tantangan dan menemukan dirimu dalam prosesnya.' <br> — Moana, Moana —",
-
-    "'Apa pun yang terjadi, kita selalu bersama; persahabatan kita adalah kekuatan yang tidak bisa dipatahkan oleh apapun.' <br> — Toy Story, Woody —",
-
-    "'Kamu adalah pahlawan dalam kisahmu sendiri; jangan pernah meragukan kekuatanmu untuk membuat perbedaan di dunia ini.' <br> — How to Train Your Dragon, Hiccup —",
-
-    "'Jangan biarkan siapapun memberitahumu bahwa kamu tidak bisa melakukan sesuatu; jika kamu memiliki mimpi, kejar hingga akhir.' <br> — Good Will Hunting, Sean —",
-
-    "'Setiap langkah kecil membawa kita lebih dekat ke tujuan besar; jadi teruslah berjalan, meskipun jalannya terjal.' <br> — Ratatouille, Remy —",
-
-    "'Hargai setiap momen yang kamu miliki; mereka adalah kenangan yang akan menuntunmu di masa depan.' <br> — Up, Carl Fredricksen —",
-
-    "'Kita semua berbeda, dan itu yang membuat kita istimewa; keunikan kita adalah kekuatan, bukan kelemahan.' <br> — The Incredibles, Elastigirl —",
-
-    "'Jangan pernah berhenti bermimpi; setiap impian bisa menjadi kenyataan jika kamu berani berjuang untuknya.' <br> — The Princess and the Frog, Tiana —",
-
-    "'Kesuksesan bukan tentang berapa banyak yang kamu miliki, tetapi tentang seberapa banyak yang kamu berikan kepada orang lain.' <br> — Kung Fu Panda, Po —",
-
-    "'Hidup ini penuh dengan keajaiban, jadi nikmati setiap momennya dan lihatlah sekelilingmu dengan mata yang penuh rasa syukur.' <br> — Finding Nemo, Dory —",
-
-    "'Keluarga adalah tempat di mana cinta tidak pernah berakhir; mereka adalah orang-orang yang selalu ada untukmu, tidak peduli apa pun yang terjadi.' <br> — The Croods, Grug —",
-
-    "'Kamu memiliki kekuatan untuk mengubah dunia, jadi gunakan itu dengan bijak dan penuh kasih sayang.' <br> — Wreck-It Ralph, Ralph —",
-
-    "'Keberanian adalah kunci untuk mencapai impian; hadapi ketakutanmu dan terus berjuang meskipun jalannya sulit.' <br> — The Incredibles, Frozone —",
-
-    "'Jangan hanya bermimpi tentang masa depan; buatlah itu menjadi kenyataan dengan tindakanmu hari ini!' <br> — Up, Ellie —",
-
-    "'Setiap orang memiliki potensi untuk menjadi pahlawan, tidak peduli seberapa kecil tindakanmu; setiap kebaikan memiliki dampak.' <br> — The Lego Movie, Emmet —",
-
-    "'Kamu adalah penulis cerita hidupmu sendiri; tulis kisah yang ingin kamu ceritakan kepada dunia dengan semangat dan keberanian.' <br> — Inside Out, Joy —",
-
-    "'Kita semua punya kekuatan untuk membuat perubahan, jadi mulailah hari ini dan jadilah inspirasi bagi orang-orang di sekitarmu.' <br> — Zootopia, Nick Wilde —",
-
-    "'Jadilah yang terbaik dari dirimu; dunia membutuhkan cahaya dari setiap individu untuk membuatnya lebih baik.' <br> — Tangled, Flynn Rider —",
-
-    "'Hidup adalah perjalanan yang penuh warna; nikmati setiap detiknya dan jangan sia-siakan kesempatan untuk bersinar.' <br> — Coco, Miguel —",
-
-    "'Setiap mimpi dimulai dengan seorang pemimpi; jadi beranilah untuk bermimpi dan berusaha keras untuk mewujudkannya.' <br> — The Little Mermaid, Ariel —",
-
-    "'Bersyukurlah atas setiap pengalaman, karena kita belajar dari semuanya dan tumbuh menjadi pribadi yang lebih baik.' <br> — Monsters, Inc., Sulley —",
-
-    "'Cinta yang tulus bisa mengatasi segala rintangan; itu adalah kekuatan terbesar yang kita miliki dalam hidup.' <br> — Aladdin, Aladdin —",
-
-    "'Kamu adalah bagian dari sesuatu yang lebih besar; jangan meremehkan dirimu dan potensi yang ada dalam dirimu.' <br> — The Lion King, Mufasa —",
-
-    "'Keberanian tidak selalu berteriak; kadangkala ia adalah suara kecil yang mengatakan, 'Aku akan mencoba lagi.' <br> — Finding Dory, Dory —",
-
-    "'Bersama kita bisa mengatasi apa pun; kita adalah tim yang tak terpisahkan, dan kekuatan kita terletak pada persahabatan.' <br> — Frozen, Anna —",
-
-    "'Hidup ini terlalu singkat untuk tidak mengejar impianmu; jadi ambil langkah pertama dan mulai perjalananmu sekarang.' <br> — Ratatouille, Linguini —",
-
-    "'Setiap tindakan kecil bisa memberikan dampak besar pada dunia; jadi lakukanlah dengan hati yang penuh kasih.' <br> — Kung Fu Panda, Master Oogway —",
-
-    "'Jadilah diri sendiri, karena keunikanmu adalah kelebihanmu yang membuatmu berharga di mata dunia.' <br> — Zootopia, Judy Hopps —",
-
-    "'Mimpi tidak akan menjadi kenyataan jika kamu tidak berusaha; jadi berjuanglah untuk apa yang kamu inginkan.' <br> — Mulan, Mushu —",
-
-    "'Keluarga bukan hanya tentang darah; itu tentang siapa yang ada di sampingmu dalam setiap langkah perjalanan.' <br> — The Croods, Eep —",
-
-    "'Selalu ada harapan, bahkan dalam kegelapan yang paling dalam; jangan pernah kehilangan keyakinan dalam dirimu sendiri.' <br> — Big Hero 6, Baymax —",
-
-    "'Hargai setiap momen bersama orang-orang yang kamu cintai; itu adalah kenangan yang akan selalu terpatri dalam hati.' <br> — Up, Carl Fredricksen —",
-
-    "'Jadilah perubahan yang ingin kamu lihat di dunia; setiap tindakan baik yang kamu lakukan bisa menginspirasi orang lain.' <br> — Mulan, Mulan —",
-
-    "'Cinta adalah kekuatan yang bisa mengubah segala sesuatu; jangan ragu untuk menunjukkan kasih sayangmu kepada orang lain.' <br> — Beauty and the Beast, Beast —",
-
-    "'Setiap perjalanan dimulai dengan satu langkah; jadi ambillah langkah pertama itu dan nikmati prosesnya.' <br> — Moana, Moana —",
-
-    "'Kita bisa membuat keajaiban jika kita percaya pada diri kita sendiri dan berani mengambil risiko.' <br> — Tangled, Rapunzel —",
-
-    "'Hidup ini adalah sebuah perjalanan, nikmatilah setiap langkah yang kamu ambil dan pelajari dari setiap pengalaman.' <br> — The Incredibles, Dash —",
-
-    "'Kamu memiliki kekuatan untuk membuat dunia menjadi tempat yang lebih baik; jadi gunakan kekuatan itu untuk kebaikan.' <br> — Wreck-It Ralph, Vanellope —",
-
-    "'Hidup adalah petualangan yang indah; jangan sia-siakan kesempatanmu untuk menjelajah dan menemukan keajaiban.' <br> — Coco, Héctor —",
-
-    "'Jangan pernah berhenti berjuang untuk apa yang kamu yakini; keberanianmu akan membawamu jauh.' <br> — Ratatouille, Remy —",
-
-    "'Kita semua memiliki kekuatan untuk menciptakan perubahan dan menginspirasi satu sama lain; jadi mulailah sekarang.' <br> — Zootopia, Chief Bogo —",
-
-    "'Hidup ini penuh dengan tantangan, tetapi kamu lebih kuat dari yang kamu kira; percayalah pada dirimu sendiri.' <br> — Finding Dory, Marlin —",
-
-    "'Cinta dapat mengatasi segala rintangan; itu adalah kekuatan yang tidak bisa dipatahkan oleh apapun.' <br> — Aladdin, Jasmine —",
-
-    "'Kamu adalah pahlawan, tidak peduli seberapa kecil tindakanmu; setiap kebaikan memiliki dampak yang besar.' <br> — How to Train Your Dragon, Toothless —",
-
-    "'Setiap detik adalah kesempatan baru untuk melakukan hal yang baik; jadi manfaatkanlah dengan bijak.' <br> — Inside Out, Sadness —",
-
-    "'Keberanian bukanlah tidak merasa takut, tetapi mampu bertindak meskipun dalam ketakutan; itu adalah kekuatan sejati.' <br> — Big Hero 6, Hiro —",
-
-    "'Keluarga adalah tempat di mana kehidupan dimulai dan cinta tidak pernah berakhir; hargai setiap momen bersamanya.' <br> — The Incredibles, Violet —",
+   "Jangan pernah ragu untuk bermimpi besar.",
+    "Setiap hari adalah kesempatan baru untuk jadi lebih baik.",
+    "Kalo bukan kita yang mulai, siapa lagi?.",
+    "Hidup ini tentang perjalanan, bukan hanya tujuan.",
+    "Jangan biarkan orang lain mendefinisikan batasanmu.",
+    "Kegagalan itu hanya batu loncatan menuju kesuksesan.",
+    "Bersyukur itu kunci, meski dalam keadaan sulit.",
+    "Jadilah orang yang menginspirasi, bukan yang mengeluh.",
+    "Kreativitas itu kekuatan, jangan takut untuk berinovasi.",
+    "Temukan passionmu dan kejar tanpa henti.",
+    "Sahabat sejati itu yang selalu mendukungmu.",
+    "Jangan lupa untuk menikmati prosesnya.",
+    "Setiap detik berharga, jangan sia-siakan.",
+    "Berani keluar dari zona nyaman, itu langkah awal.",
+    "Kita semua punya cerita, tulislah yang terbaik.",
+    "Jangan cuma jadi penonton, jadi pemain yang bikin cerita!",
+    "Hidup itu kayak kopi, kadang pahit, kadang manis, tapi tetap nikmat!",
+    "Jangan takut gagal, karena dari situ kita belajar untuk jadi lebih baik.",
+    "Setiap langkah kecil itu berarti, yang penting terus jalan!",
+    "Kita semua punya potensi, tinggal gimana kita nge-gali dan maksimalkan!",
+    "Jadilah versi terbaik dari dirimu, bukan versi orang lain!",
+    "Biar lambat asal selamat, yang penting konsisten!",
+    "Sukses itu bukan tentang seberapa cepat, tapi seberapa kuat kita bertahan!",
+    "Urip iku mung mampir ngombe, ojo lali nikmati saben detik.",
+    "Sakjane urip iki gampang, sing penting ojo nyerah.",
+    "Kaya lagu, urip kudu harmonis, ora usah ribet.",
+    "Nek ora nyoba, piye arep ngerti.",
+    "Sakabehe bakal apik, sing penting sabar lan usaha.",
+    "Yen wis niat, kudu konsisten, ojo mung setengah-setengah.",
+    "Kaya Deni Caknan, urip kudu semangat, ora usah ngeluh.",
+    "Kita kabeh duwe jalan, sing penting terus melangkah.",
+    "Aja nganti ketinggalan, urip iki ora nunggu.",
+    "Yen ora berani, ora bakal bisa, ojo wedi gagal.",
+    "Kaya Guyon Waton, urip kudu lucu, supaya ora stres.",
+    "Sakjane kabeh bisa, sing penting percaya diri.",
+    "Urip iki kaya lagu, kadang mendayu, kadang ceria.",
+    "Aja lali ngucap syukur, meski cilik.",
+    "Nek wis usaha, tinggal pasrah, kabeh bakal apik.",
+    "Setiap langkah yang kita ambil adalah bagian dari perjalanan.",
+    "Jangan takut untuk bermimpi, karena mimpi adalah awal dari segalanya.",
+    "Hidup ini penuh warna, nikmati setiap nuansa yang ada.",
+    "Kita semua punya cerita, tuliskan kisah terbaikmu.",
+    "Ketika jatuh, bangkitlah lagi, karena setiap kegagalan adalah pelajaran.",
+    "Jadilah dirimu sendiri, karena keunikanmu adalah kekuatanmu.",
+    "Cinta dan harapan adalah bahan bakar untuk terus melangkah.",
+    "Jangan biarkan keraguan menghentikan langkahmu.",
+    "Setiap detik berharga, jangan sia-siakan dengan hal yang tidak berarti.",
+    "Kita bisa melewati badai, asalkan kita tetap bersatu.",
+    "Hidup ini seperti lagu, kadang ada nada tinggi, kadang nada rendah.",
+    "Jangan lupa untuk bersyukur, meski dalam keadaan sulit.",
+    "Kita adalah penulis cerita hidup kita sendiri.",
+    "Jangan pernah berhenti berusaha, karena usaha tidak akan mengkhianati hasil.",
+    "Setiap hari adalah kesempatan baru untuk menjadi lebih baik.",
 ];
 
 // Memilih kutipan secara acak, dengan pengecualian untuk malam

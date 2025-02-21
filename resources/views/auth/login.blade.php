@@ -3,7 +3,7 @@
     <div class="min-h-screen flex flex-col sm:justify-center items-center pt-2 sm:pt-0 ">
         <div class="w-full sm:max-w-md px-6 py-4 shadow-md overflow-hidden sm:rounded-lg">
             <div>
-                <h2 id="greeting" class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                <h2 id="greeting" class="-mt-6 text-center text-3xl font-extrabold text-gray-900">
                 </h2>
                 <p id="quote" class="mt-2 text-center text-sm text-gray-600">
                 </p>

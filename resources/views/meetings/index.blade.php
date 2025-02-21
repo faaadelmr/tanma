@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="text-2xl font-bold text-primary">{{ __('Meeting Mingguan') }}</h2>
+            <h2 class="text-2xl font-semibold leading-tight text-primary">{{ __('Meeting Mingguan22') }}</h2>
             <button onclick="generateMeetings()" class="gap-2 btn btn-primary btn-sm">
                 <i class="fa-solid fa-calendar-plus"></i>
                 Buat Meeting
