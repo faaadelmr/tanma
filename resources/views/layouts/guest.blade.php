@@ -39,10 +39,10 @@
                 Tanma
             </a>
         </div>
-    
+
         <div class="hidden navbar-center lg:flex">
             <ul class="px-1 menu menu-horizontal">
-                
+
                 <li><a class="text-md" href="{{ route('tanma.merge') }}">Pdf Merge</a></li>
                 <li><a class="text-md" href="{{route('tanma.selected')}}" >Pdf Selected</a></li>
                 <li><a class="text-md" href="{{route('tanmasplitbill')}}" >Split Bill</a></li>
@@ -82,8 +82,8 @@
                 </ul>
         </div>
     </div>
-    
-    <main data-theme="" class="border-accent rounded-md">
+
+    <main data-theme="" class="rounded-md border-accent">
         {{ $slot }}
     </main>
 
@@ -195,7 +195,32 @@ function getRandomQuote(greeting) {
 const greeting = getGreeting();
 document.getElementById("greeting").innerText = greeting;
 document.getElementById("quote").innerHTML = getRandomQuote(greeting);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+let keysPressed = {};
 
+document.addEventListener('keydown', function(event) {
+    keysPressed[event.key] = true;
+
+    // Cek apakah semua tombol yang diperlukan ditekan
+    if (keysPressed['q'] && keysPressed['w'] && keysPressed['e']) {
+        Swal.fire({
+            icon: 'info',
+            title: 'Selamat datang di Tanma App!',
+            text: 'by laradelfa',
+            timer: 3000,
+            showConfirmButton: false,
+            position: 'top-end',
+            toast: true
+        });
+    }
+});
+
+document.addEventListener('keyup', function(event) {
+    // Hapus tombol yang dilepas dari objek keysPressed
+    delete keysPressed[event.key];
+});
 </script>
 
 </html>
