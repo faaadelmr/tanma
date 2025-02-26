@@ -1,6 +1,6 @@
 <x-guest-layout>
-    <header data-theme="" class="border-b-4 border-accent rounded-md">
-        <div class="max-w-7xl mx-auto py-3 px-4 sm:px-6 lg:px-8">
+    <header data-theme="" class="rounded-md border-b-4 border-accent">
+        <div class="px-4 py-3 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <h1 class="text-2xl font-bold text-base-content">
                 <div class="flex justify-between items-center">
                     <h2 class="text-2xl font-bold text-primary">{{ __('Split Bill') }}</h2>
@@ -8,35 +8,35 @@
             </h1>
         </div>
     </header>
-    <div class="container mx-auto px-4 py-6 max-w-7xl">
+    <div class="container px-4 py-6 mx-auto max-w-7xl">
         <div class="grid gap-8 md:grid-cols-2">
             <!-- Input Section -->
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body space-y-6">
-                    <h2 class="card-title text-primary border-b pb-2">Anggota & Pesanan</h2>
+            <div class="shadow-xl card bg-base-100">
+                <div class="space-y-6 card-body">
+                    <h2 class="pb-2 border-b card-title text-primary">Anggota & Pesanan</h2>
 
                     <!-- Member Input -->
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text font-medium">Nama</span>
+                            <span class="font-medium label-text">Nama</span>
                         </label>
                         <input type="text" id="memberName" placeholder="Masukkan nama"
-                            class="input input-bordered input-primary w-full" />
+                            class="w-full input input-bordered input-primary" />
                     </div>
 
                     <!-- Order Details -->
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text font-medium">Detail Pesanan</span>
+                            <span class="font-medium label-text">Detail Pesanan</span>
                         </label>
-                        <div class="join join-vertical gap-3">
+                        <div class="gap-3 join join-vertical">
                             <input type="text" id="orderName" placeholder="Nama menu"
                                 class="input input-bordered input-secondary" />
                             <input type="number" id="orderPrice" placeholder="Harga (Rp)"
                                 class="input input-bordered input-secondary" />
                             <button onclick="addMemberWithOrder()"
                                 class="btn btn-primary btn-block">
-                                <i class="fas fa-plus mr-2"></i> Tambah Pesanan
+                                <i class="mr-2 fas fa-plus"></i> Tambah Pesanan
                             </button>
                         </div>
                     </div>
@@ -50,13 +50,13 @@
             <!-- Additional Costs & Discount -->
             <div class="space-y-6">
                 <!-- Additional Costs Card -->
-                <div class="card bg-base-100 shadow-xl">
+                <div class="shadow-xl card bg-base-100">
                     <div class="card-body">
-                        <h2 class="card-title text-secondary border-b pb-2">Biaya Tambahan</h2>
+                        <h2 class="pb-2 border-b card-title text-secondary">Biaya Tambahan</h2>
                         <div class="space-y-4">
                             <div class="form-control">
                                 <label class="label">
-                                    <span class="label-text">Biaya Parkir</span>
+                                    <span class="label-text">Biaya TopUp</span>
                                 </label>
                                 <input type="number" id="parkingFee"
                                     class="input input-bordered input-secondary"
@@ -83,22 +83,22 @@
                 </div>
 
                 <!-- Discount Card -->
-                <div class="card bg-base-100 shadow-xl">
+                <div class="shadow-xl card bg-base-100">
                     <div class="card-body">
-                        <h2 class="card-title text-accent border-b pb-2">Diskon</h2>
+                        <h2 class="pb-2 border-b card-title text-accent">Diskon</h2>
                         <div class="form-control">
                             <label class="label">
-                                <span class="label-text font-medium">Tipe Diskon</span>
+                                <span class="font-medium label-text">Tipe Diskon</span>
                             </label>
                             <select id="discountType"
-                                class="select select-bordered select-accent w-full"
+                                class="w-full select select-bordered select-accent"
                                 onchange="toggleDiscountInputs()">
                                 <option value="percentage">Persentase (%)</option>
                                 <option value="fixed">Nominal (Rp)</option>
                             </select>
                         </div>
 
-                        <div id="percentageInputs" class="space-y-4 mt-4">
+                        <div id="percentageInputs" class="mt-4 space-y-4">
                             <div class="form-control">
                                 <label class="label">
                                     <span class="label-text">Persentase (0-100%)</span>
@@ -118,7 +118,7 @@
                             </div>
                         </div>
 
-                        <div id="fixedInputs" class="hidden space-y-4 mt-4">
+                        <div id="fixedInputs" class="hidden mt-4 space-y-4">
                             <div class="form-control">
                                 <label class="label">
                                     <span class="label-text">Jumlah Diskon (Rp)</span>
@@ -134,16 +134,16 @@
         </div>
 
         <!-- Calculate Button -->
-        <div class="text-center my-8">
+        <div class="my-8 text-center">
             <button onclick="calculateSplit()"
-                class="btn btn-primary btn-lg btn-wide gap-2">
+                class="gap-2 btn btn-primary btn-lg btn-wide">
                 <i class="fas fa-calculator"></i>
                 Hitung Pembagian
             </button>
         </div>
 
         <!-- Results Section -->
-        <div id="result" class="hidden space-y-8 mb-8">
+        <div id="result" class="hidden mb-8 space-y-8">
             <div id="resultDetails"></div>
         </div>
     </div>
@@ -191,20 +191,20 @@
 
                     return `
                         <div class="card bg-base-200">
-                            <div class="card-body p-4">
+                            <div class="p-4 card-body">
                                 <div class="flex justify-between items-center">
-                                    <h3 class="font-semibold text-lg">${member}</h3>
+                                    <h3 class="text-lg font-semibold">${member}</h3>
                                     <button onclick="removeMember('${member}')"
                                         class="btn btn-square btn-sm btn-ghost">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                         </svg>
                                     </button>
                                 </div>
-                                <div class="divider my-0"></div>
+                                <div class="my-0 divider"></div>
                                 <div class="space-y-2">
                                     ${orders.map((order, idx) => `
-                                        <div class="flex justify-between items-center bg-base-100 p-2 rounded-lg">
+                                        <div class="flex justify-between items-center p-2 rounded-lg bg-base-100">
                                             <div class="flex-1">
                                                 <p class="font-medium">${order.menu}</p>
                                             </div>
@@ -216,7 +216,7 @@
                                         </div>
                                     `).join('')}
                                 </div>
-                                <div class="divider my-0"></div>
+                                <div class="my-0 divider"></div>
                                 <div class="flex justify-between items-center">
                                     <span class="font-semibold">Total</span>
                                     <span class="font-bold">Rp ${memberTotal.toLocaleString()}</span>
@@ -309,10 +309,10 @@
 
                 result.classList.remove('hidden');
                 let resultHTML = `
-                    <div class="card bg-primary text-primary-content shadow-xl mb-6">
+                    <div class="mb-6 shadow-xl card bg-primary text-primary-content">
                         <div class="card-body">
                             <h2 class="card-title">Ringkasan Total</h2>
-                            <div class="stats stats-vertical lg:stats-horizontal shadow">
+                            <div class="shadow stats stats-vertical lg:stats-horizontal">
                                 <div class="stat">
                                     <div class="stat-title">Total Pesanan</div>
                                     <div class="stat-value">Rp ${totalOrders.toLocaleString()}</div>
@@ -344,25 +344,25 @@
                     const total = orderTotal + feePerPerson - memberDiscount;
 
                     resultHTML += `
-                        <div class="card bg-base-100 shadow-xl">
+                        <div class="shadow-xl card bg-base-100">
                             <div class="card-body">
                                 <h3 class="card-title">${member}</h3>
 
                                 <!-- Detail Pesanan -->
 <div tabindex="0" class="collapse collapse-arrow bg-base-200">
-    <div class="collapse-title font-medium">
+    <div class="font-medium collapse-title">
         Detail Pesanan
     </div>
     <div class="collapse-content">
         ${orders.map(order => `
-            <div class="text-sm mb-2">
+            <div class="mb-2 text-sm">
                 <div class="flex justify-between">
                     <span>${order.menu}</span>
                     <span>Rp ${order.price.toLocaleString()}</span>
                 </div>
             </div>
         `).join('')}
-        <div class="divider my-2"></div>
+        <div class="my-2 divider"></div>
         <div class="flex justify-between font-semibold">
             <span>Subtotal Pesanan</span>
             <span>Rp ${orderTotal.toLocaleString()}</span>
@@ -371,27 +371,27 @@
 </div>
 
                                 <!-- Ringkasan Biaya -->
-                                <div class="stats stats-vertical shadow mt-4">
+                                <div class="mt-4 shadow stats stats-vertical">
                                     <div class="stat">
                                         <div class="stat-title">Subtotal Pesanan</div>
-                                        <div class="stat-value text-lg">Rp ${orderTotal.toLocaleString()}</div>
+                                        <div class="text-lg stat-value">Rp ${orderTotal.toLocaleString()}</div>
                                     </div>
                                     ${totalFees > 0 ? `
                                     <div class="stat">
                                         <div class="stat-title">Biaya Tambahan</div>
-                                        <div class="stat-value text-lg">Rp ${feePerPerson.toLocaleString()}</div>
+                                        <div class="text-lg stat-value">Rp ${feePerPerson.toLocaleString()}</div>
                                         <div class="stat-desc">Dibagi ${members.length} orang</div>
                                     </div>
                                     ` : ''}
                                     ${actualDiscount > 0 ? `
                                     <div class="stat">
                                         <div class="stat-title">Diskon</div>
-                                        <div class="stat-value text-lg">Rp ${memberDiscount.toLocaleString()}</div>
+                                        <div class="text-lg stat-value">Rp ${memberDiscount.toLocaleString()}</div>
                                         <div class="stat-desc">Berdasarkan total pesanan</div>
                                     </div>
                                     ` : ''}
                                     <div class="stat bg-primary text-primary-content">
-                                        <div class="stat-title text-secondary-content ">Total Bayar</div>
+                                        <div class="stat-title text-secondary-content">Total Bayar</div>
                                         <div class="stat-value">Rp ${Math.ceil(total).toLocaleString()}</div>
                                     </div>
                                 </div>
