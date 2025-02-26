@@ -1,6 +1,6 @@
 <x-guest-layout>
-    <header class="border-b-4 border-accent rounded-md">
-        <div class="max-w-7xl mx-auto py-3 px-4 sm:px-6 lg:px-8">
+    <header class="rounded-md border-b-4 border-accent">
+        <div class="px-4 py-3 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <h1 class="text-2xl font-bold text-base-content">
                 <div class="flex justify-between items-center">
                     <h2 class="text-2xl font-bold text-primary">{{ __('Merge PDF') }}</h2>
@@ -8,7 +8,7 @@
             </h1>
         </div>
     </header>
-        
+
 
 
     <style>
@@ -25,7 +25,7 @@
         .file-preview {
             position: relative;
             width: 100%;
-            height: 200px;
+            height: 350px;
             border: 2px solid #ddd;
             border-radius: 8px;
             overflow: hidden;
@@ -35,6 +35,7 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+            padding: 8px;
         }
 
         .file-info {

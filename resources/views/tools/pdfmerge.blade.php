@@ -19,7 +19,7 @@
         .file-preview {
             position: relative;
             width: 100%;
-            height: 200px;
+            height: 350px;
             border: 2px solid #ddd;
             border-radius: 8px;
             overflow: hidden;
@@ -29,6 +29,7 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
+            padding: 8px;
         }
 
         .file-info {
