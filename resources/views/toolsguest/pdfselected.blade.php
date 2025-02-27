@@ -122,7 +122,7 @@
                 togglePage(pageNum, pageDiv);
             });
         });
-        
+
         // Add the event listener for rotating all pages
         rotateAllPages.addEventListener('click', () => {
             const allPages = Array.from(pageGrid.children);
@@ -168,7 +168,7 @@
             e.preventDefault();
             dropZone.classList.remove('border-primary/70', 'bg-base-200');
             const file = e.dataTransfer.files[0];
-            if (file?.type === 'guestlication/pdf') handleFile(file);
+            if (file?.type === 'application/pdf') handleFile(file);
         }
 
         // Function to rotate a page
