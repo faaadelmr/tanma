@@ -33,7 +33,7 @@
                 <div class="mb-8">
                     <div id="dropZone" class="p-8 border-2 border-dashed shadow-xl transition-all duration-300 card bg-base-100 border-primary/50 hover:border-primary">
                         <input type="file" id="fileInput" multiple accept=".pdf" class="hidden">
-                        <label for="fileInput" class="block text-center cursor-pointer">
+                        <label for="" class="block text-center cursor-pointer">
                             <div class="floating">
                                 <svg class="mx-auto w-16 h-16 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
@@ -136,10 +136,14 @@
         [['dragover', handleDragOver], ['dragleave', handleDragLeave], ['drop', handleDrop]]
             .forEach(([event, handler]) => dropZone.addEventListener(event, handler));
 
-        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('click', (e) => {
+            if (e.target.closest('label')) {
+                fileInput.click();
+            }
+        });
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
-            if (file) handleFile(file);
+            if (file?.type === 'application/pdf') handleFile(file);
         });
 
         // Modified clear pages to also clear rotations
