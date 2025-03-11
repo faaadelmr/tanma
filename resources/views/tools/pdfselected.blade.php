@@ -69,6 +69,9 @@
                         <button id="splitButton" class="shadow-lg transition-all duration-300 btn btn-primary btn-sm hover:btn-primary-focus">
                             Unduh Pdf
                         </button>
+                        <button id="downloadSeparateButton" class="shadow-lg transition-all duration-300 btn btn-accent btn-sm hover:btn-accent-focus">
+                            Unduh Terpisah
+                        </button>
                     </div>
 
                     <div id="pageGrid" class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8"></div>
@@ -110,7 +113,7 @@
             }
         });
 
-        // Add invert selection event listener
+        // Pilihan pembalik
         invertSelection.addEventListener('click', () => {
             const allPages = Array.from(pageGrid.children);
             allPages.forEach(pageDiv => {
@@ -119,7 +122,7 @@
             });
         });
 
-        // Add the event listener for rotating all pages
+        // Rotasi Semua PDF
         rotateAllPages.addEventListener('click', () => {
             const allPages = Array.from(pageGrid.children);
             allPages.forEach(pageDiv => {
@@ -132,10 +135,14 @@
         [['dragover', handleDragOver], ['dragleave', handleDragLeave], ['drop', handleDrop]]
             .forEach(([event, handler]) => dropZone.addEventListener(event, handler));
 
-        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('click', (e) => {
+            if (e.target.closest('label')) {
+                fileInput.click();
+            }
+        });
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
-            if (file) handleFile(file);
+            if (file?.type === 'application/pdf') handleFile(file);
         });
 
         // Modified clear pages to also clear rotations
@@ -167,7 +174,7 @@
             if (file?.type === 'application/pdf') handleFile(file);
         }
 
-        // Function to rotate a page
+        // Rotasi file PDF
         function rotatePage(pageNum) {
             const currentRotation = pageRotations.get(pageNum) || 0;
             const newRotation = (currentRotation + 90) % 360;
@@ -177,7 +184,6 @@
             pageImage.className = pageImage.className.replace(/rotate-\d+/, '') + ` rotate-${newRotation}`;
         }
 
-        // Modified handleFile function to include rotation button
         async function handleFile(file) {
             currentFile = file;
             selectedPages.clear();
@@ -299,5 +305,45 @@
                 pageDiv.classList.remove('opacity-50');
             }
         }
+
+        //Unduh Terpisah
+        document.getElementById('downloadSeparateButton').addEventListener('click', async () => {
+            if (!currentFile || selectedPages.size === 0) return;
+
+            const button = document.getElementById('downloadSeparateButton');
+            button.disabled = true;
+            button.innerHTML = '<span class="loading loading-spinner"></span> Processing...';
+
+            try {
+                const arrayBuffer = await currentFile.arrayBuffer();
+                const originalPdf = await PDFLib.PDFDocument.load(arrayBuffer);
+
+                const orderedSelectedPages = pageOrder.filter(pageNum => selectedPages.has(pageNum));
+
+                for (let pageNum of orderedSelectedPages) {
+                    const singleDoc = await PDFLib.PDFDocument.create();
+                    const [page] = await singleDoc.copyPages(originalPdf, [pageNum - 1]);
+
+                    const rotation = pageRotations.get(pageNum) || 0;
+                    page.setRotation(PDFLib.degrees(rotation));
+                    singleDoc.addPage(page);
+
+                    const pdfBytes = await singleDoc.save();
+                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `TanmaPdfSelected_Page_${pageNum}.pdf`;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                }
+            } catch (error) {
+                console.error('Error creating separate PDFs:', error);
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Unduh Terpisah';
+            }
+        });
+
     </script>
 </x-app-layout>
