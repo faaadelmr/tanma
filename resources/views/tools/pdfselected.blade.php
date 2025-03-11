@@ -280,7 +280,8 @@
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
-                link.download = 'TanmaSelectedPdf.pdf';
+                const originalFileName = currentFile.name.replace('.pdf', '');
+                link.download = `${originalFileName}_TanmaSelected.pdf`;
                 link.click();
                 URL.revokeObjectURL(url);
             } catch (error) {
@@ -333,7 +334,8 @@
                     const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.href = url;
-                    link.download = `TanmaPdfSelected_Page_${pageNum}.pdf`;
+                    const originalFileName = currentFile.name.replace('.pdf', '');
+                    link.download = `${originalFileName}_Halaman_${pageNum}_TanmaSelected.pdf`;
                     link.click();
                     URL.revokeObjectURL(url);
                 }
