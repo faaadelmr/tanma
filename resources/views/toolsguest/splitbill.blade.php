@@ -78,6 +78,14 @@
                                     class="input input-bordered input-secondary"
                                     placeholder="0" onchange="updateDefaultFees()">
                             </div>
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">PPN (%)</span>
+                                </label>
+                                <input type="number" id="ppnPercentage"
+                                    class="input input-bordered input-secondary"
+                                    placeholder="0" min="0" max="100" value="0" onchange="updateDefaultFees()">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -154,7 +162,8 @@
             let defaultFees = {
                 parking: 0,
                 service: 0,
-                packaging: 0
+                packaging: 0,
+                ppn: 0
             };
             let discountType = 'percentage';
             let discountPercent = 0;
@@ -247,6 +256,7 @@
                 defaultFees.parking = parseFloat(document.getElementById('parkingFee').value) || 0;
                 defaultFees.service = parseFloat(document.getElementById('serviceFee').value) || 0;
                 defaultFees.packaging = parseFloat(document.getElementById('packagingFee').value) || 0;
+                defaultFees.ppn = parseFloat(document.getElementById('ppnPercentage').value) || 0;
             }
 
             function updateDiscount() {
@@ -279,128 +289,142 @@
             }
 
             function calculateSplit() {
-                const members = Object.keys(memberOrders);
-                if (members.length === 0) return;
+    const members = Object.keys(memberOrders);
+    if (members.length === 0) return;
 
-                updateDefaultFees();
-                updateDiscount();
-                updateMaxDiscount();
-                updateFixedDiscount();
+    updateDefaultFees();
+    updateDiscount();
+    updateMaxDiscount();
+    updateFixedDiscount();
 
-                const totalOrders = Object.values(memberOrders).reduce((sum, orders) =>
-                    sum + orders.reduce((memberSum, order) => memberSum + order.total, 0), 0);
+    const totalOrders = Object.values(memberOrders).reduce((sum, orders) =>
+        sum + orders.reduce((memberSum, order) => memberSum + order.total, 0), 0);
 
-                const totalFees = Object.values(defaultFees).reduce((sum, fee) => sum + fee, 0);
+    // Calculate PPN amount based on percentage
+    const ppnAmount = totalOrders * (defaultFees.ppn / 100);
 
-                // Calculate discount based on selected type
-                let actualDiscount;
-                if (discountType === 'percentage') {
-                    const calculatedDiscount = (totalOrders * discountPercent / 100);
-                    actualDiscount = Math.min(calculatedDiscount, maxDiscount);
-                } else {
-                    actualDiscount = Math.min(fixedDiscountAmount, totalOrders);
-                }
+    // Calculate other fees (excluding PPN which is handled separately)
+    const otherFees = defaultFees.parking + defaultFees.service + defaultFees.packaging;
+    const totalFees = otherFees + ppnAmount;
 
-                const discountRatio = actualDiscount / totalOrders;
-                const feePerPerson = totalFees / members.length;
+    // Calculate discount based on selected type
+    let actualDiscount;
+    if (discountType === 'percentage') {
+        const calculatedDiscount = (totalOrders * discountPercent / 100);
+        actualDiscount = Math.min(calculatedDiscount, maxDiscount);
+    } else {
+        actualDiscount = Math.min(fixedDiscountAmount, totalOrders);
+    }
 
-                const result = document.getElementById('result');
-                const resultDetails = document.getElementById('resultDetails');
+    const discountRatio = actualDiscount / totalOrders;
+    const otherFeesPerPerson = otherFees / members.length;
 
-                result.classList.remove('hidden');
-                let resultHTML = `
-                    <div class="mb-6 shadow-xl card bg-primary text-primary-content">
-                        <div class="card-body">
-                            <h2 class="card-title">Ringkasan Total</h2>
-                            <div class="shadow stats stats-vertical lg:stats-horizontal">
-                                <div class="stat">
-                                    <div class="stat-title">Total Pesanan</div>
-                                    <div class="stat-value">Rp ${totalOrders.toLocaleString()}</div>
+    const result = document.getElementById('result');
+    const resultDetails = document.getElementById('resultDetails');
+
+    result.classList.remove('hidden');
+    let resultHTML = `
+        <div class="mb-6 shadow-xl card bg-primary text-primary-content">
+            <div class="card-body">
+                <h2 class="card-title">Ringkasan Total</h2>
+                <div class="shadow stats stats-vertical lg:stats-horizontal">
+                    <div class="stat">
+                        <div class="stat-title">Total Pesanan</div>
+                        <div class="stat-value">Rp ${totalOrders.toLocaleString()}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-title">PPN (${defaultFees.ppn}%)</div>
+                        <div class="stat-value">Rp ${ppnAmount.toLocaleString()}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-title">Biaya Tambahan</div>
+                        <div class="stat-value">Rp ${otherFees.toLocaleString()}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-title">Total Diskon</div>
+                        <div class="stat-value">Rp ${actualDiscount.toLocaleString()}</div>
+                        <div class="stat-desc">${discountType === 'percentage' ? `(${discountPercent}%)` : '(Nominal)'}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-title">Grand Total</div>
+                        <div class="stat-value">Rp ${(totalOrders + totalFees - actualDiscount).toLocaleString()}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    resultHTML += '<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">';
+
+    for (const member of members) {
+        const orders = memberOrders[member];
+        const orderTotal = orders.reduce((sum, order) => sum + order.total, 0);
+        const memberPpn = orderTotal * (defaultFees.ppn / 100);
+        const memberDiscount = orderTotal * discountRatio;
+        const total = orderTotal + otherFeesPerPerson + memberPpn - memberDiscount;
+
+        resultHTML += `
+            <div class="shadow-xl card bg-base-100">
+                <div class="card-body">
+                    <h3 class="card-title">${member}</h3>
+
+                    <!-- Detail Pesanan -->
+                    <div tabindex="0" class="collapse collapse-arrow bg-base-200">
+                        <div class="font-medium collapse-title">
+                            Detail Pesanan
+                        </div>
+                        <div class="collapse-content">
+                            ${orders.map(order => `
+                                <div class="mb-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>${order.menu}</span>
+                                        <span>Rp ${order.price.toLocaleString()}</span>
+                                    </div>
                                 </div>
-                                <div class="stat">
-                                    <div class="stat-title">Biaya Tambahan</div>
-                                    <div class="stat-value">Rp ${totalFees.toLocaleString()}</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-title">Total Diskon</div>
-                                    <div class="stat-value">Rp ${actualDiscount.toLocaleString()}</div>
-                                    <div class="stat-desc">${discountType === 'percentage' ? `(${discountPercent}%)` : '(Nominal)'}</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-title">Grand Total</div>
-                                    <div class="stat-value">Rp ${(totalOrders + totalFees - actualDiscount).toLocaleString()}</div>
-                                </div>
+                            `).join('')}
+                            <div class="my-2 divider"></div>
+                            <div class="flex justify-between font-semibold">
+                                <span>Subtotal Pesanan</span>
+                                <span>Rp ${orderTotal.toLocaleString()}</span>
                             </div>
                         </div>
                     </div>
-                `;
 
-                resultHTML += '<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">';
-
-                for (const member of members) {
-                    const orders = memberOrders[member];
-                    const orderTotal = orders.reduce((sum, order) => sum + order.total, 0);
-                    const memberDiscount = orderTotal * discountRatio;
-                    const total = orderTotal + feePerPerson - memberDiscount;
-
-                    resultHTML += `
-                        <div class="shadow-xl card bg-base-100">
-                            <div class="card-body">
-                                <h3 class="card-title">${member}</h3>
-
-                                <!-- Detail Pesanan -->
-<div tabindex="0" class="collapse collapse-arrow bg-base-200">
-    <div class="font-medium collapse-title">
-        Detail Pesanan
-    </div>
-    <div class="collapse-content">
-        ${orders.map(order => `
-            <div class="mb-2 text-sm">
-                <div class="flex justify-between">
-                    <span>${order.menu}</span>
-                    <span>Rp ${order.price.toLocaleString()}</span>
+                    <!-- Ringkasan Biaya -->
+                    <div class="mt-4 shadow stats stats-vertical">
+                        <div class="stat">
+                            <div class="stat-title">Subtotal Pesanan</div>
+                            <div class="text-lg stat-value">Rp ${orderTotal.toLocaleString()}</div>
+                        </div>
+                        ${defaultFees.ppn > 0 ? `
+                        <div class="stat">
+                            <div class="stat-title">PPN (${defaultFees.ppn}%)</div>
+                            <div class="text-lg stat-value">Rp ${memberPpn.toLocaleString()}</div>
+                        </div>
+                        ` : ''}
+                        ${otherFees > 0 ? `
+                        <div class="stat">
+                            <div class="stat-title">Biaya Tambahan</div>
+                            <div class="text-lg stat-value">Rp ${otherFeesPerPerson.toLocaleString()}</div>
+                            <div class="stat-desc">Dibagi ${members.length} orang</div>
+                        </div>
+                        ` : ''}
+                        ${actualDiscount > 0 ? `
+                        <div class="stat">
+                            <div class="stat-title">Diskon</div>
+                            <div class="text-lg stat-value">Rp ${memberDiscount.toLocaleString()}</div>
+                            <div class="stat-desc">Berdasarkan total pesanan</div>
+                        </div>
+                        ` : ''}
+                        <div class="stat bg-primary text-primary-content">
+                            <div class="stat-title text-secondary-content">Total Bayar</div>
+                            <div class="stat-value">Rp ${Math.ceil(total).toLocaleString()}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        `).join('')}
-        <div class="my-2 divider"></div>
-        <div class="flex justify-between font-semibold">
-            <span>Subtotal Pesanan</span>
-            <span>Rp ${orderTotal.toLocaleString()}</span>
-        </div>
-    </div>
-</div>
-
-                                <!-- Ringkasan Biaya -->
-                                <div class="mt-4 shadow stats stats-vertical">
-                                    <div class="stat">
-                                        <div class="stat-title">Subtotal Pesanan</div>
-                                        <div class="text-lg stat-value">Rp ${orderTotal.toLocaleString()}</div>
-                                    </div>
-                                    ${totalFees > 0 ? `
-                                    <div class="stat">
-                                        <div class="stat-title">Biaya Tambahan</div>
-                                        <div class="text-lg stat-value">Rp ${feePerPerson.toLocaleString()}</div>
-                                        <div class="stat-desc">Dibagi ${members.length} orang</div>
-                                    </div>
-                                    ` : ''}
-                                    ${actualDiscount > 0 ? `
-                                    <div class="stat">
-                                        <div class="stat-title">Diskon</div>
-                                        <div class="text-lg stat-value">Rp ${memberDiscount.toLocaleString()}</div>
-                                        <div class="stat-desc">Berdasarkan total pesanan</div>
-                                    </div>
-                                    ` : ''}
-                                    <div class="stat bg-primary text-primary-content">
-                                        <div class="stat-title text-secondary-content">Total Bayar</div>
-                                        <div class="stat-value">Rp ${Math.ceil(total).toLocaleString()}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-
-
+        `;
+    }
                 resultDetails.innerHTML = resultHTML;
             }
         </script>
