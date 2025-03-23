@@ -41,6 +41,36 @@
                         </div>
                     </div>
 
+                    <!-- Shared Menu Section -->
+            <div class="shadow-xl card bg-base-100">
+                <div class="space-y-6 card-body">
+                    <h2 class="pb-2 border-b card-title text-secondary">Menu Bersama</h2>
+                    <p class="text-sm">Menu yang dibagikan rata ke semua anggota</p>
+
+                    <!-- Shared Menu Input -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="font-medium label-text">Detail Menu Bersama</span>
+                        </label>
+                        <div class="gap-3 join join-vertical">
+                            <input type="text" id="sharedMenuName" placeholder="Nama menu bersama"
+                                class="input input-bordered input-secondary" />
+                            <input type="number" id="sharedMenuPrice" placeholder="Harga (Rp)"
+                                class="input input-bordered input-secondary" />
+                            <button onclick="addSharedMenu()"
+                                class="btn btn-secondary btn-block">
+                                <i class="mr-2 fas fa-plus"></i> Tambah Menu Bersama
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Shared Menu List -->
+                    <div class="divider"></div>
+                    <div id="sharedMenuList" class="space-y-4 overflow-y-auto max-h-[300px]"></div>
+                </div>
+            </div>
+
+
                     <!-- Member List -->
                     <div class="divider"></div>
                     <div id="memberOrderList" class="space-y-4 overflow-y-auto max-h-[500px]"></div>
@@ -167,8 +197,61 @@
             };
             let discountType = 'percentage';
             let discountPercent = 0;
-            let maxDiscount = 50000;
+            let maxDiscount = 0;
             let fixedDiscountAmount = 0;
+            let sharedMenus = [];
+
+            function addSharedMenu() {
+    const menuName = document.getElementById('sharedMenuName').value.trim();
+    const price = parseFloat(document.getElementById('sharedMenuPrice').value);
+
+    if (menuName && price > 0) {
+        sharedMenus.push({
+            menu: menuName,
+            price: price
+        });
+        updateSharedMenuList();
+
+        document.getElementById('sharedMenuName').value = '';
+        document.getElementById('sharedMenuPrice').value = '';
+            }
+        }
+
+        function updateSharedMenuList() {
+            const list = document.getElementById('sharedMenuList');
+            if (!list) return;
+
+            const totalShared = sharedMenus.reduce((sum, item) => sum + item.price, 0);
+
+            list.innerHTML = `
+                ${sharedMenus.map((item, idx) => `
+                    <div class="flex justify-between items-center p-3 rounded-lg bg-base-200">
+                        <div class="flex-1">
+                            <p class="font-medium">${item.menu}</p>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <p class="font-semibold">Rp ${item.price.toLocaleString()}</p>
+                            <button onclick="removeSharedMenu(${idx})"
+                                class="btn btn-ghost btn-xs">Hapus</button>
+                        </div>
+                    </div>
+                `).join('')}
+
+                ${sharedMenus.length > 0 ? `
+                    <div class="p-3 mt-4 rounded-lg bg-secondary text-secondary-content">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">Total Menu Bersama</span>
+                            <span class="font-bold">Rp ${totalShared.toLocaleString()}</span>
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+        }
+
+            function removeSharedMenu(index) {
+                sharedMenus.splice(index, 1);
+                updateSharedMenuList();
+            }
 
             function addMemberWithOrder() {
                 const memberName = document.getElementById('memberName').value.trim();
@@ -297,11 +380,19 @@
     updateMaxDiscount();
     updateFixedDiscount();
 
+    // Calculate individual orders total
     const totalOrders = Object.values(memberOrders).reduce((sum, orders) =>
         sum + orders.reduce((memberSum, order) => memberSum + order.total, 0), 0);
 
+    // Calculate shared menu total
+    const totalSharedMenu = sharedMenus.reduce((sum, item) => sum + item.price, 0);
+    const sharedMenuPerPerson = members.length > 0 ? totalSharedMenu / members.length : 0;
+
+    // Combined total of all orders
+    const combinedTotal = totalOrders + totalSharedMenu;
+
     // Calculate PPN amount based on percentage
-    const ppnAmount = totalOrders * (defaultFees.ppn / 100);
+    const ppnAmount = combinedTotal * (defaultFees.ppn / 100);
 
     // Calculate other fees (excluding PPN which is handled separately)
     const otherFees = defaultFees.parking + defaultFees.service + defaultFees.packaging;
@@ -310,13 +401,13 @@
     // Calculate discount based on selected type
     let actualDiscount;
     if (discountType === 'percentage') {
-        const calculatedDiscount = (totalOrders * discountPercent / 100);
+        const calculatedDiscount = (combinedTotal * discountPercent / 100);
         actualDiscount = Math.min(calculatedDiscount, maxDiscount);
     } else {
-        actualDiscount = Math.min(fixedDiscountAmount, totalOrders);
+        actualDiscount = Math.min(fixedDiscountAmount, combinedTotal);
     }
 
-    const discountRatio = actualDiscount / totalOrders;
+    const discountRatio = combinedTotal > 0 ? actualDiscount / combinedTotal : 0;
     const otherFeesPerPerson = otherFees / members.length;
 
     const result = document.getElementById('result');
@@ -329,8 +420,12 @@
                 <h2 class="card-title">Ringkasan Total</h2>
                 <div class="shadow stats stats-vertical lg:stats-horizontal">
                     <div class="stat">
-                        <div class="stat-title">Total Pesanan</div>
+                        <div class="stat-title">Total Pesanan Individu</div>
                         <div class="stat-value">Rp ${totalOrders.toLocaleString()}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-title">Total Menu Bersama</div>
+                        <div class="stat-value">Rp ${totalSharedMenu.toLocaleString()}</div>
                     </div>
                     <div class="stat">
                         <div class="stat-title">PPN (${defaultFees.ppn}%)</div>
@@ -347,7 +442,7 @@
                     </div>
                     <div class="stat">
                         <div class="stat-title">Grand Total</div>
-                        <div class="stat-value">Rp ${(totalOrders + totalFees - actualDiscount).toLocaleString()}</div>
+                        <div class="stat-value">Rp ${(combinedTotal + totalFees - actualDiscount).toLocaleString()}</div>
                     </div>
                 </div>
             </div>
@@ -359,9 +454,18 @@
     for (const member of members) {
         const orders = memberOrders[member];
         const orderTotal = orders.reduce((sum, order) => sum + order.total, 0);
-        const memberPpn = orderTotal * (defaultFees.ppn / 100);
-        const memberDiscount = orderTotal * discountRatio;
-        const total = orderTotal + otherFeesPerPerson + memberPpn - memberDiscount;
+
+        // Calculate individual portion of shared items
+        const memberTotal = orderTotal + sharedMenuPerPerson;
+
+        // Calculate PPN for this member proportionally
+        const memberPpn = memberTotal * (defaultFees.ppn / 100);
+
+        // Calculate discount for this member proportionally
+        const memberDiscount = memberTotal * discountRatio;
+
+        // Calculate final total for this member
+        const total = memberTotal + otherFeesPerPerson + memberPpn - memberDiscount;
 
         resultHTML += `
             <div class="shadow-xl card bg-base-100">
@@ -384,18 +488,50 @@
                             `).join('')}
                             <div class="my-2 divider"></div>
                             <div class="flex justify-between font-semibold">
-                                <span>Subtotal Pesanan</span>
+                                <span>Subtotal Pesanan Individu</span>
                                 <span>Rp ${orderTotal.toLocaleString()}</span>
                             </div>
                         </div>
                     </div>
 
+                    <!-- Shared Menu Detail -->
+                    ${sharedMenus.length > 0 ? `
+                    <div tabindex="0" class="mt-2 collapse collapse-arrow bg-base-200">
+                        <div class="font-medium collapse-title">
+                            Detail Menu Bersama
+                        </div>
+                        <div class="collapse-content">
+                            ${sharedMenus.map(item => `
+                                <div class="mb-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>${item.menu}</span>
+                                        <span>Rp ${(item.price / members.length).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                            <div class="my-2 divider"></div>
+                            <div class="flex justify-between font-semibold">
+                                <span>Subtotal Menu Bersama</span>
+                                <span>Rp ${sharedMenuPerPerson.toLocaleString()}</span>
+                                <span class="text-xs">(dibagi ${members.length} orang)</span>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+
                     <!-- Ringkasan Biaya -->
                     <div class="mt-4 shadow stats stats-vertical">
                         <div class="stat">
-                            <div class="stat-title">Subtotal Pesanan</div>
+                            <div class="stat-title">Pesanan Individu</div>
                             <div class="text-lg stat-value">Rp ${orderTotal.toLocaleString()}</div>
                         </div>
+                        ${sharedMenus.length > 0 ? `
+                        <div class="stat">
+                            <div class="stat-title">Menu Bersama</div>
+                            <div class="text-lg stat-value">Rp ${sharedMenuPerPerson.toLocaleString()}</div>
+                            <div class="stat-desc">Dibagi ${members.length} orang</div>
+                        </div>
+                        ` : ''}
                         ${defaultFees.ppn > 0 ? `
                         <div class="stat">
                             <div class="stat-title">PPN (${defaultFees.ppn}%)</div>
