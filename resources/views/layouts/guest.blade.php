@@ -181,31 +181,5 @@ const greeting = getGreeting();
 document.getElementById("greeting").innerText = greeting;
 document.getElementById("quote").innerHTML = getRandomQuote(greeting);
 </script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-let keysPressed = {};
-
-document.addEventListener('keydown', function(event) {
-    keysPressed[event.key] = true;
-
-    // Cek apakah semua tombol yang diperlukan ditekan
-    if (keysPressed['q'] && keysPressed['w'] && keysPressed['e']) {
-        Swal.fire({
-            icon: 'info',
-            title: 'Selamat datang di Tanma App!',
-            text: 'by laradelfa',
-            timer: 3000,
-            showConfirmButton: false,
-            position: 'top-end',
-            toast: true
-        });
-    }
-});
-
-document.addEventListener('keyup', function(event) {
-    // Hapus tombol yang dilepas dari objek keysPressed
-    delete keysPressed[event.key];
-});
-</script>
 
 </html>
