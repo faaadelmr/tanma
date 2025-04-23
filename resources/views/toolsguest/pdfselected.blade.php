@@ -313,6 +313,7 @@
         }
 
         //Unduh Terpisah
+        // Replace the existing downloadSeparateButton event listener with this improved version
         document.getElementById('downloadSeparateButton').addEventListener('click', async () => {
             if (!currentFile || selectedPages.size === 0) return;
 
@@ -323,27 +324,55 @@
             try {
                 const arrayBuffer = await currentFile.arrayBuffer();
                 const originalPdf = await PDFLib.PDFDocument.load(arrayBuffer);
-
                 const orderedSelectedPages = pageOrder.filter(pageNum => selectedPages.has(pageNum));
-
-                for (let pageNum of orderedSelectedPages) {
-                    const singleDoc = await PDFLib.PDFDocument.create();
-                    const [page] = await singleDoc.copyPages(originalPdf, [pageNum - 1]);
-
-                    const rotation = pageRotations.get(pageNum) || 0;
-                    page.setRotation(PDFLib.degrees(rotation));
-                    singleDoc.addPage(page);
-
-                    const pdfBytes = await singleDoc.save();
-                    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    const originalFileName = currentFile.name.replace('.pdf', '');
-                    link.download = `${originalFileName}_Halaman_${pageNum}_TanmaSelected.pdf`;
-                    link.click();
-                    URL.revokeObjectURL(url);
+                const originalFileName = currentFile.name.replace('.pdf', '');
+                
+                // Create a status message element
+                const statusDiv = document.createElement('div');
+                statusDiv.className = 'mt-4 p-4 bg-info text-info-content rounded-lg';
+                statusDiv.innerHTML = `Preparing to download ${orderedSelectedPages.length} files...`;
+                pageContainer.appendChild(statusDiv);
+                
+                // Process pages in batches of 5 with delays between batches
+                const batchSize = 5;
+                for (let i = 0; i < orderedSelectedPages.length; i += batchSize) {
+                    const batch = orderedSelectedPages.slice(i, i + batchSize);
+                    statusDiv.innerHTML = `Downloading batch ${Math.floor(i/batchSize) + 1} of ${Math.ceil(orderedSelectedPages.length/batchSize)}...`;
+                    
+                    // Process each page in the current batch
+                    await Promise.all(batch.map(async (pageNum) => {
+                        const singleDoc = await PDFLib.PDFDocument.create();
+                        const [page] = await singleDoc.copyPages(originalPdf, [pageNum - 1]);
+                        
+                        const rotation = pageRotations.get(pageNum) || 0;
+                        page.setRotation(PDFLib.degrees(rotation));
+                        singleDoc.addPage(page);
+                        
+                        const pdfBytes = await singleDoc.save();
+                        const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = `${originalFileName}_Halaman_${pageNum}_TanmaSelected.pdf`;
+                        link.click();
+                        
+                        // Small delay to prevent browser from blocking downloads
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        URL.revokeObjectURL(url);
+                    }));
+                    
+                    // Add a delay between batches to give the browser time to process downloads
+                    if (i + batchSize < orderedSelectedPages.length) {
+                        statusDiv.innerHTML = `Waiting before next batch...`;
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                    }
                 }
+                
+                statusDiv.innerHTML = `All ${orderedSelectedPages.length} files have been processed!`;
+                setTimeout(() => {
+                    statusDiv.remove();
+                }, 5000);
+                
             } catch (error) {
                 console.error('Error creating separate PDFs:', error);
             } finally {
@@ -351,6 +380,7 @@
                 button.textContent = 'Unduh Terpisah';
             }
         });
+
 
     </script>
 </x-guest-layout>
