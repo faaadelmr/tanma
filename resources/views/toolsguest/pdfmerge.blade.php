@@ -92,6 +92,26 @@
                 </div>
             </div>
         </div>
+        {{-- // footer //--}}
+        <div class=" py-3 border-t-2 border-red-500">
+            <div class="container mx-auto px-4">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-2">
+                    <div class="mb-2 sm:mb-0">
+                        <p class="text-base-content/80 text-xs">
+                            &copy; <?php echo date('Y'); ?> <span class="text-red-600 font-medium">Tanma PDF Tools</span>. All rights reserved.
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-2 text-xs">
+                        <span class="text-base-content/70">
+                            Crafted with
+                        </span>
+                        <img src="{{ asset('breathing.png') }}" alt="gambar">
+                        </span>
+                        <span class="text-base-content/70">by <a href="https://github.com/faaadelmr" class="text-red-500 hover:text-red-600 transition-colors duration-300">faaadelmr</a></span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
