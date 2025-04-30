@@ -15,37 +15,101 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        $winda = User::create([
+            'name' => 'winda',
+            'username' => 'winda',
+            'email' => 'winda@gmail.com',
+            'password' => bcrypt('winda')
+        ]);
+        $winda->assignRole('PIC');
+
+        $suwakar = User::create([
+            'name' => 'suwakar',
+            'username' => 'suwakar',
+            'email' => 'suwakar@gmail.com',
+            'password' => bcrypt('suwakar')
+        ]);
+        $suwakar->assignRole('Leader');
+
+        $risma = User::create([
+            'name' => 'risma',
+            'username' => 'risma',
+            'email' => 'risma@gmail.com',
+            'password' => bcrypt('risma')
+        ]);
+        $risma->assignRole('TeamAdmin');
+
+        $hesti = User::create([
+            'name' => 'hesti',
+            'username' => 'hesti',
+            'email' => 'hesti@gmail.com',
+            'password' => bcrypt('hesti')
+        ]);
+        $hesti->assignRole('TeamAdmin');
+
+        $elida = User::create([
+            'name' => 'elida',
+            'username' => 'elida',
+            'email' => 'elida@gmail.com',
+            'password' => bcrypt('elida')
+        ]);
+        $elida->assignRole('TeamAdmin');
+    
+        $dwi = User::create([
+            'name' => 'dwi',
+            'username' => 'dwi',
+            'email' => 'dwi@gmail.com',
+            'password' => bcrypt('dwi')
+        ]);
+        $dwi->assignRole('TeamAdmin');
+    
+        $firman = User::create([
+            'name' => 'firman',
+            'username' => 'firman',
+            'email' => 'firman@gmail.com',
+            'password' => bcrypt('firman')
+        ]);
+        $firman->assignRole('TeamAdmin');
+    
+        $fahmi = User::create([
+            'name' => 'fahmi',
+            'username' => 'fahmi',
+            'email' => 'fahmi@gmail.com',
+            'password' => bcrypt('fahmi')
+        ]);
+        $fahmi->assignRole('TeamAdmin');
+    
+        $tomy = User::create([
+            'name' => 'tomy',
+            'username' => 'tomy',
+            'email' => 'tomy@gmail.com',
+            'password' => bcrypt('tomy')
+        ]);
+        $tomy->assignRole('TeamAdmin');
+    
+        $edo = User::create([
+            'name' => 'edo',
+            'username' => 'edo',
+            'email' => 'edo@gmail.com',
+            'password' => bcrypt('edo')
+        ]);
+        $edo->assignRole('TeamAdmin');
+    
         $fadel = User::create([
             'name' => 'fadel',
             'username' => 'fadel',
             'email' => 'fadel@gmail.com',
             'password' => bcrypt('fadel')
         ]);
-        $fadel->assignRole('PIC');
+        $fadel->assignRole('TeamAdmin');
 
-        $dandy = User::create([
-            'name' => 'Dandy',
-            'username' => 'dandy',
-            'email' => 'dandy@gmail.com',
-            'password' => bcrypt('dandy')
+        $sri = User::create([
+            'name' => 'sri',
+            'username' => 'sri',
+            'email' => 'sri@gmail.com',
+            'password' => bcrypt('sri')
         ]);
-        $dandy->assignRole('Leader');
-
-        $eva = User::create([
-            'name' => 'Evan',
-            'username' => 'evan',
-            'email' => 'eva@gmail.com',
-            'password' => bcrypt('evan')
-        ]);
-        $eva->assignRole('TeamAdmin');
-
-        $ryand = User::create([
-            'name' => 'Ryand',
-            'username' => 'ryand',
-            'email' => 'ryand@gmail.com',
-            'password' => bcrypt('ryand')
-        ]);
-        $ryand->assignRole('TeamAdmin');
+        $sri->assignRole('TeamAdmin');
 
         $dev = User::create([
             'name' => 'dev',

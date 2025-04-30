@@ -60,26 +60,26 @@ class TaskCategorySeeder extends Seeder
             //     'has_form' => false,
             //     'has_dor_date' => false
             // ],
-            // [
-            //     'name' => 'Filling Provider',
-            //     'has_batch' => true,
-            //     'has_claim' => false,
-            //     'has_time_range' => false,
-            //     'has_sheets' => false,
-            //     'has_email' => false,
-            //     'has_form' => false,
-            //     'has_dor_date' => false
-            // ],
-            // [
-            //     'name' => 'Filling Reimbursement',
-            //     'has_batch' => true,
-            //     'has_claim' => false,
-            //     'has_time_range' => false,
-            //     'has_sheets' => false,
-            //     'has_email' => false,
-            //     'has_form' => false,
-            //     'has_dor_date' => false
-            // ],
+            [
+                'name' => 'Filling Provider',
+                'has_batch' => true,
+                'has_claim' => false,
+                'has_time_range' => false,
+                'has_sheets' => false,
+                'has_email' => false,
+                'has_form' => false,
+                'has_dor_date' => false
+            ],
+            [
+                'name' => 'Filling Reimbursement',
+                'has_batch' => true,
+                'has_claim' => false,
+                'has_time_range' => false,
+                'has_sheets' => false,
+                'has_email' => false,
+                'has_form' => false,
+                'has_dor_date' => false
+            ],
             [
                 'name' => 'Follow Up Email',
                 'has_batch' => false,
@@ -420,16 +420,16 @@ class TaskCategorySeeder extends Seeder
                 'has_form' => false,
                 'has_dor_date' => true
             ],
-            // [
-            //     'name' => 'Jumlah angka scanner',
-            //     'has_batch' => false,
-            //     'has_claim' => false,
-            //     'has_time_range' => false,
-            //     'has_sheets' => true,
-            //     'has_email' => false,
-            //     'has_form' => false,
-            //     'has_dor_date' => false
-            // ],
+            [
+                'name' => 'Jumlah angka scanner',
+                'has_batch' => false,
+                'has_claim' => false,
+                'has_time_range' => false,
+                'has_sheets' => true,
+                'has_email' => false,
+                'has_form' => false,
+                'has_dor_date' => false
+            ],
             // [
             //     'name' => 'Download Data Penggesekan ARI Daily Transaction',
             //     'has_batch' => false,

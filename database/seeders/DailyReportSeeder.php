@@ -25,7 +25,7 @@ class DailyReportSeeder extends Seeder
                     'approved_at' => rand(0, 1) ? Carbon::now()->subDays(rand(0, 30)) : null,
                     'approved_by' => rand(0, 1) ? User::role('Leader')->get()->random()->id : null,                ]);
 
-                // Create 1-3 tasks per report
+                // Create 2-4 tasks per report
                 for ($j = 0; $j < rand(2, 4); $j++) {
                     $category = $categories->random();
                     $taskData = [

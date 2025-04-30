@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-app-layout>
     <header data-theme="" class="rounded-md border-b-4 border-accent">
         <div class="px-4 py-3 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <h1 class="text-2xl font-bold text-base-content">
@@ -566,4 +566,4 @@
         </script>
 
 
-</x-guest-layout>
+</x-app-layout>
